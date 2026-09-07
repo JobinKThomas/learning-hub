@@ -20,6 +20,7 @@ import {
   BookOpen,
   Link2,
   Terminal,
+  HelpCircle,
 } from 'lucide-react';
 
 export default function AdminDashboard() {
@@ -135,6 +136,13 @@ export default function AdminDashboard() {
           >
             <Terminal className="w-3.5 h-3.5 mr-1.5" />
             Playgrounds
+          </Link>
+          <Link
+            to="/admin/quizzes"
+            className="inline-flex items-center px-3.5 py-2 rounded-xl bg-indigo-900 hover:bg-indigo-800 text-white text-xs font-semibold shadow-md shadow-indigo-900/30 transition"
+          >
+            <HelpCircle className="w-3.5 h-3.5 mr-1.5" />
+            Quizzes
           </Link>
           <button
             onClick={fetchAdminData}

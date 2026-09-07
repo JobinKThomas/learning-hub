@@ -39,6 +39,10 @@ import Playground from './pages/Playground';
 import AdminPlaygrounds from './pages/admin/AdminPlaygrounds';
 import CreatePlayground from './pages/admin/CreatePlayground';
 import EditPlayground from './pages/admin/EditPlayground';
+import Quiz from './pages/Quiz';
+import AdminQuizzes from './pages/admin/AdminQuizzes';
+import CreateQuiz from './pages/admin/CreateQuiz';
+import EditQuiz from './pages/admin/EditQuiz';
 
 export default function App() {
   const dispatch = useDispatch();
@@ -128,6 +132,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Playground />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/quizzes/:id"
+            element={
+              <ProtectedRoute>
+                <Quiz />
               </ProtectedRoute>
             }
           />
@@ -307,11 +319,35 @@ export default function App() {
               </AdminRoute>
             }
           />
+          <Route
+            path="/admin/quizzes"
+            element={
+              <AdminRoute>
+                <AdminQuizzes />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/quizzes/create"
+            element={
+              <AdminRoute>
+                <CreateQuiz />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/quizzes/:id/edit"
+            element={
+              <AdminRoute>
+                <EditQuiz />
+              </AdminRoute>
+            }
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
       <footer className="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
-        <p>© 2026 Learning Hub — Phase 9 Playground</p>
+        <p>© 2026 Learning Hub — Phase 10 Quiz</p>
       </footer>
     </div>
   );

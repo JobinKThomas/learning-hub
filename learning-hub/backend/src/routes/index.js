@@ -9,6 +9,7 @@ import topicRoutes from './topicRoutes.js';
 import noteRoutes from './noteRoutes.js';
 import resourceRoutes from './resourceRoutes.js';
 import playgroundRoutes from './playgroundRoutes.js';
+import quizRoutes from './quizRoutes.js';
 
 const router = Router();
 
@@ -22,5 +23,6 @@ router.use('/topics', topicRoutes);
 router.use('/notes', noteRoutes);
 router.use('/resources', resourceRoutes);
 router.use('/playgrounds', playgroundRoutes);
+router.use('/quizzes', quizRoutes);
 
 export default router;
