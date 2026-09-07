@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchLearningPathBySlug, clearCurrentPath } from '../features/learningPaths/learningPathSlice';
+import { fetchModulesByLearningPath } from '../features/modules/moduleSlice';
 import { useAuth } from '../hooks/useAuth';
 import {
   ArrowLeft,
@@ -18,6 +19,8 @@ import {
   AlertCircle,
   GraduationCap,
   Award,
+  PlusCircle,
+  ArrowRight,
 } from 'lucide-react';
 
 const LEVEL_BADGES = {
@@ -33,6 +36,7 @@ export default function LearningPathDetails() {
   const { currentPath: path, detailsLoading: loading, error } = useSelector(
     (state) => state.learningPaths
   );
+  const { modules: standaloneModules } = useSelector((state) => state.modules);
   const { isAdmin } = useAuth();
 
   const [expandedModules, setExpandedModules] = useState({});
@@ -42,6 +46,7 @@ export default function LearningPathDetails() {
   useEffect(() => {
     if (slug) {
       dispatch(fetchLearningPathBySlug(slug));
+      dispatch(fetchModulesByLearningPath(slug));
     }
     return () => {
       dispatch(clearCurrentPath());
@@ -114,6 +119,11 @@ export default function LearningPathDetails() {
 
   const levelBadge = LEVEL_BADGES[path.level] || LEVEL_BADGES.Beginner;
 
+  const displayModules =
+    standaloneModules && standaloneModules.length > 0
+      ? standaloneModules
+      : path.modules || [];
+
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       {/* Navigation Breadcrumb */}
@@ -127,13 +137,22 @@ export default function LearningPathDetails() {
         </Link>
 
         {isAdmin && (
-          <Link
-            to={`/admin/learning-paths/${path.id}/edit`}
-            className="inline-flex items-center px-3 py-1.5 rounded-lg border border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100 text-xs font-semibold transition"
-          >
-            <Edit className="w-3.5 h-3.5 mr-1.5" />
-            Edit Path (Admin)
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              to={`/admin/modules/create?path=${path.id}`}
+              className="inline-flex items-center px-3 py-1.5 rounded-lg border border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100 text-xs font-semibold transition"
+            >
+              <PlusCircle className="w-3.5 h-3.5 mr-1.5" />
+              Add Module
+            </Link>
+            <Link
+              to={`/admin/learning-paths/${path.id}/edit`}
+              className="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 text-xs font-semibold transition"
+            >
+              <Edit className="w-3.5 h-3.5 mr-1.5" />
+              Edit Path
+            </Link>
+          </div>
         )}
       </div>
 
@@ -169,7 +188,7 @@ export default function LearningPathDetails() {
             <div className="flex items-center gap-2">
               <BookOpen className="w-4 h-4 text-indigo-400" />
               <span>
-                <strong className="text-white font-bold">{path.modulesCount || path.modules?.length || 0}</strong>{' '}
+                <strong className="text-white font-bold">{displayModules.length}</strong>{' '}
                 Modules
               </span>
             </div>
@@ -199,32 +218,41 @@ export default function LearningPathDetails() {
               <GraduationCap className="w-5 h-5 text-indigo-600" />
               Curriculum Roadmap
             </h2>
-            <span className="text-xs text-slate-500 font-medium">
-              {path.modules?.length || 0} sequential modules
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-slate-500 font-medium">
+                {displayModules.length} sequential modules
+              </span>
+              {isAdmin && (
+                <Link
+                  to={`/admin/modules/create?path=${path.id}`}
+                  className="inline-flex items-center px-3 py-1.5 rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 text-xs font-semibold transition"
+                >
+                  <PlusCircle className="w-3.5 h-3.5 mr-1" />
+                  Add Module
+                </Link>
+              )}
+            </div>
           </div>
 
-          {path.modules && path.modules.length > 0 ? (
+          {displayModules && displayModules.length > 0 ? (
             <div className="space-y-4">
-              {path.modules.map((module, idx) => {
+              {displayModules.map((module, idx) => {
                 const isOpen = !!expandedModules[idx];
+                const moduleSlug = module.slug || `module-${idx + 1}`;
                 return (
                   <div
-                    key={module._id || idx}
+                    key={module._id || module.id || idx}
                     className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden transition-all"
                   >
                     {/* Module Accordion Header */}
-                    <button
-                      onClick={() => toggleModule(idx)}
-                      className="w-full p-5 flex items-start justify-between text-left hover:bg-slate-50/80 transition"
-                    >
-                      <div className="flex items-start gap-4">
+                    <div className="p-5 flex items-start justify-between">
+                      <div className="flex items-start gap-4 flex-grow cursor-pointer" onClick={() => toggleModule(idx)}>
                         <div className="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-700 font-bold text-xs flex items-center justify-center flex-shrink-0 mt-0.5">
-                          {idx + 1}
+                          {module.order ?? idx + 1}
                         </div>
                         <div>
                           <div className="flex items-center gap-3">
-                            <h3 className="text-base font-bold text-slate-900">
+                            <h3 className="text-base font-bold text-slate-900 hover:text-indigo-600 transition-colors">
                               {module.title}
                             </h3>
                             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">
@@ -240,14 +268,27 @@ export default function LearningPathDetails() {
                         </div>
                       </div>
 
-                      <div className="text-slate-400 pl-4 mt-1">
-                        {isOpen ? (
-                          <ChevronUp className="w-5 h-5" />
-                        ) : (
-                          <ChevronDown className="w-5 h-5" />
-                        )}
+                      <div className="flex items-center gap-3 pl-4">
+                        <Link
+                          to={`/modules/${moduleSlug}`}
+                          className="hidden sm:inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold transition whitespace-nowrap"
+                        >
+                          <span>Open Module</span>
+                          <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                        </Link>
+                        <button
+                          onClick={() => toggleModule(idx)}
+                          className="text-slate-400 hover:text-slate-600 p-1"
+                          title={isOpen ? 'Collapse' : 'Expand'}
+                        >
+                          {isOpen ? (
+                            <ChevronUp className="w-5 h-5" />
+                          ) : (
+                            <ChevronDown className="w-5 h-5" />
+                          )}
+                        </button>
                       </div>
-                    </button>
+                    </div>
 
                     {/* Topics Checklist (Collapsible) */}
                     {isOpen && module.topics && module.topics.length > 0 && (
@@ -268,6 +309,16 @@ export default function LearningPathDetails() {
                             </li>
                           ))}
                         </ul>
+
+                        <div className="mt-3 pt-3 border-t border-slate-100 sm:hidden">
+                          <Link
+                            to={`/modules/${moduleSlug}`}
+                            className="w-full inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold shadow-sm"
+                          >
+                            <span>Open Module Lessons</span>
+                            <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                          </Link>
+                        </div>
                       </div>
                     )}
                   </div>

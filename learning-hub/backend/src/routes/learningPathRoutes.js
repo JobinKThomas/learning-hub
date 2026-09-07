@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { learningPathController } from '../controllers/learningPathController.js';
+import { moduleController } from '../controllers/moduleController.js';
 import { requireAuth, requireAdmin } from '../middlewares/authMiddleware.js';
 import {
   validateCreateLearningPath,
@@ -64,6 +65,31 @@ router.get('/', learningPathController.getAll);
  *         description: Not found
  */
 router.get('/id/:id', learningPathController.getById);
+
+/**
+ * @openapi
+ * /learning-paths/{learningPathId}/modules:
+ *   get:
+ *     summary: Get all modules for a specific learning path
+ *     tags:
+ *       - Learning Paths
+ *       - Modules
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: learningPathId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Learning path ID or slug (e.g., 'javascript')
+ *     responses:
+ *       200:
+ *         description: List of modules for the learning path
+ *       404:
+ *         description: Learning path not found
+ */
+router.get('/:learningPathId/modules', moduleController.getByLearningPath);
 
 /**
  * @openapi
