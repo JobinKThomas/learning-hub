@@ -5,6 +5,11 @@ import { fetchNoteBySlug, fetchNotesByTopic, clearCurrentNote } from '../feature
 import MarkdownRenderer from '../components/MarkdownRenderer';
 import { useAuth } from '../hooks/useAuth';
 import {
+  updateProgress,
+  fetchTopicProgress,
+} from '../features/progress/progressSlice';
+import CompleteButton from '../features/progress/components/CompleteButton';
+import {
   ArrowLeft,
   Clock,
   BookOpen,
@@ -27,9 +32,11 @@ export default function NoteDetails() {
   const { currentNote: note, notes: siblingNotes, detailsLoading: loading, error } = useSelector(
     (state) => state.notes
   );
+  const { currentTopicProgress, actionLoading: progressLoading } = useSelector(
+    (state) => state.progress
+  );
   const { isAdmin } = useAuth();
 
-  const [isCompleted, setIsCompleted] = useState(false);
   const [copiedShare, setCopiedShare] = useState(false);
 
   useEffect(() => {
@@ -41,12 +48,35 @@ export default function NoteDetails() {
     };
   }, [dispatch, slug]);
 
-  // Load sibling notes within the same topic once note is fetched
+  // Load sibling notes within the same topic & topic progress once note is fetched
   useEffect(() => {
     if (note?.topic?.slug) {
       dispatch(fetchNotesByTopic(note.topic.slug));
+      dispatch(fetchTopicProgress(note.topic.slug));
+    } else if (note?.topic?._id || note?.topic?.id) {
+      dispatch(fetchTopicProgress(note.topic._id || note.topic.id));
     }
-  }, [dispatch, note?.topic?.slug]);
+  }, [dispatch, note?.topic]);
+
+  const noteId = note?._id || note?.id;
+  const isNoteCompleted = Boolean(
+    noteId &&
+      currentTopicProgress?.completedNotes?.some(
+        (id) => id === noteId || id === noteId.toString()
+      )
+  );
+
+  const handleToggleComplete = async () => {
+    if (!note?.topic) return;
+    const topicId = note.topic.slug || note.topic._id || note.topic.id;
+    await dispatch(
+      updateProgress({
+        topicId,
+        noteId: note.slug || note._id || note.id,
+        completed: !isNoteCompleted,
+      })
+    );
+  };
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -249,27 +279,14 @@ export default function NoteDetails() {
           </div>
 
           {/* Mark as Completed Button */}
-          <button
-            type="button"
-            onClick={() => setIsCompleted(!isCompleted)}
-            className={`inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-semibold transition gap-1.5 ${
-              isCompleted
-                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-            }`}
-          >
-            {isCompleted ? (
-              <>
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                <span>Completed</span>
-              </>
-            ) : (
-              <>
-                <Circle className="w-4 h-4 text-slate-400" />
-                <span>Mark as Read</span>
-              </>
-            )}
-          </button>
+          <CompleteButton
+            isCompleted={isNoteCompleted}
+            onToggle={handleToggleComplete}
+            loading={progressLoading}
+            labelActive="Completed"
+            labelInactive="Mark as Read"
+            size="sm"
+          />
         </div>
 
         {/* Tags */}
@@ -292,6 +309,28 @@ export default function NoteDetails() {
       <article className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/80 shadow-sm leading-relaxed">
         <MarkdownRenderer content={note.content} />
       </article>
+
+      {/* Completion Banner */}
+      <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+          <h4 className="text-sm font-bold text-slate-900">
+            {isNoteCompleted ? 'You completed this note! 🎉' : 'Finished reading?'}
+          </h4>
+          <p className="text-xs text-slate-500 mt-0.5">
+            {isNoteCompleted
+              ? 'Your progress has been recorded for this topic and learning path.'
+              : 'Mark this study note complete to progress through your curriculum milestones.'}
+          </p>
+        </div>
+        <CompleteButton
+          isCompleted={isNoteCompleted}
+          onToggle={handleToggleComplete}
+          loading={progressLoading}
+          labelActive="Note Completed"
+          labelInactive="Mark as Completed"
+          size="md"
+        />
+      </div>
 
       {/* Sibling Navigation Footer */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-200">

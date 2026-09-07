@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Clock, BookOpen, Tag, ArrowRight } from 'lucide-react';
+import { Clock, BookOpen, Tag, ArrowRight, CheckCircle2 } from 'lucide-react';
 
-export default function NoteCard({ note, showTopic = true }) {
+export default function NoteCard({ note, showTopic = true, isCompleted = false }) {
   if (!note) return null;
 
   const topic = note.topic;
@@ -16,6 +16,12 @@ export default function NoteCard({ note, showTopic = true }) {
             <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100">
               Note {note.order || 1}
             </span>
+            {isCompleted && (
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+                <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                Done
+              </span>
+            )}
             {showTopic && topic && (
               <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">
                 Topic: {topic.title || topic.slug}

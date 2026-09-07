@@ -6,6 +6,7 @@ import {
   setFilters,
   resetFilters,
 } from '../features/learningPaths/learningPathSlice';
+import { fetchOverallProgress } from '../features/progress/progressSlice';
 import LearningPathCard from '../features/learningPaths/components/LearningPathCard';
 import { useAuth } from '../hooks/useAuth';
 import {
@@ -27,7 +28,8 @@ export default function LearningPaths() {
   const { paths, count, loading, error, filters } = useSelector(
     (state) => state.learningPaths
   );
-  const { isAdmin } = useAuth();
+  const { overallProgress } = useSelector((state) => state.progress);
+  const { user, isAdmin } = useAuth();
 
   const [searchInput, setSearchInput] = useState(filters.search || '');
 
@@ -41,6 +43,12 @@ export default function LearningPaths() {
       })
     );
   }, [dispatch, filters.category, filters.level, filters.search]);
+
+  useEffect(() => {
+    if (user) {
+      dispatch(fetchOverallProgress());
+    }
+  }, [dispatch, user]);
 
   // Handle Search Input submit / debounced
   const handleSearchSubmit = (e) => {
@@ -209,9 +217,18 @@ export default function LearningPaths() {
       ) : paths.length > 0 ? (
         /* Grid of Learning Paths */
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {paths.map((path) => (
-            <LearningPathCard key={path.id || path.slug} path={path} />
-          ))}
+          {paths.map((path) => {
+            const prog = overallProgress?.learningPaths?.find(
+              (lp) => lp.slug === path.slug || String(lp.id) === String(path.id || path._id)
+            );
+            return (
+              <LearningPathCard
+                key={path.id || path.slug}
+                path={path}
+                progress={prog?.percentage}
+              />
+            );
+          })}
         </div>
       ) : (
         /* Empty State */

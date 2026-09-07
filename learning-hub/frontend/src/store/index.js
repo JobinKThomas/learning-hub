@@ -10,6 +10,7 @@ import playgroundReducer from '../features/playgrounds/playgroundSlice';
 import quizReducer from '../features/quizzes/quizSlice';
 import quizAttemptReducer from '../features/quizAttempts/quizAttemptSlice';
 import interviewQuestionReducer from '../features/interviewQuestions/interviewQuestionSlice';
+import progressReducer from '../features/progress/progressSlice';
 
 export const store = configureStore({
   reducer: {
@@ -24,6 +25,7 @@ export const store = configureStore({
     quizzes: quizReducer,
     quizAttempts: quizAttemptReducer,
     interviewQuestions: interviewQuestionReducer,
+    progress: progressReducer,
   },
   devTools: process.env.NODE_ENV !== 'production',
 });

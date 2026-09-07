@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { quizAttemptRepository } from '../repositories/quizAttemptRepository.js';
 import { quizRepository } from '../repositories/quizRepository.js';
+import { progressService } from './progressService.js';
 
 async function resolveQuiz(quizIdOrSlug) {
   if (!quizIdOrSlug) return null;
@@ -94,6 +95,18 @@ export const quizAttemptService = {
       startedAt,
       completedAt,
     });
+
+    if (passed && quiz.topic) {
+      try {
+        await progressService.updateProgress(userId, {
+          topicId: quiz.topic._id || quiz.topic,
+          quizId: quiz._id,
+          completed: true,
+        });
+      } catch (err) {
+        // Non-blocking progress sync
+      }
+    }
 
     return quizAttemptRepository.findById(created._id);
   },
