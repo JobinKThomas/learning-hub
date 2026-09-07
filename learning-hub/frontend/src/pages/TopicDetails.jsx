@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchTopicBySlug, clearCurrentTopic } from '../features/topics/topicSlice';
+import { fetchNotesByTopic } from '../features/notes/noteSlice';
+import NoteCard from '../features/notes/components/NoteCard';
 import { useAuth } from '../hooks/useAuth';
 import {
   ArrowLeft,
@@ -22,6 +24,7 @@ import {
   FileText,
   Copy,
   Terminal,
+  Plus,
 } from 'lucide-react';
 
 export default function TopicDetails() {
@@ -31,6 +34,7 @@ export default function TopicDetails() {
   const { currentTopic: topic, detailsLoading: loading, error } = useSelector(
     (state) => state.topics
   );
+  const { notes, loading: notesLoading } = useSelector((state) => state.notes);
   const { isAdmin } = useAuth();
 
   const [completedKeyPoints, setCompletedKeyPoints] = useState({});
@@ -40,6 +44,7 @@ export default function TopicDetails() {
   useEffect(() => {
     if (slug) {
       dispatch(fetchTopicBySlug(slug));
+      dispatch(fetchNotesByTopic(slug));
     }
     return () => {
       dispatch(clearCurrentTopic());
@@ -359,6 +364,57 @@ export default function TopicDetails() {
               </p>
             </div>
           )}
+
+          {/* Notes Section: Topic -> Notes -> Select Note -> Read Note */}
+          <div className="space-y-4 pt-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-indigo-600" />
+                <h2 className="text-base font-bold text-slate-900">
+                  Study Notes & In-Depth Guides ({notes?.length || 0})
+                </h2>
+              </div>
+
+              {isAdmin && (
+                <Link
+                  to={`/admin/notes/create?topic=${topic.slug}`}
+                  className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-xs font-semibold transition gap-1 border border-indigo-200"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add Note</span>
+                </Link>
+              )}
+            </div>
+
+            {notesLoading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="h-36 bg-slate-100 rounded-2xl animate-pulse" />
+                <div className="h-36 bg-slate-100 rounded-2xl animate-pulse" />
+              </div>
+            ) : notes && notes.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {notes.map((note) => (
+                  <NoteCard key={note.id} note={note} showTopic={false} />
+                ))}
+              </div>
+            ) : (
+              <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm text-center space-y-3">
+                <BookOpen className="w-8 h-8 text-slate-300 mx-auto" />
+                <p className="text-xs text-slate-500">
+                  No notes published for this topic yet.
+                </p>
+                {isAdmin && (
+                  <Link
+                    to={`/admin/notes/create?topic=${topic.slug}`}
+                    className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition"
+                  >
+                    <Plus className="w-3.5 h-3.5 mr-1" />
+                    Create First Note
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Right Column: Mastery & Quick Navigation */}

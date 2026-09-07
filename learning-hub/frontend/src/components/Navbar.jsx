@@ -12,6 +12,7 @@ import {
   Shield,
   Layers,
   Code2,
+  FileText,
 } from 'lucide-react';
 
 export default function Navbar() {
@@ -53,6 +54,18 @@ export default function Navbar() {
                 >
                   <BookOpen className="w-4 h-4 mr-1.5 text-indigo-500" />
                   Learning Paths
+                </Link>
+
+                <Link
+                  to="/notes"
+                  className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                    location.pathname.startsWith('/notes')
+                      ? 'bg-indigo-50 text-indigo-700'
+                      : 'text-slate-600 hover:text-indigo-600 hover:bg-slate-50'
+                  }`}
+                >
+                  <FileText className="w-4 h-4 mr-1.5 text-indigo-500" />
+                  Notes
                 </Link>
 
                 <Link
@@ -127,6 +140,18 @@ export default function Navbar() {
                     >
                       <Code2 className="w-4 h-4 mr-1.5 text-purple-600" />
                       Topics
+                    </Link>
+
+                    <Link
+                      to="/admin/notes"
+                      className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                        location.pathname.startsWith('/admin/notes')
+                          ? 'bg-purple-100 text-purple-800'
+                          : 'text-purple-700 hover:bg-purple-50'
+                      }`}
+                    >
+                      <FileText className="w-4 h-4 mr-1.5 text-purple-600" />
+                      Notes
                     </Link>
                   </>
                 )}
