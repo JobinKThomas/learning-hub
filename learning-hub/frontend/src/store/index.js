@@ -5,6 +5,7 @@ import moduleReducer from '../features/modules/moduleSlice';
 import sectionReducer from '../features/sections/sectionSlice';
 import topicReducer from '../features/topics/topicSlice';
 import noteReducer from '../features/notes/noteSlice';
+import resourceReducer from '../features/resources/resourceSlice';
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     sections: sectionReducer,
     topics: topicReducer,
     notes: noteReducer,
+    resources: resourceReducer,
   },
   devTools: process.env.NODE_ENV !== 'production',
 });

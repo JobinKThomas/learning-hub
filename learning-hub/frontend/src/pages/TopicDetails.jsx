@@ -3,7 +3,9 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchTopicBySlug, clearCurrentTopic } from '../features/topics/topicSlice';
 import { fetchNotesByTopic } from '../features/notes/noteSlice';
+import { fetchResourcesByTopic } from '../features/resources/resourceSlice';
 import NoteCard from '../features/notes/components/NoteCard';
+import ResourceCard from '../features/resources/components/ResourceCard';
 import { useAuth } from '../hooks/useAuth';
 import {
   ArrowLeft,
@@ -25,6 +27,8 @@ import {
   Copy,
   Terminal,
   Plus,
+  ExternalLink,
+  Globe,
 } from 'lucide-react';
 
 export default function TopicDetails() {
@@ -35,16 +39,19 @@ export default function TopicDetails() {
     (state) => state.topics
   );
   const { notes, loading: notesLoading } = useSelector((state) => state.notes);
+  const { resources, loading: resourcesLoading } = useSelector((state) => state.resources);
   const { isAdmin } = useAuth();
 
   const [completedKeyPoints, setCompletedKeyPoints] = useState({});
   const [copiedCodeIdx, setCopiedCodeIdx] = useState(null);
   const [copiedShare, setCopiedShare] = useState(false);
+  const [resourceTypeFilter, setResourceTypeFilter] = useState('ALL');
 
   useEffect(() => {
     if (slug) {
       dispatch(fetchTopicBySlug(slug));
       dispatch(fetchNotesByTopic(slug));
+      dispatch(fetchResourcesByTopic({ topicId: slug }));
     }
     return () => {
       dispatch(clearCurrentTopic());
@@ -410,6 +417,121 @@ export default function TopicDetails() {
                   >
                     <Plus className="w-3.5 h-3.5 mr-1" />
                     Create First Note
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Resources Section: Topic -> Resources (📚 Documentation, 🎥 Video, 🔗 Article, 💻 GitHub) */}
+          <div className="space-y-4 pt-4 border-t border-slate-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Globe className="w-4 h-4 text-indigo-600" />
+                <h2 className="text-base font-bold text-slate-900">
+                  Curated Learning Resources ({resources?.length || 0})
+                </h2>
+              </div>
+
+              {isAdmin && (
+                <Link
+                  to={`/admin/resources/create?topic=${topic.slug}`}
+                  className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-xs font-semibold transition gap-1 border border-indigo-200"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add Resource</span>
+                </Link>
+              )}
+            </div>
+
+            {/* Type Filters */}
+            {resources && resources.length > 0 && (
+              <div className="flex flex-wrap items-center gap-1.5">
+                {[
+                  { key: 'ALL', label: 'All Resources' },
+                  { key: 'DOCUMENTATION', label: '📚 Documentation' },
+                  { key: 'VIDEO', label: '🎥 Video' },
+                  { key: 'ARTICLE', label: '🔗 Article' },
+                  { key: 'GITHUB', label: '💻 GitHub' },
+                  { key: 'TOOL', label: '🛠️ Tool' },
+                ].map((tab) => {
+                  const isActive = resourceTypeFilter === tab.key;
+                  const countForType =
+                    tab.key === 'ALL'
+                      ? resources.length
+                      : resources.filter((r) => r.type === tab.key).length;
+
+                  if (tab.key !== 'ALL' && countForType === 0) return null;
+
+                  return (
+                    <button
+                      key={tab.key}
+                      type="button"
+                      onClick={() => setResourceTypeFilter(tab.key)}
+                      className={`text-xs font-semibold px-3 py-1.5 rounded-xl transition ${
+                        isActive
+                          ? 'bg-slate-900 text-white shadow-sm'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      <span>{tab.label}</span>
+                      <span
+                        className={`ml-1.5 text-[10px] px-1.5 py-0.2 rounded-full ${
+                          isActive
+                            ? 'bg-white/20 text-white'
+                            : 'bg-slate-200/80 text-slate-700'
+                        }`}
+                      >
+                        {countForType}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Resources List */}
+            {resourcesLoading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="h-32 bg-slate-100 rounded-2xl animate-pulse" />
+                <div className="h-32 bg-slate-100 rounded-2xl animate-pulse" />
+              </div>
+            ) : resources && resources.length > 0 ? (
+              (() => {
+                const filteredResources =
+                  resourceTypeFilter === 'ALL'
+                    ? resources
+                    : resources.filter((r) => r.type === resourceTypeFilter);
+
+                if (filteredResources.length === 0) {
+                  return (
+                    <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 text-center text-xs text-slate-500">
+                      No resources found for this category.
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {filteredResources.map((res) => (
+                      <ResourceCard key={res.id} resource={res} />
+                    ))}
+                  </div>
+                );
+              })()
+            ) : (
+              <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm text-center space-y-3">
+                <Globe className="w-8 h-8 text-slate-300 mx-auto" />
+                <p className="text-xs text-slate-500">
+                  No curated resources attached to this topic yet.
+                </p>
+                {isAdmin && (
+                  <Link
+                    to={`/admin/resources/create?topic=${topic.slug}`}
+                    className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition"
+                  >
+                    <Plus className="w-3.5 h-3.5 mr-1" />
+                    Attach First Resource
                   </Link>
                 )}
               </div>
