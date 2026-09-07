@@ -6,10 +6,12 @@ import { fetchNotesByTopic } from '../features/notes/noteSlice';
 import { fetchResourcesByTopic } from '../features/resources/resourceSlice';
 import { fetchPlaygroundsByTopic } from '../features/playgrounds/playgroundSlice';
 import { fetchQuizzesByTopic } from '../features/quizzes/quizSlice';
+import { fetchInterviewQuestionsByTopic } from '../features/interviewQuestions/interviewQuestionSlice';
 import NoteCard from '../features/notes/components/NoteCard';
 import ResourceCard from '../features/resources/components/ResourceCard';
 import PlaygroundCard from '../features/playgrounds/components/PlaygroundCard';
 import QuizCard from '../features/quizzes/components/QuizCard';
+import InterviewQuestionCard from '../features/interviewQuestions/components/InterviewQuestionCard';
 import { useAuth } from '../hooks/useAuth';
 import {
   ArrowLeft,
@@ -36,6 +38,7 @@ import {
   Play,
   HelpCircle,
   Award,
+  Flame,
 } from 'lucide-react';
 
 export default function TopicDetails() {
@@ -53,6 +56,9 @@ export default function TopicDetails() {
   const { topicQuizzes: quizzes, loading: quizzesLoading } = useSelector(
     (state) => state.quizzes
   );
+  const { questions: interviewQuestions, loading: interviewQuestionsLoading } = useSelector(
+    (state) => state.interviewQuestions
+  );
   const { isAdmin } = useAuth();
 
   const [completedKeyPoints, setCompletedKeyPoints] = useState({});
@@ -67,6 +73,7 @@ export default function TopicDetails() {
       dispatch(fetchResourcesByTopic({ topicId: slug }));
       dispatch(fetchPlaygroundsByTopic(slug));
       dispatch(fetchQuizzesByTopic(slug));
+      dispatch(fetchInterviewQuestionsByTopic({ topicId: slug }));
     }
     return () => {
       dispatch(clearCurrentTopic());
@@ -654,6 +661,57 @@ export default function TopicDetails() {
               </div>
             )}
           </div>
+
+          {/* Interview Questions Section: Topic -> Interview Questions -> Question -> Reveal Answer */}
+          <div className="space-y-4 pt-4 border-t border-slate-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Flame className="w-4 h-4 text-rose-600" />
+                <h2 className="text-base font-bold text-slate-900">
+                  Technical Interview Questions ({interviewQuestions?.length || 0})
+                </h2>
+              </div>
+
+              {isAdmin && (
+                <Link
+                  to={`/admin/interview-questions/create?topic=${topic.slug}`}
+                  className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-xs font-semibold transition gap-1 border border-indigo-200"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add Question</span>
+                </Link>
+              )}
+            </div>
+
+            {interviewQuestionsLoading ? (
+              <div className="space-y-4">
+                <div className="h-32 bg-slate-100 rounded-2xl animate-pulse" />
+                <div className="h-32 bg-slate-100 rounded-2xl animate-pulse" />
+              </div>
+            ) : interviewQuestions && interviewQuestions.length > 0 ? (
+              <div className="space-y-4">
+                {interviewQuestions.map((q, idx) => (
+                  <InterviewQuestionCard key={q.id} question={q} index={idx + 1} />
+                ))}
+              </div>
+            ) : (
+              <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm text-center space-y-3">
+                <Flame className="w-8 h-8 text-slate-300 mx-auto" />
+                <p className="text-xs text-slate-500">
+                  No technical interview questions added for this topic yet.
+                </p>
+                {isAdmin && (
+                  <Link
+                    to={`/admin/interview-questions/create?topic=${topic.slug}`}
+                    className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition"
+                  >
+                    <Plus className="w-3.5 h-3.5 mr-1" />
+                    Create First Question
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Right Column: Mastery & Quick Navigation */}
@@ -715,6 +773,17 @@ export default function TopicDetails() {
               >
                 <Award className="w-4 h-4 text-amber-300" />
                 <span>Take Knowledge Quiz ({quizzes[0].questions?.length || 0} Questions)</span>
+              </Link>
+            )}
+
+            {/* Direct Interview Prep CTA */}
+            {interviewQuestions && interviewQuestions.length > 0 && (
+              <Link
+                to={`/interview-questions?topic=${topic.slug}`}
+                className="w-full inline-flex items-center justify-center px-4 py-3 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-700 hover:to-amber-700 text-white text-xs font-bold shadow-lg shadow-rose-200 transition gap-2"
+              >
+                <Flame className="w-4 h-4 text-amber-200" />
+                <span>Prep Interview Questions ({interviewQuestions.length})</span>
               </Link>
             )}
 

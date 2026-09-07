@@ -16,6 +16,7 @@ import {
   Link2,
   Terminal,
   HelpCircle,
+  Flame,
 } from 'lucide-react';
 
 export default function Navbar() {
@@ -69,6 +70,18 @@ export default function Navbar() {
                 >
                   <FileText className="w-4 h-4 mr-1.5 text-indigo-500" />
                   Notes
+                </Link>
+
+                <Link
+                  to="/interview-questions"
+                  className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                    location.pathname.startsWith('/interview-questions')
+                      ? 'bg-rose-50 text-rose-700 font-bold'
+                      : 'text-slate-600 hover:text-rose-600 hover:bg-rose-50/50'
+                  }`}
+                >
+                  <Flame className="w-4 h-4 mr-1.5 text-rose-500" />
+                  Interview Prep
                 </Link>
 
                 <Link
@@ -191,6 +204,18 @@ export default function Navbar() {
                     >
                       <HelpCircle className="w-4 h-4 mr-1.5 text-purple-600" />
                       Quizzes
+                    </Link>
+
+                    <Link
+                      to="/admin/interview-questions"
+                      className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                        location.pathname.startsWith('/admin/interview-questions')
+                          ? 'bg-purple-100 text-purple-800'
+                          : 'text-purple-700 hover:bg-purple-50'
+                      }`}
+                    >
+                      <Flame className="w-4 h-4 mr-1.5 text-rose-600" />
+                      Interview
                     </Link>
                   </>
                 )}
