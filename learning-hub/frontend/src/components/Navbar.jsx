@@ -10,6 +10,7 @@ import {
   User,
   LayoutDashboard,
   Shield,
+  Layers,
 } from 'lucide-react';
 
 export default function Navbar() {
