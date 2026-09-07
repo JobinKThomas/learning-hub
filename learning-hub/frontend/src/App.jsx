@@ -23,6 +23,10 @@ import SectionDetails from './pages/SectionDetails';
 import AdminSections from './pages/admin/AdminSections';
 import CreateSection from './pages/admin/CreateSection';
 import EditSection from './pages/admin/EditSection';
+import TopicDetails from './pages/TopicDetails';
+import AdminTopics from './pages/admin/AdminTopics';
+import CreateTopic from './pages/admin/CreateTopic';
+import EditTopic from './pages/admin/EditTopic';
 
 export default function App() {
   const dispatch = useDispatch();
@@ -80,6 +84,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <SectionDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/topics/:slug"
+            element={
+              <ProtectedRoute>
+                <TopicDetails />
               </ProtectedRoute>
             }
           />
@@ -163,11 +175,35 @@ export default function App() {
               </AdminRoute>
             }
           />
+          <Route
+            path="/admin/topics"
+            element={
+              <AdminRoute>
+                <AdminTopics />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/topics/create"
+            element={
+              <AdminRoute>
+                <CreateTopic />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/topics/:id/edit"
+            element={
+              <AdminRoute>
+                <EditTopic />
+              </AdminRoute>
+            }
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
       <footer className="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
-        <p>© 2026 Learning Hub — Phase 5 Sections</p>
+        <p>© 2026 Learning Hub — Phase 6 Topics</p>
       </footer>
     </div>
   );

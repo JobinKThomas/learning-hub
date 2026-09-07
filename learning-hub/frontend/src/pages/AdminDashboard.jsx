@@ -104,6 +104,13 @@ export default function AdminDashboard() {
             <Layers className="w-3.5 h-3.5 mr-1.5" />
             Sections
           </Link>
+          <Link
+            to="/admin/topics"
+            className="inline-flex items-center px-3.5 py-2 rounded-xl bg-purple-900 hover:bg-purple-800 text-white text-xs font-semibold shadow-md shadow-purple-900/30 transition"
+          >
+            <Code2 className="w-3.5 h-3.5 mr-1.5" />
+            Topics
+          </Link>
           <button
             onClick={fetchAdminData}
             disabled={loading}

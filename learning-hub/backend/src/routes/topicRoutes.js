@@ -1,51 +1,55 @@
 import { Router } from 'express';
-import { sectionController } from '../controllers/sectionController.js';
 import { topicController } from '../controllers/topicController.js';
 import { requireAuth, requireAdmin } from '../middlewares/authMiddleware.js';
 import {
-  validateCreateSection,
-  validateUpdateSection,
-} from '../middlewares/sectionValidation.js';
+  validateCreateTopic,
+  validateUpdateTopic,
+} from '../middlewares/topicValidation.js';
 
 const router = Router();
 
-// All section routes require authentication
+// All topic routes require authentication
 router.use(requireAuth);
 
 /**
  * @openapi
- * /sections:
+ * /topics:
  *   get:
- *     summary: Get all sections
+ *     summary: Get all topics
  *     tags:
- *       - Sections
+ *       - Topics
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
- *         name: moduleId
+ *         name: section
  *         schema:
  *           type: string
- *         description: Optional module ID or slug filter
+ *         description: Optional section ID or slug filter
+ *       - in: query
+ *         name: sectionId
+ *         schema:
+ *           type: string
+ *         description: Optional section ID or slug filter
  *       - in: query
  *         name: search
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: List of sections
+ *         description: List of topics
  *       401:
  *         description: Unauthorized
  */
-router.get('/', sectionController.getAll);
+router.get('/', topicController.getAll);
 
 /**
  * @openapi
- * /sections/id/{id}:
+ * /topics/id/{id}:
  *   get:
- *     summary: Get section by ID
+ *     summary: Get topic by ID
  *     tags:
- *       - Sections
+ *       - Topics
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -56,44 +60,19 @@ router.get('/', sectionController.getAll);
  *           type: string
  *     responses:
  *       200:
- *         description: Section details
+ *         description: Topic details
  *       404:
- *         description: Section not found
+ *         description: Topic not found
  */
-router.get('/id/:id', sectionController.getById);
+router.get('/id/:id', topicController.getById);
 
 /**
  * @openapi
- * /sections/{sectionId}/topics:
+ * /topics/{slug}:
  *   get:
- *     summary: Get all topics for a section
+ *     summary: Get topic details by slug
  *     tags:
- *       - Sections
  *       - Topics
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: sectionId
- *         required: true
- *         schema:
- *           type: string
- *         description: Section ID or slug
- *     responses:
- *       200:
- *         description: List of topics for the section
- *       404:
- *         description: Section not found
- */
-router.get('/:sectionId/topics', topicController.getBySection);
-
-/**
- * @openapi
- * /sections/{slug}:
- *   get:
- *     summary: Get section details by slug
- *     tags:
- *       - Sections
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -104,19 +83,19 @@ router.get('/:sectionId/topics', topicController.getBySection);
  *           type: string
  *     responses:
  *       200:
- *         description: Section details
+ *         description: Topic details
  *       404:
- *         description: Section not found
+ *         description: Topic not found
  */
-router.get('/:slug', sectionController.getBySlug);
+router.get('/:slug', topicController.getBySlug);
 
 /**
  * @openapi
- * /sections:
+ * /topics:
  *   post:
- *     summary: Create new section (Admin only)
+ *     summary: Create new topic (Admin only)
  *     tags:
- *       - Sections
+ *       - Topics
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -127,14 +106,16 @@ router.get('/:slug', sectionController.getBySlug);
  *             type: object
  *             required:
  *               - title
- *               - module
+ *               - section
  *               - description
  *             properties:
  *               title:
  *                 type: string
  *               slug:
  *                 type: string
- *               module:
+ *               section:
+ *                 type: string
+ *               summary:
  *                 type: string
  *               description:
  *                 type: string
@@ -142,7 +123,11 @@ router.get('/:slug', sectionController.getBySlug);
  *                 type: string
  *               order:
  *                 type: number
- *               items:
+ *               codeExamples:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *               keyPoints:
  *                 type: array
  *                 items:
  *                   type: string
@@ -152,19 +137,19 @@ router.get('/:slug', sectionController.getBySlug);
  *                 type: boolean
  *     responses:
  *       201:
- *         description: Section created
+ *         description: Topic created
  *       403:
  *         description: Forbidden - Admin only
  */
-router.post('/', requireAdmin, validateCreateSection, sectionController.create);
+router.post('/', requireAdmin, validateCreateTopic, topicController.create);
 
 /**
  * @openapi
- * /sections/{id}:
+ * /topics/{id}:
  *   put:
- *     summary: Update section (Admin only)
+ *     summary: Update topic (Admin only)
  *     tags:
- *       - Sections
+ *       - Topics
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -175,19 +160,19 @@ router.post('/', requireAdmin, validateCreateSection, sectionController.create);
  *           type: string
  *     responses:
  *       200:
- *         description: Section updated
+ *         description: Topic updated
  *       403:
  *         description: Forbidden - Admin only
  */
-router.put('/:id', requireAdmin, validateUpdateSection, sectionController.update);
+router.put('/:id', requireAdmin, validateUpdateTopic, topicController.update);
 
 /**
  * @openapi
- * /sections/{id}:
+ * /topics/{id}:
  *   delete:
- *     summary: Delete section (Admin only)
+ *     summary: Delete topic (Admin only)
  *     tags:
- *       - Sections
+ *       - Topics
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -198,10 +183,10 @@ router.put('/:id', requireAdmin, validateUpdateSection, sectionController.update
  *           type: string
  *     responses:
  *       200:
- *         description: Section deleted
+ *         description: Topic deleted
  *       403:
  *         description: Forbidden - Admin only
  */
-router.delete('/:id', requireAdmin, sectionController.delete);
+router.delete('/:id', requireAdmin, topicController.delete);
 
 export default router;

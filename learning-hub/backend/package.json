@@ -11,7 +11,8 @@
     "db:start": "bash scripts/start-mongo.sh",
     "seed:paths": "node scripts/seedLearningPaths.js",
     "seed:modules": "node scripts/seedModules.js",
-    "seed:sections": "node scripts/seedSections.js"
+    "seed:sections": "node scripts/seedSections.js",
+    "seed:topics": "node scripts/seedTopics.js"
   },
   "keywords": [
     "express",
