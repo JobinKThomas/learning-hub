@@ -16,6 +16,7 @@ import {
   AlertCircle,
   Code2,
   Layers,
+  FileText,
 } from 'lucide-react';
 
 export default function AdminDashboard() {
@@ -110,6 +111,13 @@ export default function AdminDashboard() {
           >
             <Code2 className="w-3.5 h-3.5 mr-1.5" />
             Topics
+          </Link>
+          <Link
+            to="/admin/notes"
+            className="inline-flex items-center px-3.5 py-2 rounded-xl bg-purple-950 hover:bg-purple-900 text-white text-xs font-semibold shadow-md shadow-purple-950/30 transition"
+          >
+            <FileText className="w-3.5 h-3.5 mr-1.5" />
+            Notes
           </Link>
           <button
             onClick={fetchAdminData}

@@ -27,6 +27,11 @@ import TopicDetails from './pages/TopicDetails';
 import AdminTopics from './pages/admin/AdminTopics';
 import CreateTopic from './pages/admin/CreateTopic';
 import EditTopic from './pages/admin/EditTopic';
+import Notes from './pages/Notes';
+import NoteDetails from './pages/NoteDetails';
+import AdminNotes from './pages/admin/AdminNotes';
+import CreateNote from './pages/admin/CreateNote';
+import EditNote from './pages/admin/EditNote';
 
 export default function App() {
   const dispatch = useDispatch();
@@ -92,6 +97,22 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <TopicDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/notes"
+            element={
+              <ProtectedRoute>
+                <Notes />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/notes/:slug"
+            element={
+              <ProtectedRoute>
+                <NoteDetails />
               </ProtectedRoute>
             }
           />
@@ -199,11 +220,35 @@ export default function App() {
               </AdminRoute>
             }
           />
+          <Route
+            path="/admin/notes"
+            element={
+              <AdminRoute>
+                <AdminNotes />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/notes/create"
+            element={
+              <AdminRoute>
+                <CreateNote />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/notes/:id/edit"
+            element={
+              <AdminRoute>
+                <EditNote />
+              </AdminRoute>
+            }
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
       <footer className="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
-        <p>© 2026 Learning Hub — Phase 6 Topics</p>
+        <p>© 2026 Learning Hub — Phase 7 Notes</p>
       </footer>
     </div>
   );

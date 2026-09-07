@@ -1,56 +1,61 @@
 import { Router } from 'express';
-import { topicController } from '../controllers/topicController.js';
 import { noteController } from '../controllers/noteController.js';
 import { requireAuth, requireAdmin } from '../middlewares/authMiddleware.js';
 import {
-  validateCreateTopic,
-  validateUpdateTopic,
-} from '../middlewares/topicValidation.js';
+  validateCreateNote,
+  validateUpdateNote,
+} from '../middlewares/noteValidation.js';
 
 const router = Router();
 
-// All topic routes require authentication
+// All note routes require authentication
 router.use(requireAuth);
 
 /**
  * @openapi
- * /topics:
+ * /notes:
  *   get:
- *     summary: Get all topics
+ *     summary: Get all notes (optionally filtered by topic, tag, or search)
  *     tags:
- *       - Topics
+ *       - Notes
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
- *         name: section
+ *         name: topic
  *         schema:
  *           type: string
- *         description: Optional section ID or slug filter
+ *         description: Optional topic ID or slug filter
  *       - in: query
- *         name: sectionId
+ *         name: topicId
  *         schema:
  *           type: string
- *         description: Optional section ID or slug filter
+ *         description: Optional topic ID or slug filter
+ *       - in: query
+ *         name: tag
+ *         schema:
+ *           type: string
+ *         description: Optional tag filter
  *       - in: query
  *         name: search
  *         schema:
  *           type: string
+ *         description: Optional search text
  *     responses:
  *       200:
- *         description: List of topics
+ *         description: List of notes
  *       401:
  *         description: Unauthorized
  */
-router.get('/', topicController.getAll);
+router.get('/', noteController.getAll);
 
 /**
  * @openapi
- * /topics/id/{id}:
+ * /notes/id/{id}:
  *   get:
- *     summary: Get topic by ID
+ *     summary: Get note by ID
  *     tags:
- *       - Topics
+ *       - Notes
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -61,44 +66,19 @@ router.get('/', topicController.getAll);
  *           type: string
  *     responses:
  *       200:
- *         description: Topic details
+ *         description: Note details
  *       404:
- *         description: Topic not found
+ *         description: Note not found
  */
-router.get('/id/:id', topicController.getById);
+router.get('/id/:id', noteController.getById);
 
 /**
  * @openapi
- * /topics/{topicId}/notes:
+ * /notes/{slug}:
  *   get:
- *     summary: Get all notes belonging to a topic
+ *     summary: Get note details by slug
  *     tags:
- *       - Topics
  *       - Notes
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: topicId
- *         required: true
- *         schema:
- *           type: string
- *         description: Topic ID or slug
- *     responses:
- *       200:
- *         description: List of notes for topic
- *       404:
- *         description: Topic not found
- */
-router.get('/:topicId/notes', noteController.getByTopic);
-
-/**
- * @openapi
- * /topics/{slug}:
- *   get:
- *     summary: Get topic details by slug
- *     tags:
- *       - Topics
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -109,19 +89,19 @@ router.get('/:topicId/notes', noteController.getByTopic);
  *           type: string
  *     responses:
  *       200:
- *         description: Topic details
+ *         description: Note details
  *       404:
- *         description: Topic not found
+ *         description: Note not found
  */
-router.get('/:slug', topicController.getBySlug);
+router.get('/:slug', noteController.getBySlug);
 
 /**
  * @openapi
- * /topics:
+ * /notes:
  *   post:
- *     summary: Create new topic (Admin only)
+ *     summary: Create new note (Admin only)
  *     tags:
- *       - Topics
+ *       - Notes
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -132,50 +112,44 @@ router.get('/:slug', topicController.getBySlug);
  *             type: object
  *             required:
  *               - title
- *               - section
- *               - description
+ *               - topic
+ *               - content
  *             properties:
  *               title:
  *                 type: string
  *               slug:
  *                 type: string
- *               section:
+ *               topic:
+ *                 type: string
+ *               content:
  *                 type: string
  *               summary:
  *                 type: string
- *               description:
- *                 type: string
- *               duration:
+ *               readingTime:
  *                 type: string
  *               order:
  *                 type: number
- *               codeExamples:
- *                 type: array
- *                 items:
- *                   type: object
- *               keyPoints:
+ *               tags:
  *                 type: array
  *                 items:
  *                   type: string
- *               content:
- *                 type: string
  *               published:
  *                 type: boolean
  *     responses:
  *       201:
- *         description: Topic created
+ *         description: Note created
  *       403:
  *         description: Forbidden - Admin only
  */
-router.post('/', requireAdmin, validateCreateTopic, topicController.create);
+router.post('/', requireAdmin, validateCreateNote, noteController.create);
 
 /**
  * @openapi
- * /topics/{id}:
+ * /notes/{id}:
  *   put:
- *     summary: Update topic (Admin only)
+ *     summary: Update note (Admin only)
  *     tags:
- *       - Topics
+ *       - Notes
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -186,19 +160,19 @@ router.post('/', requireAdmin, validateCreateTopic, topicController.create);
  *           type: string
  *     responses:
  *       200:
- *         description: Topic updated
+ *         description: Note updated
  *       403:
  *         description: Forbidden - Admin only
  */
-router.put('/:id', requireAdmin, validateUpdateTopic, topicController.update);
+router.put('/:id', requireAdmin, validateUpdateNote, noteController.update);
 
 /**
  * @openapi
- * /topics/{id}:
+ * /notes/{id}:
  *   delete:
- *     summary: Delete topic (Admin only)
+ *     summary: Delete note (Admin only)
  *     tags:
- *       - Topics
+ *       - Notes
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -209,10 +183,10 @@ router.put('/:id', requireAdmin, validateUpdateTopic, topicController.update);
  *           type: string
  *     responses:
  *       200:
- *         description: Topic deleted
+ *         description: Note deleted
  *       403:
  *         description: Forbidden - Admin only
  */
-router.delete('/:id', requireAdmin, topicController.delete);
+router.delete('/:id', requireAdmin, noteController.delete);
 
 export default router;

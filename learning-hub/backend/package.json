@@ -12,7 +12,8 @@
     "seed:paths": "node scripts/seedLearningPaths.js",
     "seed:modules": "node scripts/seedModules.js",
     "seed:sections": "node scripts/seedSections.js",
-    "seed:topics": "node scripts/seedTopics.js"
+    "seed:topics": "node scripts/seedTopics.js",
+    "seed:notes": "node scripts/seedNotes.js"
   },
   "keywords": [
     "express",

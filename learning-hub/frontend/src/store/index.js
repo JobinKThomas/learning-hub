@@ -4,6 +4,7 @@ import learningPathReducer from '../features/learningPaths/learningPathSlice';
 import moduleReducer from '../features/modules/moduleSlice';
 import sectionReducer from '../features/sections/sectionSlice';
 import topicReducer from '../features/topics/topicSlice';
+import noteReducer from '../features/notes/noteSlice';
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     modules: moduleReducer,
     sections: sectionReducer,
     topics: topicReducer,
+    notes: noteReducer,
   },
   devTools: process.env.NODE_ENV !== 'production',
 });
