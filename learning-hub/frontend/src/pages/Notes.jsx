@@ -5,6 +5,10 @@ import { fetchNotes } from '../features/notes/noteSlice';
 import { fetchTopics } from '../features/topics/topicSlice';
 import NoteCard from '../features/notes/components/NoteCard';
 import { useAuth } from '../hooks/useAuth';
+import ErrorState from '../components/ErrorState';
+import EmptyState from '../components/EmptyState';
+import LoadingState from '../components/LoadingState';
+import { normalizeList } from '../utils/normalize';
 import {
   BookOpen,
   Search,
@@ -20,9 +24,12 @@ import {
 export default function Notes() {
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { notes, count, loading, error } = useSelector((state) => state.notes);
-  const { topics } = useSelector((state) => state.topics);
+  const { notes: rawNotes, count, loading, error } = useSelector((state) => state.notes);
+  const { topics: rawTopics } = useSelector((state) => state.topics);
   const { isAdmin } = useAuth();
+
+  const notes = normalizeList(rawNotes);
+  const topics = normalizeList(rawTopics);
 
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   const [selectedTopic, setSelectedTopic] = useState(searchParams.get('topic') || '');
@@ -182,19 +189,23 @@ export default function Notes() {
 
       {/* Error State */}
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-2xl text-xs flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
-          <span>{error}</span>
-        </div>
+        <ErrorState
+          title="Unable to load study notes."
+          message={error}
+          onRetry={() => {
+            const params = {};
+            if (selectedTopic) params.topic = selectedTopic;
+            if (searchTerm) params.search = searchTerm;
+            if (selectedTag) params.tag = selectedTag;
+            dispatch(fetchNotes(params));
+          }}
+          variant="banner"
+        />
       )}
 
       {/* Loading Skeleton */}
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="h-52 bg-slate-200 rounded-2xl animate-pulse" />
-          ))}
-        </div>
+        <LoadingState variant="cards" count={6} />
       ) : notes && notes.length > 0 ? (
         /* Notes Grid */
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -204,30 +215,37 @@ export default function Notes() {
         </div>
       ) : (
         /* Empty State */
-        <div className="bg-white rounded-3xl p-12 text-center border border-slate-200/80 shadow-sm max-w-md mx-auto space-y-4">
-          <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 mx-auto flex items-center justify-center">
-            <BookOpen className="w-7 h-7" />
-          </div>
-          <h3 className="text-lg font-bold text-slate-900">No Notes Found</h3>
-          <p className="text-xs text-slate-500">
-            {searchTerm || selectedTopic || selectedTag
+        <EmptyState
+          icon={BookOpen}
+          title="No Notes Found"
+          description={
+            searchTerm || selectedTopic || selectedTag
               ? 'No study notes matched your search criteria. Try clearing filters.'
-              : 'There are no study notes available yet.'}
-          </p>
-          {(searchTerm || selectedTopic || selectedTag) && (
-            <button
-              onClick={() => {
-                setSearchTerm('');
-                setSelectedTopic('');
-                setSelectedTag('');
-                setSearchParams({});
-              }}
-              className="inline-flex items-center px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition"
-            >
-              Reset Filters
-            </button>
-          )}
-        </div>
+              : 'There are no study notes available yet.'
+          }
+          actionText={
+            searchTerm || selectedTopic || selectedTag
+              ? 'Reset Filters'
+              : isAdmin
+              ? 'Create New Note'
+              : undefined
+          }
+          onAction={
+            searchTerm || selectedTopic || selectedTag
+              ? () => {
+                  setSearchTerm('');
+                  setSelectedTopic('');
+                  setSelectedTag('');
+                  setSearchParams({});
+                }
+              : undefined
+          }
+          actionLink={
+            !searchTerm && !selectedTopic && !selectedTag && isAdmin
+              ? '/admin/notes/create'
+              : undefined
+          }
+        />
       )}
     </div>
   );

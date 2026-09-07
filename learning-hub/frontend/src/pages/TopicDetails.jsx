@@ -19,6 +19,10 @@ import InterviewQuestionCard from '../features/interviewQuestions/components/Int
 import ProgressBar from '../features/progress/components/ProgressBar';
 import CompleteButton from '../features/progress/components/CompleteButton';
 import { useAuth } from '../hooks/useAuth';
+import ErrorState from '../components/ErrorState';
+import EmptyState from '../components/EmptyState';
+import LoadingState from '../components/LoadingState';
+import { normalizeList } from '../utils/normalize';
 import {
   ArrowLeft,
   Clock,
@@ -54,15 +58,15 @@ export default function TopicDetails() {
   const { currentTopic: topic, detailsLoading: loading, error } = useSelector(
     (state) => state.topics
   );
-  const { notes, loading: notesLoading } = useSelector((state) => state.notes);
-  const { resources, loading: resourcesLoading } = useSelector((state) => state.resources);
-  const { topicPlaygrounds: playgrounds, loading: playgroundsLoading } = useSelector(
+  const { notes: rawNotes, loading: notesLoading, error: notesError } = useSelector((state) => state.notes);
+  const { resources: rawResources, loading: resourcesLoading, error: resourcesError } = useSelector((state) => state.resources);
+  const { topicPlaygrounds: rawPlaygrounds, loading: playgroundsLoading, error: playgroundsError } = useSelector(
     (state) => state.playgrounds
   );
-  const { topicQuizzes: quizzes, loading: quizzesLoading } = useSelector(
+  const { topicQuizzes: rawQuizzes, loading: quizzesLoading, error: quizzesError } = useSelector(
     (state) => state.quizzes
   );
-  const { questions: interviewQuestions, loading: interviewQuestionsLoading } = useSelector(
+  const { questions: rawInterviewQuestions, loading: interviewQuestionsLoading, error: interviewQuestionsError } = useSelector(
     (state) => state.interviewQuestions
   );
   const { currentTopicProgress, actionLoading: progressLoading } = useSelector(
@@ -136,46 +140,34 @@ export default function TopicDetails() {
 
   if (loading) {
     return (
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 space-y-6">
-        <div className="h-6 bg-slate-200 rounded w-48 animate-pulse" />
-        <div className="h-48 bg-slate-200 rounded-3xl animate-pulse" />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-32 bg-slate-200 rounded-2xl animate-pulse" />
-            ))}
-          </div>
-          <div className="h-64 bg-slate-200 rounded-2xl animate-pulse" />
-        </div>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <LoadingState variant="detail" count={3} />
       </div>
     );
   }
 
   if (error || !topic) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-16 text-center space-y-6">
-        <div className="w-16 h-16 rounded-full bg-red-100 text-red-600 mx-auto flex items-center justify-center">
-          <AlertCircle className="w-8 h-8" />
-        </div>
-        <h2 className="text-2xl font-bold text-slate-900">Topic Not Found</h2>
-        <p className="text-sm text-slate-600 max-w-md mx-auto">
-          {error || `The topic '/topics/${slug}' could not be located.`}
-        </p>
-        <div>
-          <Link
-            to="/learning-paths"
-            className="inline-flex items-center px-4 py-2 rounded-xl bg-indigo-600 text-white font-semibold text-sm hover:bg-indigo-700 transition"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Learning Paths
-          </Link>
-        </div>
+      <div className="max-w-3xl mx-auto px-4 py-16">
+        <ErrorState
+          statusCode={404}
+          title="Topic Not Found"
+          message={error || `The topic '/topics/${slug}' could not be located.`}
+          actionText="Back to Learning Paths"
+          actionLink="/learning-paths"
+          onRetry={() => dispatch(fetchTopicBySlug(slug))}
+        />
       </div>
     );
   }
 
-  const keyPoints = topic.keyPoints || [];
-  const codeExamples = topic.codeExamples || [];
+  const notes = normalizeList(rawNotes);
+  const resources = normalizeList(rawResources);
+  const playgrounds = normalizeList(rawPlaygrounds);
+  const quizzes = normalizeList(rawQuizzes);
+  const interviewQuestions = normalizeList(rawInterviewQuestions);
+  const keyPoints = normalizeList(topic.keyPoints);
+  const codeExamples = normalizeList(topic.codeExamples);
   const completedCount = currentTopicProgress?.completedKeyPoints?.length ?? Object.values(completedKeyPoints).filter(Boolean).length;
   const totalPoints = keyPoints.length;
   const isTopicCompleted = Boolean(currentTopicProgress?.isCompleted);
@@ -394,7 +386,14 @@ export default function TopicDetails() {
               )}
             </div>
 
-            {playgroundsLoading ? (
+            {playgroundsError ? (
+              <ErrorState
+                title="Unable to load playgrounds."
+                message="Please try again."
+                onRetry={() => dispatch(fetchPlaygroundsByTopic(slug))}
+                variant="card"
+              />
+            ) : playgroundsLoading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="h-36 bg-slate-100 rounded-2xl animate-pulse" />
                 <div className="h-36 bg-slate-100 rounded-2xl animate-pulse" />
@@ -406,21 +405,13 @@ export default function TopicDetails() {
                 ))}
               </div>
             ) : (
-              <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm text-center space-y-3">
-                <Terminal className="w-8 h-8 text-slate-300 mx-auto" />
-                <p className="text-xs text-slate-500">
-                  No interactive playgrounds configured for this topic yet.
-                </p>
-                {isAdmin && (
-                  <Link
-                    to={`/admin/playgrounds/create?topic=${topic.slug}`}
-                    className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition"
-                  >
-                    <Plus className="w-3.5 h-3.5 mr-1" />
-                    Create First Playground
-                  </Link>
-                )}
-              </div>
+              <EmptyState
+                icon={Terminal}
+                title="No interactive playgrounds"
+                description="No interactive playgrounds configured for this topic yet."
+                actionText={isAdmin ? "Create First Playground" : undefined}
+                actionLink={isAdmin ? `/admin/playgrounds/create?topic=${topic.slug}` : undefined}
+              />
             )}
           </div>
 
@@ -513,7 +504,14 @@ export default function TopicDetails() {
               )}
             </div>
 
-            {notesLoading ? (
+            {notesError ? (
+              <ErrorState
+                title="Unable to load notes."
+                message="Please try again."
+                onRetry={() => dispatch(fetchNotesByTopic(slug))}
+                variant="card"
+              />
+            ) : notesLoading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="h-36 bg-slate-100 rounded-2xl animate-pulse" />
                 <div className="h-36 bg-slate-100 rounded-2xl animate-pulse" />
@@ -535,21 +533,13 @@ export default function TopicDetails() {
                 })}
               </div>
             ) : (
-              <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm text-center space-y-3">
-                <BookOpen className="w-8 h-8 text-slate-300 mx-auto" />
-                <p className="text-xs text-slate-500">
-                  No notes published for this topic yet.
-                </p>
-                {isAdmin && (
-                  <Link
-                    to={`/admin/notes/create?topic=${topic.slug}`}
-                    className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition"
-                  >
-                    <Plus className="w-3.5 h-3.5 mr-1" />
-                    Create First Note
-                  </Link>
-                )}
-              </div>
+              <EmptyState
+                icon={BookOpen}
+                title="No study notes found"
+                description="No notes published for this topic yet."
+                actionText={isAdmin ? "Create First Note" : undefined}
+                actionLink={isAdmin ? `/admin/notes/create?topic=${topic.slug}` : undefined}
+              />
             )}
           </div>
 
@@ -621,7 +611,14 @@ export default function TopicDetails() {
             )}
 
             {/* Resources List */}
-            {resourcesLoading ? (
+            {resourcesError ? (
+              <ErrorState
+                title="Unable to load resources."
+                message="Please try again."
+                onRetry={() => dispatch(fetchResourcesByTopic({ topicId: slug }))}
+                variant="card"
+              />
+            ) : resourcesLoading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="h-32 bg-slate-100 rounded-2xl animate-pulse" />
                 <div className="h-32 bg-slate-100 rounded-2xl animate-pulse" />
@@ -635,9 +632,13 @@ export default function TopicDetails() {
 
                 if (filteredResources.length === 0) {
                   return (
-                    <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 text-center text-xs text-slate-500">
-                      No resources found for this category.
-                    </div>
+                    <EmptyState
+                      icon={Globe}
+                      title="No matching resources"
+                      description="No learning resources found for this selected category filter."
+                      actionText="Show All Resources"
+                      onAction={() => setResourceTypeFilter('ALL')}
+                    />
                   );
                 }
 
@@ -650,21 +651,13 @@ export default function TopicDetails() {
                 );
               })()
             ) : (
-              <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm text-center space-y-3">
-                <Globe className="w-8 h-8 text-slate-300 mx-auto" />
-                <p className="text-xs text-slate-500">
-                  No curated resources attached to this topic yet.
-                </p>
-                {isAdmin && (
-                  <Link
-                    to={`/admin/resources/create?topic=${topic.slug}`}
-                    className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition"
-                  >
-                    <Plus className="w-3.5 h-3.5 mr-1" />
-                    Attach First Resource
-                  </Link>
-                )}
-              </div>
+              <EmptyState
+                icon={Globe}
+                title="No curated resources found"
+                description="No curated resources attached to this topic yet."
+                actionText={isAdmin ? "Attach First Resource" : undefined}
+                actionLink={isAdmin ? `/admin/resources/create?topic=${topic.slug}` : undefined}
+              />
             )}
           </div>
 
@@ -689,7 +682,14 @@ export default function TopicDetails() {
               )}
             </div>
 
-            {quizzesLoading ? (
+            {quizzesError ? (
+              <ErrorState
+                title="Unable to load quizzes."
+                message="Please try again."
+                onRetry={() => dispatch(fetchQuizzesByTopic(slug))}
+                variant="card"
+              />
+            ) : quizzesLoading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="h-36 bg-slate-100 rounded-2xl animate-pulse" />
                 <div className="h-36 bg-slate-100 rounded-2xl animate-pulse" />
@@ -701,21 +701,13 @@ export default function TopicDetails() {
                 ))}
               </div>
             ) : (
-              <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm text-center space-y-3">
-                <HelpCircle className="w-8 h-8 text-slate-300 mx-auto" />
-                <p className="text-xs text-slate-500">
-                  No evaluation quizzes published for this topic yet.
-                </p>
-                {isAdmin && (
-                  <Link
-                    to={`/admin/quizzes/create?topic=${topic.slug}`}
-                    className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition"
-                  >
-                    <Plus className="w-3.5 h-3.5 mr-1" />
-                    Create First Quiz
-                  </Link>
-                )}
-              </div>
+              <EmptyState
+                icon={HelpCircle}
+                title="No quizzes found"
+                description="No evaluation quizzes published for this topic yet."
+                actionText={isAdmin ? "Create First Quiz" : undefined}
+                actionLink={isAdmin ? `/admin/quizzes/create?topic=${topic.slug}` : undefined}
+              />
             )}
           </div>
 
@@ -740,7 +732,14 @@ export default function TopicDetails() {
               )}
             </div>
 
-            {interviewQuestionsLoading ? (
+            {interviewQuestionsError ? (
+              <ErrorState
+                title="Unable to load interview questions."
+                message="Please try again."
+                onRetry={() => dispatch(fetchInterviewQuestionsByTopic({ topicId: slug }))}
+                variant="card"
+              />
+            ) : interviewQuestionsLoading ? (
               <div className="space-y-4">
                 <div className="h-32 bg-slate-100 rounded-2xl animate-pulse" />
                 <div className="h-32 bg-slate-100 rounded-2xl animate-pulse" />
@@ -752,21 +751,13 @@ export default function TopicDetails() {
                 ))}
               </div>
             ) : (
-              <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm text-center space-y-3">
-                <Flame className="w-8 h-8 text-slate-300 mx-auto" />
-                <p className="text-xs text-slate-500">
-                  No technical interview questions added for this topic yet.
-                </p>
-                {isAdmin && (
-                  <Link
-                    to={`/admin/interview-questions/create?topic=${topic.slug}`}
-                    className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition"
-                  >
-                    <Plus className="w-3.5 h-3.5 mr-1" />
-                    Create First Question
-                  </Link>
-                )}
-              </div>
+              <EmptyState
+                icon={Flame}
+                title="No interview questions found"
+                description="No technical interview questions added for this topic yet."
+                actionText={isAdmin ? "Create First Question" : undefined}
+                actionLink={isAdmin ? `/admin/interview-questions/create?topic=${topic.slug}` : undefined}
+              />
             )}
           </div>
         </div>
