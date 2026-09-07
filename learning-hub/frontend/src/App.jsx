@@ -5,6 +5,9 @@ import { fetchCurrentUser } from './store/slices/authSlice';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
+import ErrorBoundary from './components/ErrorBoundary';
+import NotFound from './pages/NotFound';
+import Forbidden from './pages/Forbidden';
 import HomePage from './pages/HomePage';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -64,7 +67,8 @@ export default function App() {
     <div className="min-h-screen flex flex-col bg-slate-50">
       <Navbar />
       <main className="flex-grow">
-        <Routes>
+        <ErrorBoundary>
+          <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -388,12 +392,14 @@ export default function App() {
               </AdminRoute>
             }
           />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/forbidden" element={<Forbidden />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
-      </main>
-      <footer className="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
-        <p>© 2026 Learning Hub — Phase 16 Search / Filter / Pagination</p>
-      </footer>
-    </div>
-  );
+      </ErrorBoundary>
+    </main>
+    <footer className="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
+      <p>© 2026 Learning Hub — Phase 17 Error Handling & UX</p>
+    </footer>
+  </div>
+);
 }

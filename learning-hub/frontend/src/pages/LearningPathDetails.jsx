@@ -7,6 +7,10 @@ import { fetchLearningPathProgress } from '../features/progress/progressSlice';
 import ProgressBar from '../features/progress/components/ProgressBar';
 import TopicProgressBadge from '../features/progress/components/TopicProgressBadge';
 import { useAuth } from '../hooks/useAuth';
+import ErrorState from '../components/ErrorState';
+import EmptyState from '../components/EmptyState';
+import LoadingState from '../components/LoadingState';
+import { normalizeList } from '../utils/normalize';
 import {
   ArrowLeft,
   Clock,
@@ -39,7 +43,7 @@ export default function LearningPathDetails() {
   const { currentPath: path, detailsLoading: loading, error } = useSelector(
     (state) => state.learningPaths
   );
-  const { modules: standaloneModules } = useSelector((state) => state.modules);
+  const { modules: standaloneModules, error: modulesError } = useSelector((state) => state.modules);
   const { currentPathProgress } = useSelector((state) => state.progress);
   const { isAdmin } = useAuth();
 
@@ -60,7 +64,7 @@ export default function LearningPathDetails() {
 
   // Expand first 2 modules by default once loaded
   useEffect(() => {
-    if (path?.modules) {
+    if (path?.modules && Array.isArray(path.modules)) {
       const initial = {};
       path.modules.forEach((_, idx) => {
         initial[idx] = true; // all open by default
@@ -84,50 +88,37 @@ export default function LearningPathDetails() {
 
   if (loading) {
     return (
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 space-y-6">
-        <div className="h-6 bg-slate-200 rounded w-48 animate-pulse" />
-        <div className="h-48 bg-slate-200 rounded-3xl animate-pulse" />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-28 bg-slate-200 rounded-2xl animate-pulse" />
-            ))}
-          </div>
-          <div className="h-64 bg-slate-200 rounded-2xl animate-pulse" />
-        </div>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <LoadingState variant="detail" count={3} />
       </div>
     );
   }
 
   if (error || !path) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-16 text-center space-y-6">
-        <div className="w-16 h-16 rounded-full bg-red-100 text-red-600 mx-auto flex items-center justify-center">
-          <AlertCircle className="w-8 h-8" />
-        </div>
-        <h2 className="text-2xl font-bold text-slate-900">Learning Path Not Found</h2>
-        <p className="text-sm text-slate-600 max-w-md mx-auto">
-          {error || `The path '/learning-paths/${slug}' could not be located. It may have been unpublished or removed.`}
-        </p>
-        <div>
-          <Link
-            to="/learning-paths"
-            className="inline-flex items-center px-4 py-2 rounded-xl bg-indigo-600 text-white font-semibold text-sm hover:bg-indigo-700 transition"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to All Paths
-          </Link>
-        </div>
+      <div className="max-w-3xl mx-auto px-4 py-16">
+        <ErrorState
+          statusCode={404}
+          title="Learning Path Not Found"
+          message={
+            error ||
+            `The path '/learning-paths/${slug}' could not be located. It may have been unpublished or removed.`
+          }
+          actionText="Back to Learning Paths"
+          actionLink="/learning-paths"
+          onRetry={() => dispatch(fetchLearningPathBySlug(slug))}
+        />
       </div>
     );
   }
 
   const levelBadge = LEVEL_BADGES[path.level] || LEVEL_BADGES.Beginner;
 
-  const displayModules =
+  const displayModules = normalizeList(
     standaloneModules && standaloneModules.length > 0
       ? standaloneModules
-      : path.modules || [];
+      : path.modules
+  );
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
@@ -239,7 +230,14 @@ export default function LearningPathDetails() {
             </div>
           </div>
 
-          {displayModules && displayModules.length > 0 ? (
+          {modulesError ? (
+            <ErrorState
+              title="Unable to load modules."
+              message="Please try again."
+              onRetry={() => dispatch(fetchModulesByLearningPath(slug))}
+              variant="card"
+            />
+          ) : displayModules && displayModules.length > 0 ? (
             <div className="space-y-4">
               {displayModules.map((module, idx) => {
                 const isOpen = !!expandedModules[idx];
@@ -341,11 +339,13 @@ export default function LearningPathDetails() {
               })}
             </div>
           ) : (
-            <div className="p-8 text-center bg-white rounded-2xl border border-dashed border-slate-300">
-              <p className="text-sm text-slate-500">
-                No modules specified for this curriculum yet.
-              </p>
-            </div>
+            <EmptyState
+              icon={Layers}
+              title="No modules found"
+              description="No curriculum modules specified for this learning path yet."
+              actionText={isAdmin ? "Add First Module" : undefined}
+              actionLink={isAdmin ? `/admin/modules/create?path=${path.id}` : undefined}
+            />
           )}
         </div>
 

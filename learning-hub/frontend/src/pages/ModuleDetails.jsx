@@ -7,6 +7,10 @@ import { fetchModuleProgress } from '../features/progress/progressSlice';
 import ProgressBar from '../features/progress/components/ProgressBar';
 import TopicProgressBadge from '../features/progress/components/TopicProgressBadge';
 import { useAuth } from '../hooks/useAuth';
+import ErrorState from '../components/ErrorState';
+import EmptyState from '../components/EmptyState';
+import LoadingState from '../components/LoadingState';
+import { normalizeList } from '../utils/normalize';
 import {
   ArrowLeft,
   Clock,
@@ -32,7 +36,7 @@ export default function ModuleDetails() {
   const { currentModule: module, detailsLoading: loading, error } = useSelector(
     (state) => state.modules
   );
-  const { sections, loading: sectionsLoading } = useSelector(
+  const { sections: rawSections, loading: sectionsLoading, error: sectionsError } = useSelector(
     (state) => state.sections
   );
   const { currentModuleProgress } = useSelector(
@@ -69,46 +73,30 @@ export default function ModuleDetails() {
 
   if (loading) {
     return (
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 space-y-6">
-        <div className="h-6 bg-slate-200 rounded w-48 animate-pulse" />
-        <div className="h-44 bg-slate-200 rounded-3xl animate-pulse" />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-24 bg-slate-200 rounded-2xl animate-pulse" />
-            ))}
-          </div>
-          <div className="h-64 bg-slate-200 rounded-2xl animate-pulse" />
-        </div>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <LoadingState variant="detail" count={3} />
       </div>
     );
   }
 
   if (error || !module) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-16 text-center space-y-6">
-        <div className="w-16 h-16 rounded-full bg-red-100 text-red-600 mx-auto flex items-center justify-center">
-          <AlertCircle className="w-8 h-8" />
-        </div>
-        <h2 className="text-2xl font-bold text-slate-900">Module Not Found</h2>
-        <p className="text-sm text-slate-600 max-w-md mx-auto">
-          {error || `The module '/modules/${slug}' could not be located.`}
-        </p>
-        <div>
-          <Link
-            to="/learning-paths"
-            className="inline-flex items-center px-4 py-2 rounded-xl bg-indigo-600 text-white font-semibold text-sm hover:bg-indigo-700 transition"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Learning Paths
-          </Link>
-        </div>
+      <div className="max-w-3xl mx-auto px-4 py-16">
+        <ErrorState
+          statusCode={404}
+          title="Module Not Found"
+          message={error || `The module '/modules/${slug}' could not be located.`}
+          actionText="Back to Learning Paths"
+          actionLink="/learning-paths"
+          onRetry={() => dispatch(fetchModuleBySlug(slug))}
+        />
       </div>
     );
   }
 
-  const topics = module.topics || [];
-  const objectives = module.learningObjectives || [];
+  const sections = normalizeList(rawSections);
+  const topics = normalizeList(module.topics);
+  const objectives = normalizeList(module.learningObjectives);
   const totalTopics = currentModuleProgress?.totalTopics ?? topics.length;
   const completedCount = currentModuleProgress?.completedTopics ?? Object.values(completedTopics).filter(Boolean).length;
   const progressPercent = currentModuleProgress?.percentage ?? (totalTopics > 0 ? Math.round((completedCount / totalTopics) * 100) : 0);
@@ -246,23 +234,25 @@ export default function ModuleDetails() {
               </div>
             </div>
 
-            {sectionsLoading ? (
+            {sectionsError ? (
+              <ErrorState
+                title="Unable to load sections."
+                message="Please try again."
+                onRetry={() => dispatch(fetchSectionsByModule(slug))}
+                variant="card"
+              />
+            ) : sectionsLoading ? (
               <div className="py-8 text-center text-slate-400 text-xs">
                 Loading module sections...
               </div>
             ) : sections.length === 0 ? (
-              <div className="p-6 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center space-y-2">
-                <Layers className="w-6 h-6 text-slate-400 mx-auto" />
-                <p className="text-xs text-slate-600">No specific sections created for this module yet.</p>
-                {isAdmin && (
-                  <Link
-                    to={`/admin/sections/create?module=${module.slug}`}
-                    className="inline-flex items-center text-xs text-purple-600 hover:underline font-semibold"
-                  >
-                    Create the first section now
-                  </Link>
-                )}
-              </div>
+              <EmptyState
+                icon={Layers}
+                title="No sections found"
+                description="No specific sections created for this module yet."
+                actionText={isAdmin ? "Create First Section" : undefined}
+                actionLink={isAdmin ? `/admin/sections/create?module=${module.slug}` : undefined}
+              />
             ) : (
               <div className="space-y-4">
                 {sections.map((section, sIdx) => {

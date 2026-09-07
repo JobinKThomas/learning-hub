@@ -98,13 +98,21 @@ api.interceptors.response.use(
       }
     }
 
+    const isNetworkError = !error.response || error.code === 'ERR_NETWORK' || error.code === 'ECONNABORTED';
+    const status = error.response?.status || (isNetworkError ? 0 : 500);
+    const message = isNetworkError
+      ? 'Unable to connect to the server. Please check your network connection.'
+      : (error.response?.data?.message || error.message || 'An unexpected error occurred');
+
     const customError = {
-      status: error.response?.status,
-      message:
-        error.response?.data?.message ||
-        error.message ||
-        'An unexpected error occurred',
+      status,
+      message,
       errors: error.response?.data?.errors,
+      isNetworkError,
+      isNotFound: status === 404,
+      isForbidden: status === 403,
+      isUnauthorized: status === 401,
+      isValidationError: status === 400,
     };
 
     return Promise.reject(customError);

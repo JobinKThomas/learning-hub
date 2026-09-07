@@ -11,6 +11,10 @@ import { fetchOverallProgress } from '../features/progress/progressSlice';
 import LearningPathCard from '../features/learningPaths/components/LearningPathCard';
 import Pagination from '../components/Pagination';
 import { useAuth } from '../hooks/useAuth';
+import ErrorState from '../components/ErrorState';
+import EmptyState from '../components/EmptyState';
+import LoadingState from '../components/LoadingState';
+import { normalizeList } from '../utils/normalize';
 import {
   Search,
   Filter,
@@ -38,9 +42,10 @@ const SORT_OPTIONS = [
 
 export default function LearningPaths() {
   const dispatch = useDispatch();
-  const { paths, count, loading, error, filters, pagination } = useSelector(
+  const { paths: rawPaths, count, loading, error, filters, pagination } = useSelector(
     (state) => state.learningPaths
   );
+  const paths = normalizeList(rawPaths);
   const { overallProgress } = useSelector((state) => state.progress);
   const { user, isAdmin } = useAuth();
 
@@ -308,32 +313,31 @@ export default function LearningPaths() {
 
       {/* Error Message */}
       {error && (
-        <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-3">
-          <AlertCircle className="w-5 h-5 shrink-0 text-red-500" />
-          <span>{error}</span>
-        </div>
+        <ErrorState
+          title="Unable to load learning paths."
+          message={error}
+          onRetry={() => {
+            dispatch(
+              fetchLearningPaths({
+                category: filters.category !== 'All' ? filters.category : undefined,
+                difficulty: filters.level !== 'All' ? filters.level : undefined,
+                level: filters.level !== 'All' ? filters.level : undefined,
+                status: filters.status !== 'All' ? filters.status.toLowerCase() : undefined,
+                search: filters.search ? filters.search : undefined,
+                sort: filters.sort || 'createdAt',
+                order: filters.order || 'desc',
+                page: filters.page || 1,
+                limit: filters.limit || 6,
+              })
+            );
+          }}
+          variant="banner"
+        />
       )}
 
       {/* Loading Skeletons */}
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div
-              key={i}
-              className="bg-white rounded-3xl border border-slate-200 p-6 h-72 animate-pulse flex flex-col justify-between"
-            >
-              <div className="space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-slate-200" />
-                <div className="h-6 bg-slate-200 rounded w-3/4" />
-                <div className="space-y-2">
-                  <div className="h-4 bg-slate-100 rounded" />
-                  <div className="h-4 bg-slate-100 rounded w-5/6" />
-                </div>
-              </div>
-              <div className="h-10 bg-slate-200 rounded-2xl w-full" />
-            </div>
-          ))}
-        </div>
+        <LoadingState variant="cards" count={6} />
       ) : paths.length > 0 ? (
         /* Grid of Learning Paths */
         <div className="space-y-8">
@@ -369,22 +373,14 @@ export default function LearningPaths() {
         </div>
       ) : (
         /* Empty State */
-        <div className="text-center py-16 bg-white rounded-3xl border border-dashed border-slate-300 p-8 space-y-4">
-          <div className="w-16 h-16 rounded-2xl bg-slate-100 text-slate-400 mx-auto flex items-center justify-center">
-            <Layers className="w-8 h-8" />
-          </div>
-          <h3 className="text-lg font-bold text-slate-900">No learning paths found</h3>
-          <p className="text-sm text-slate-500 max-w-sm mx-auto">
-            We couldn't find any learning paths matching your current filter criteria. Try adjusting
-            your search term or clearing filters.
-          </p>
-          <button
-            onClick={handleResetFilters}
-            className="inline-flex items-center px-4 py-2 rounded-2xl bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition shadow-sm"
-          >
-            Clear Filters
-          </button>
-        </div>
+        <EmptyState
+          icon={Layers}
+          title="No learning paths found"
+          description="We couldn't find any learning paths matching your current filter criteria. Try adjusting your search term or clearing filters."
+          actionText={hasActiveFilters ? "Clear Filters" : isAdmin ? "Create Learning Path" : undefined}
+          onAction={hasActiveFilters ? handleResetFilters : undefined}
+          actionLink={!hasActiveFilters && isAdmin ? "/admin/learning-paths/create" : undefined}
+        />
       )}
     </div>
   );

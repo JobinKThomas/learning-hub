@@ -9,6 +9,9 @@ import ContinueLearning from '../features/dashboard/components/ContinueLearning'
 import ProgressOverview from '../features/dashboard/components/ProgressOverview';
 import QuizHistoryTable from '../features/quizAttempts/components/QuizHistoryTable';
 import QuizAttemptReviewModal from '../features/quizAttempts/components/QuizAttemptReviewModal';
+import ErrorState from '../components/ErrorState';
+import LoadingState from '../components/LoadingState';
+import { normalizeList } from '../utils/normalize';
 import {
   User,
   Shield,
@@ -27,7 +30,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user, role, isAdmin, accessToken, refreshToken, logout } = useAuth();
-  const { data: dashboardData, loading: dashboardLoading } = useSelector(
+  const { data: dashboardData, loading: dashboardLoading, error: dashboardError } = useSelector(
     (state) => state.dashboard
   );
 
@@ -66,18 +69,25 @@ export default function Dashboard() {
 
   const stats = dashboardData?.stats;
   const continueLearning = dashboardData?.continueLearning;
-  const learningPaths = dashboardData?.learningPaths || [];
-  const recentQuizAttempts = dashboardData?.recentQuizAttempts || [];
+  const learningPaths = normalizeList(dashboardData?.learningPaths);
+  const recentQuizAttempts = normalizeList(dashboardData?.recentQuizAttempts);
 
   if (dashboardLoading && !dashboardData) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 animate-pulse">
-        <div className="h-36 bg-slate-200 rounded-3xl" />
-        <div className="h-48 bg-slate-200 rounded-3xl" />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="h-64 bg-slate-200 rounded-3xl lg:col-span-2" />
-          <div className="h-64 bg-slate-200 rounded-3xl" />
-        </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <LoadingState variant="cards" count={3} />
+      </div>
+    );
+  }
+
+  if (dashboardError && !dashboardData) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <ErrorState
+          title="Unable to load learning dashboard."
+          message={dashboardError || "Please try again."}
+          onRetry={() => dispatch(fetchDashboardData())}
+        />
       </div>
     );
   }

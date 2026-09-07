@@ -5,6 +5,10 @@ import { fetchInterviewQuestions } from '../features/interviewQuestions/intervie
 import { fetchTopics } from '../features/topics/topicSlice';
 import InterviewQuestionCard from '../features/interviewQuestions/components/InterviewQuestionCard';
 import { useAuth } from '../hooks/useAuth';
+import ErrorState from '../components/ErrorState';
+import EmptyState from '../components/EmptyState';
+import LoadingState from '../components/LoadingState';
+import { normalizeList } from '../utils/normalize';
 import {
   HelpCircle,
   Search,
@@ -19,11 +23,14 @@ import {
 export default function InterviewQuestions() {
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { questions, count, loading, error } = useSelector(
+  const { questions: rawQuestions, count, loading, error } = useSelector(
     (state) => state.interviewQuestions
   );
-  const { topics } = useSelector((state) => state.topics);
+  const { topics: rawTopics } = useSelector((state) => state.topics);
   const { isAdmin } = useAuth();
+
+  const questions = normalizeList(rawQuestions);
+  const topics = normalizeList(rawTopics);
 
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   const [selectedTopic, setSelectedTopic] = useState(searchParams.get('topic') || '');
@@ -177,19 +184,23 @@ export default function InterviewQuestions() {
 
       {/* Error State */}
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-2xl text-xs flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
-          <span>{error}</span>
-        </div>
+        <ErrorState
+          title="Unable to load interview questions."
+          message={error}
+          onRetry={() => {
+            const params = {};
+            if (selectedTopic) params.topic = selectedTopic;
+            if (searchTerm) params.search = searchTerm;
+            if (selectedDifficulty) params.difficulty = selectedDifficulty;
+            dispatch(fetchInterviewQuestions(params));
+          }}
+          variant="banner"
+        />
       )}
 
       {/* Question List */}
       {loading ? (
-        <div className="space-y-4">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-44 bg-slate-200 rounded-2xl animate-pulse" />
-          ))}
-        </div>
+        <LoadingState variant="rows" count={4} />
       ) : questions && questions.length > 0 ? (
         <div className="space-y-5">
           {questions.map((q, idx) => (
@@ -202,32 +213,37 @@ export default function InterviewQuestions() {
         </div>
       ) : (
         /* Empty State */
-        <div className="bg-white rounded-3xl p-12 text-center border border-slate-200/80 shadow-sm max-w-md mx-auto space-y-4">
-          <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 mx-auto flex items-center justify-center">
-            <HelpCircle className="w-7 h-7" />
-          </div>
-          <h3 className="text-lg font-bold text-slate-900">
-            No Interview Questions Found
-          </h3>
-          <p className="text-xs text-slate-500 leading-relaxed">
-            {searchTerm || selectedTopic || selectedDifficulty
+        <EmptyState
+          icon={HelpCircle}
+          title="No Interview Questions Found"
+          description={
+            searchTerm || selectedTopic || selectedDifficulty
               ? 'No questions matched your filter criteria. Try clearing filters.'
-              : 'There are no interview questions available yet.'}
-          </p>
-          {(searchTerm || selectedTopic || selectedDifficulty) && (
-            <button
-              onClick={() => {
-                setSearchTerm('');
-                setSelectedTopic('');
-                setSelectedDifficulty('');
-                setSearchParams({});
-              }}
-              className="inline-flex items-center px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition"
-            >
-              Reset Filters
-            </button>
-          )}
-        </div>
+              : 'There are no interview questions available yet.'
+          }
+          actionText={
+            searchTerm || selectedTopic || selectedDifficulty
+              ? 'Reset Filters'
+              : isAdmin
+              ? 'Create Question'
+              : undefined
+          }
+          onAction={
+            searchTerm || selectedTopic || selectedDifficulty
+              ? () => {
+                  setSearchTerm('');
+                  setSelectedTopic('');
+                  setSelectedDifficulty('');
+                  setSearchParams({});
+                }
+              : undefined
+          }
+          actionLink={
+            !searchTerm && !selectedTopic && !selectedDifficulty && isAdmin
+              ? '/admin/interview-questions/create'
+              : undefined
+          }
+        />
       )}
     </div>
   );
