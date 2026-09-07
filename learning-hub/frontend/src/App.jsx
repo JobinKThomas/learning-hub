@@ -32,6 +32,9 @@ import NoteDetails from './pages/NoteDetails';
 import AdminNotes from './pages/admin/AdminNotes';
 import CreateNote from './pages/admin/CreateNote';
 import EditNote from './pages/admin/EditNote';
+import AdminResources from './pages/admin/AdminResources';
+import CreateResource from './pages/admin/CreateResource';
+import EditResource from './pages/admin/EditResource';
 
 export default function App() {
   const dispatch = useDispatch();
@@ -244,11 +247,35 @@ export default function App() {
               </AdminRoute>
             }
           />
+          <Route
+            path="/admin/resources"
+            element={
+              <AdminRoute>
+                <AdminResources />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/resources/create"
+            element={
+              <AdminRoute>
+                <CreateResource />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/resources/:id/edit"
+            element={
+              <AdminRoute>
+                <EditResource />
+              </AdminRoute>
+            }
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
       <footer className="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
-        <p>© 2026 Learning Hub — Phase 7 Notes</p>
+        <p>© 2026 Learning Hub — Phase 8 Resources</p>
       </footer>
     </div>
   );

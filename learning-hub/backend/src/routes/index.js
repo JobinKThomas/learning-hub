@@ -7,6 +7,7 @@ import moduleRoutes from './moduleRoutes.js';
 import sectionRoutes from './sectionRoutes.js';
 import topicRoutes from './topicRoutes.js';
 import noteRoutes from './noteRoutes.js';
+import resourceRoutes from './resourceRoutes.js';
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.use('/modules', moduleRoutes);
 router.use('/sections', sectionRoutes);
 router.use('/topics', topicRoutes);
 router.use('/notes', noteRoutes);
+router.use('/resources', resourceRoutes);
 
 export default router;

@@ -13,7 +13,8 @@
     "seed:modules": "node scripts/seedModules.js",
     "seed:sections": "node scripts/seedSections.js",
     "seed:topics": "node scripts/seedTopics.js",
-    "seed:notes": "node scripts/seedNotes.js"
+    "seed:notes": "node scripts/seedNotes.js",
+    "seed:resources": "node scripts/seedResources.js"
   },
   "keywords": [
     "express",

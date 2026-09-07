@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { topicController } from '../controllers/topicController.js';
 import { noteController } from '../controllers/noteController.js';
+import { resourceController } from '../controllers/resourceController.js';
 import { requireAuth, requireAdmin } from '../middlewares/authMiddleware.js';
 import {
   validateCreateTopic,
@@ -91,6 +92,31 @@ router.get('/id/:id', topicController.getById);
  *         description: Topic not found
  */
 router.get('/:topicId/notes', noteController.getByTopic);
+
+/**
+ * @openapi
+ * /topics/{topicId}/resources:
+ *   get:
+ *     summary: Get all resources belonging to a topic
+ *     tags:
+ *       - Topics
+ *       - Resources
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: topicId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Topic ID or slug
+ *     responses:
+ *       200:
+ *         description: List of resources for topic
+ *       404:
+ *         description: Topic not found
+ */
+router.get('/:topicId/resources', resourceController.getByTopic);
 
 /**
  * @openapi

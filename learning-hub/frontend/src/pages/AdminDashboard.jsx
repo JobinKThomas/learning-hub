@@ -17,6 +17,8 @@ import {
   Code2,
   Layers,
   FileText,
+  BookOpen,
+  Link2,
 } from 'lucide-react';
 
 export default function AdminDashboard() {
@@ -118,6 +120,13 @@ export default function AdminDashboard() {
           >
             <FileText className="w-3.5 h-3.5 mr-1.5" />
             Notes
+          </Link>
+          <Link
+            to="/admin/resources"
+            className="inline-flex items-center px-3.5 py-2 rounded-xl bg-indigo-700 hover:bg-indigo-600 text-white text-xs font-semibold shadow-md shadow-indigo-700/30 transition"
+          >
+            <Link2 className="w-3.5 h-3.5 mr-1.5" />
+            Resources
           </Link>
           <button
             onClick={fetchAdminData}
