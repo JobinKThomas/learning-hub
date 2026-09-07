@@ -103,6 +103,18 @@ export default function Navbar() {
                       <BookOpen className="w-4 h-4 mr-1.5 text-purple-600" />
                       Modules
                     </Link>
+
+                    <Link
+                      to="/admin/sections"
+                      className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                        location.pathname.startsWith('/admin/sections')
+                          ? 'bg-purple-100 text-purple-800'
+                          : 'text-purple-700 hover:bg-purple-50'
+                      }`}
+                    >
+                      <Layers className="w-4 h-4 mr-1.5 text-purple-600" />
+                      Sections
+                    </Link>
                   </>
                 )}
               </div>

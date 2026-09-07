@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchModuleBySlug, clearCurrentModule } from '../features/modules/moduleSlice';
+import { fetchSectionsByModule } from '../features/sections/sectionSlice';
 import { useAuth } from '../hooks/useAuth';
 import {
   ArrowLeft,
@@ -18,6 +19,7 @@ import {
   GraduationCap,
   Target,
   ArrowRight,
+  PlusCircle,
 } from 'lucide-react';
 
 export default function ModuleDetails() {
@@ -27,6 +29,9 @@ export default function ModuleDetails() {
   const { currentModule: module, detailsLoading: loading, error } = useSelector(
     (state) => state.modules
   );
+  const { sections, loading: sectionsLoading } = useSelector(
+    (state) => state.sections
+  );
   const { isAdmin } = useAuth();
 
   const [completedTopics, setCompletedTopics] = useState({});
@@ -35,6 +40,7 @@ export default function ModuleDetails() {
   useEffect(() => {
     if (slug) {
       dispatch(fetchModuleBySlug(slug));
+      dispatch(fetchSectionsByModule(slug));
     }
     return () => {
       dispatch(clearCurrentModule());
@@ -204,6 +210,112 @@ export default function ModuleDetails() {
               </ul>
             </div>
           )}
+
+          {/* Curriculum Sections & Sub-lessons (Phase 5) */}
+          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-4 gap-2">
+              <div>
+                <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <Layers className="w-4 h-4 text-indigo-600" />
+                  Module Sections & Lessons
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Deep-dive sections covering essential concepts and syntax breakdown.
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold text-slate-500">
+                  {sections.length} {sections.length === 1 ? 'Section' : 'Sections'}
+                </span>
+                {isAdmin && (
+                  <Link
+                    to={`/admin/sections/create?module=${module.slug}`}
+                    className="inline-flex items-center px-2.5 py-1 rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 text-[11px] font-semibold transition"
+                  >
+                    <PlusCircle className="w-3.5 h-3.5 mr-1" />
+                    + Add Section
+                  </Link>
+                )}
+              </div>
+            </div>
+
+            {sectionsLoading ? (
+              <div className="py-8 text-center text-slate-400 text-xs">
+                Loading module sections...
+              </div>
+            ) : sections.length === 0 ? (
+              <div className="p-6 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center space-y-2">
+                <Layers className="w-6 h-6 text-slate-400 mx-auto" />
+                <p className="text-xs text-slate-600">No specific sections created for this module yet.</p>
+                {isAdmin && (
+                  <Link
+                    to={`/admin/sections/create?module=${module.slug}`}
+                    className="inline-flex items-center text-xs text-purple-600 hover:underline font-semibold"
+                  >
+                    Create the first section now
+                  </Link>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {sections.map((section, sIdx) => (
+                  <div
+                    key={section.id}
+                    className="p-5 rounded-2xl border border-slate-200/80 bg-slate-50/40 hover:bg-white hover:border-indigo-200 hover:shadow-sm transition-all group"
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                      <div className="space-y-1.5 flex-grow">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-700">
+                            Section {section.order || sIdx + 1}
+                          </span>
+                          <span className="text-[11px] font-medium text-slate-500 flex items-center gap-1">
+                            <Clock className="w-3 h-3 text-amber-500" />
+                            {section.duration}
+                          </span>
+                        </div>
+                        <h3 className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition">
+                          <Link to={`/sections/${section.slug}`}>
+                            {section.title}
+                          </Link>
+                        </h3>
+                        <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                          {section.description}
+                        </p>
+
+                        {/* Sub-lesson items pills (e.g. var, let, const) */}
+                        {section.items && section.items.length > 0 && (
+                          <div className="flex flex-wrap items-center gap-1.5 pt-2">
+                            <span className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">
+                              Topics:
+                            </span>
+                            {section.items.map((item, itemIdx) => (
+                              <span
+                                key={itemIdx}
+                                className="px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200 text-slate-700 font-mono text-[11px] font-medium"
+                              >
+                                {item}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="shrink-0 self-start sm:self-center">
+                        <Link
+                          to={`/sections/${section.slug}`}
+                          className="inline-flex items-center px-3.5 py-1.5 rounded-xl bg-indigo-50 text-indigo-700 hover:bg-indigo-600 hover:text-white font-semibold text-xs transition gap-1"
+                        >
+                          <span>Study Section</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
           {/* Topics / Lessons Checklist */}
           <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-5">

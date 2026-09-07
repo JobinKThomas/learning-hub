@@ -4,6 +4,7 @@ import authRoutes from './authRoutes.js';
 import adminRoutes from './adminRoutes.js';
 import learningPathRoutes from './learningPathRoutes.js';
 import moduleRoutes from './moduleRoutes.js';
+import sectionRoutes from './sectionRoutes.js';
 
 const router = Router();
 
@@ -12,5 +13,6 @@ router.use('/auth', authRoutes);
 router.use('/admin', adminRoutes);
 router.use('/learning-paths', learningPathRoutes);
 router.use('/modules', moduleRoutes);
+router.use('/sections', sectionRoutes);
 
 export default router;

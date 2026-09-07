@@ -82,21 +82,35 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5">
           <Link
             to="/admin/learning-paths"
-            className="inline-flex items-center px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-sm font-semibold shadow-md shadow-purple-600/30 transition"
+            className="inline-flex items-center px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shadow-md shadow-purple-600/30 transition"
           >
-            <Layers className="w-4 h-4 mr-2" />
-            Manage Learning Paths
+            <Layers className="w-3.5 h-3.5 mr-1.5" />
+            Paths
+          </Link>
+          <Link
+            to="/admin/modules"
+            className="inline-flex items-center px-3.5 py-2 rounded-xl bg-purple-700 hover:bg-purple-600 text-white text-xs font-semibold shadow-md shadow-purple-700/30 transition"
+          >
+            <BookOpen className="w-3.5 h-3.5 mr-1.5" />
+            Modules
+          </Link>
+          <Link
+            to="/admin/sections"
+            className="inline-flex items-center px-3.5 py-2 rounded-xl bg-purple-800 hover:bg-purple-700 text-white text-xs font-semibold shadow-md shadow-purple-800/30 transition"
+          >
+            <Layers className="w-3.5 h-3.5 mr-1.5" />
+            Sections
           </Link>
           <button
             onClick={fetchAdminData}
             disabled={loading}
-            className="inline-flex items-center px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-semibold border border-white/10 transition disabled:opacity-50"
+            className="inline-flex items-center px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/10 transition disabled:opacity-50"
           >
-            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-            Refresh Stats
+            <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
           </button>
         </div>
       </div>
