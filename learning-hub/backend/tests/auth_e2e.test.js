@@ -61,7 +61,7 @@ test('Full E2E Auth Cycle: Register -> Login -> Me -> Refresh -> Rotation -> Log
 
   assert.strictEqual(meRes.status, 200);
   assert.strictEqual(meRes.body.data.user.email, testUser.email);
-  assert.strictEqual(meRes.body.data.user.role, 'student');
+  assert.strictEqual(meRes.body.data.user.role.toUpperCase(), 'STUDENT');
 
   // 5. POST /api/auth/refresh with valid token
   const refreshRes = await request(app)

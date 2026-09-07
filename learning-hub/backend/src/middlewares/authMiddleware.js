@@ -40,5 +40,6 @@ export const authenticate = async (req, res, next) => {
   }
 };
 
-// Re-export authorize for convenience
-export { authorize } from './roleMiddleware.js';
+// Aliases and RBAC re-exports for convenience
+export const requireAuth = authenticate;
+export { authorize, requireAdmin } from './roleMiddleware.js';
