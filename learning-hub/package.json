@@ -1,0 +1,11 @@
+{
+  "name": "learning-hub-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "backend": "npm --prefix backend run dev",
+    "frontend": "npm --prefix frontend run dev",
+    "backend:test": "npm --prefix backend test",
+    "frontend:build": "npm --prefix frontend run build"
+  }
+}
