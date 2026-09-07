@@ -4,8 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchTopicBySlug, clearCurrentTopic } from '../features/topics/topicSlice';
 import { fetchNotesByTopic } from '../features/notes/noteSlice';
 import { fetchResourcesByTopic } from '../features/resources/resourceSlice';
+import { fetchPlaygroundsByTopic } from '../features/playgrounds/playgroundSlice';
 import NoteCard from '../features/notes/components/NoteCard';
 import ResourceCard from '../features/resources/components/ResourceCard';
+import PlaygroundCard from '../features/playgrounds/components/PlaygroundCard';
 import { useAuth } from '../hooks/useAuth';
 import {
   ArrowLeft,
@@ -29,6 +31,7 @@ import {
   Plus,
   ExternalLink,
   Globe,
+  Play,
 } from 'lucide-react';
 
 export default function TopicDetails() {
@@ -40,6 +43,9 @@ export default function TopicDetails() {
   );
   const { notes, loading: notesLoading } = useSelector((state) => state.notes);
   const { resources, loading: resourcesLoading } = useSelector((state) => state.resources);
+  const { topicPlaygrounds: playgrounds, loading: playgroundsLoading } = useSelector(
+    (state) => state.playgrounds
+  );
   const { isAdmin } = useAuth();
 
   const [completedKeyPoints, setCompletedKeyPoints] = useState({});
@@ -52,6 +58,7 @@ export default function TopicDetails() {
       dispatch(fetchTopicBySlug(slug));
       dispatch(fetchNotesByTopic(slug));
       dispatch(fetchResourcesByTopic({ topicId: slug }));
+      dispatch(fetchPlaygroundsByTopic(slug));
     }
     return () => {
       dispatch(clearCurrentTopic());
@@ -303,6 +310,57 @@ export default function TopicDetails() {
               ))}
             </div>
           )}
+
+          {/* Interactive Playgrounds Section: Topic -> Playground -> Code Editor -> Run -> Output */}
+          <div className="space-y-4 pt-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Terminal className="w-4 h-4 text-indigo-600" />
+                <h2 className="text-base font-bold text-slate-900">
+                  Interactive Playgrounds & Challenges ({playgrounds?.length || 0})
+                </h2>
+              </div>
+
+              {isAdmin && (
+                <Link
+                  to={`/admin/playgrounds/create?topic=${topic.slug}`}
+                  className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-xs font-semibold transition gap-1 border border-indigo-200"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add Playground</span>
+                </Link>
+              )}
+            </div>
+
+            {playgroundsLoading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="h-36 bg-slate-100 rounded-2xl animate-pulse" />
+                <div className="h-36 bg-slate-100 rounded-2xl animate-pulse" />
+              </div>
+            ) : playgrounds && playgrounds.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {playgrounds.map((pg) => (
+                  <PlaygroundCard key={pg.id} playground={pg} showTopic={false} />
+                ))}
+              </div>
+            ) : (
+              <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm text-center space-y-3">
+                <Terminal className="w-8 h-8 text-slate-300 mx-auto" />
+                <p className="text-xs text-slate-500">
+                  No interactive playgrounds configured for this topic yet.
+                </p>
+                {isAdmin && (
+                  <Link
+                    to={`/admin/playgrounds/create?topic=${topic.slug}`}
+                    className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition"
+                  >
+                    <Plus className="w-3.5 h-3.5 mr-1" />
+                    Create First Playground
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* Key Points / Concept Checklist */}
           {keyPoints.length > 0 && (
@@ -578,6 +636,17 @@ export default function TopicDetails() {
                   : 'Check off each key point as you test the code snippets.'}
               </p>
             </div>
+
+            {/* Direct Playground CTA */}
+            {playgrounds && playgrounds.length > 0 && (
+              <Link
+                to={`/playgrounds/${playgrounds[0].slug}`}
+                className="w-full inline-flex items-center justify-center px-4 py-3 rounded-xl bg-slate-900 hover:bg-indigo-600 text-white text-xs font-bold shadow-lg shadow-slate-900/20 transition gap-2"
+              >
+                <Play className="w-3.5 h-3.5 fill-current text-emerald-400" />
+                <span>Launch Interactive Playground</span>
+              </Link>
+            )}
 
             {/* Navigation back to parent section */}
             {parentSection && (
