@@ -93,7 +93,15 @@ export default function HomePage() {
               <Code2 className="w-4 h-4 mr-2" />
               Interactive Swagger API Docs
             </a>
-            {!isAuthenticated && (
+            {isAuthenticated ? (
+              <Link
+                to="/dashboard"
+                className="inline-flex items-center px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-sm shadow-sm transition"
+              >
+                Go to Dashboard
+                <ArrowRight className="w-4 h-4 ml-1.5" />
+              </Link>
+            ) : (
               <Link
                 to="/register"
                 className="inline-flex items-center px-4 py-2 rounded-xl bg-indigo-600/80 hover:bg-indigo-600 text-white font-semibold text-sm border border-indigo-400/40 transition"

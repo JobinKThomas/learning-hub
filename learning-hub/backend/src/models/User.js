@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Name is required'],
       trim: true,
+      minlength: [2, 'Name must be at least 2 characters'],
       maxlength: [50, 'Name cannot exceed 50 characters'],
     },
     email: {
@@ -31,12 +32,23 @@ const userSchema = new mongoose.Schema(
       enum: ['student', 'instructor', 'admin'],
       default: 'student',
     },
+    refreshTokens: {
+      type: [
+        {
+          token: { type: String, required: true },
+          createdAt: { type: Date, default: Date.now },
+        },
+      ],
+      select: false,
+      default: [],
+    },
   },
   {
     timestamps: true,
     toJSON: {
       transform: (doc, ret) => {
         delete ret.password;
+        delete ret.refreshTokens;
         delete ret.__v;
         return ret;
       },
@@ -59,7 +71,7 @@ userSchema.pre('save', async function (next) {
   }
 });
 
-// Compare hashed password
+// Compare candidate password with hashed password
 userSchema.methods.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };

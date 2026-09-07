@@ -1,5 +1,16 @@
 import { Router } from 'express';
-import { register, login, getMe } from '../controllers/authController.js';
+import {
+  register,
+  login,
+  refresh,
+  logout,
+  getMe,
+} from '../controllers/authController.js';
+import {
+  validateRegister,
+  validateLogin,
+  validateRefresh,
+} from '../middlewares/validationMiddleware.js';
 import { authenticate } from '../middlewares/authMiddleware.js';
 
 const router = Router();
@@ -39,19 +50,19 @@ const router = Router();
  *                 example: student
  *     responses:
  *       201:
- *         description: User successfully registered
+ *         description: User registered successfully with access and refresh tokens
  *       400:
- *         description: Bad request / validation error
+ *         description: Validation error
  *       409:
  *         description: Email already in use
  */
-router.post('/register', register);
+router.post('/register', validateRegister, register);
 
 /**
  * @openapi
  * /auth/login:
  *   post:
- *     summary: Authenticate user & get JWT token
+ *     summary: Authenticate user & issue tokens
  *     tags:
  *       - Auth
  *     requestBody:
@@ -74,13 +85,63 @@ router.post('/register', register);
  *                 example: securePass123
  *     responses:
  *       200:
- *         description: Authentication successful
+ *         description: Login successful with access and refresh tokens
  *       400:
  *         description: Missing credentials
  *       401:
  *         description: Invalid email or password
  */
-router.post('/login', login);
+router.post('/login', validateLogin, login);
+
+/**
+ * @openapi
+ * /auth/refresh:
+ *   post:
+ *     summary: Renew access token with refresh token
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *                 example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *     responses:
+ *       200:
+ *         description: Tokens successfully rotated and renewed
+ *       400:
+ *         description: Refresh token missing
+ *       401:
+ *         description: Invalid or revoked refresh token
+ */
+router.post('/refresh', validateRefresh, refresh);
+
+/**
+ * @openapi
+ * /auth/logout:
+ *   post:
+ *     summary: Log out user & revoke refresh token
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *                 example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *     responses:
+ *       200:
+ *         description: Successfully logged out
+ */
+router.post('/logout', logout);
 
 /**
  * @openapi
