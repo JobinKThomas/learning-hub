@@ -15,6 +15,10 @@ import LearningPathDetails from './pages/LearningPathDetails';
 import AdminLearningPaths from './pages/admin/AdminLearningPaths';
 import CreateLearningPath from './pages/admin/CreateLearningPath';
 import EditLearningPath from './pages/admin/EditLearningPath';
+import ModuleDetails from './pages/ModuleDetails';
+import AdminModules from './pages/admin/AdminModules';
+import CreateModule from './pages/admin/CreateModule';
+import EditModule from './pages/admin/EditModule';
 
 export default function App() {
   const dispatch = useDispatch();
@@ -60,6 +64,14 @@ export default function App() {
             }
           />
           <Route
+            path="/modules/:slug"
+            element={
+              <ProtectedRoute>
+                <ModuleDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/admin"
             element={
               <AdminRoute>
@@ -91,11 +103,35 @@ export default function App() {
               </AdminRoute>
             }
           />
+          <Route
+            path="/admin/modules"
+            element={
+              <AdminRoute>
+                <AdminModules />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/modules/create"
+            element={
+              <AdminRoute>
+                <CreateModule />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/modules/:id/edit"
+            element={
+              <AdminRoute>
+                <EditModule />
+              </AdminRoute>
+            }
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
       <footer className="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
-        <p>© 2026 Learning Hub — Phase 3 Learning Paths</p>
+        <p>© 2026 Learning Hub — Phase 4 Modules</p>
       </footer>
     </div>
   );
