@@ -11,6 +11,7 @@ import quizReducer from '../features/quizzes/quizSlice';
 import quizAttemptReducer from '../features/quizAttempts/quizAttemptSlice';
 import interviewQuestionReducer from '../features/interviewQuestions/interviewQuestionSlice';
 import progressReducer from '../features/progress/progressSlice';
+import dashboardReducer from '../features/dashboard/dashboardSlice';
 
 export const store = configureStore({
   reducer: {
@@ -26,6 +27,7 @@ export const store = configureStore({
     quizAttempts: quizAttemptReducer,
     interviewQuestions: interviewQuestionReducer,
     progress: progressReducer,
+    dashboard: dashboardReducer,
   },
   devTools: process.env.NODE_ENV !== 'production',
 });

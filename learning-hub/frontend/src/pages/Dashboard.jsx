@@ -3,9 +3,10 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAuth } from '../hooks/useAuth';
 import authApi from '../api/authApi';
-import { fetchMyAttempts } from '../features/quizAttempts/quizAttemptSlice';
-import { fetchOverallProgress } from '../features/progress/progressSlice';
-import ProgressBar from '../features/progress/components/ProgressBar';
+import { fetchDashboardData } from '../features/dashboard/dashboardSlice';
+import DashboardCards from '../features/dashboard/components/DashboardCards';
+import ContinueLearning from '../features/dashboard/components/ContinueLearning';
+import ProgressOverview from '../features/dashboard/components/ProgressOverview';
 import QuizHistoryTable from '../features/quizAttempts/components/QuizHistoryTable';
 import QuizAttemptReviewModal from '../features/quizAttempts/components/QuizAttemptReviewModal';
 import {
@@ -18,30 +19,24 @@ import {
   AlertCircle,
   Calendar,
   Mail,
-  BookOpen,
-  GraduationCap,
-  Award,
-  ArrowRight,
   History,
-  CheckSquare,
-  Play,
-  Flame,
+  RotateCcw,
 } from 'lucide-react';
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user, role, isAdmin, accessToken, refreshToken, logout } = useAuth();
-  const { myAttempts, loading: attemptsLoading } = useSelector((state) => state.quizAttempts);
-  const { overallProgress } = useSelector((state) => state.progress);
+  const { data: dashboardData, loading: dashboardLoading } = useSelector(
+    (state) => state.dashboard
+  );
 
   const [testResponse, setTestResponse] = useState(null);
   const [testingApi, setTestingApi] = useState(false);
   const [reviewAttemptId, setReviewAttemptId] = useState(null);
 
   useEffect(() => {
-    dispatch(fetchMyAttempts({ limit: 5 }));
-    dispatch(fetchOverallProgress());
+    dispatch(fetchDashboardData());
   }, [dispatch]);
 
   const handleLogout = async () => {
@@ -69,6 +64,24 @@ export default function Dashboard() {
       })
     : 'Recently';
 
+  const stats = dashboardData?.stats;
+  const continueLearning = dashboardData?.continueLearning;
+  const learningPaths = dashboardData?.learningPaths || [];
+  const recentQuizAttempts = dashboardData?.recentQuizAttempts || [];
+
+  if (dashboardLoading && !dashboardData) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 animate-pulse">
+        <div className="h-36 bg-slate-200 rounded-3xl" />
+        <div className="h-48 bg-slate-200 rounded-3xl" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="h-64 bg-slate-200 rounded-3xl lg:col-span-2" />
+          <div className="h-64 bg-slate-200 rounded-3xl" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       {/* Learning Dashboard Header */}
@@ -93,19 +106,27 @@ export default function Dashboard() {
               </span>
             </div>
             <p className="text-indigo-200 text-sm mt-1">
-              Welcome back, {user?.name || 'Learner'}! Track your progress and manage your account.
+              Welcome back, {user?.name || 'Learner'}! Track your progress and resume your active track.
             </p>
           </div>
         </div>
 
         <div className="flex items-center space-x-3">
+          <button
+            onClick={() => dispatch(fetchDashboardData())}
+            className="inline-flex items-center px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/10 transition"
+            title="Refresh Dashboard"
+          >
+            <RefreshCw className="w-4 h-4 mr-1.5" />
+            <span>Refresh</span>
+          </button>
           {isAdmin && (
             <Link
               to="/admin"
               className="inline-flex items-center px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold shadow-md transition"
             >
               <Shield className="w-4 h-4 mr-1.5" />
-              Switch to Admin Dashboard
+              Switch to Admin
             </Link>
           )}
           <button
@@ -118,156 +139,23 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Learning Progress Summary Grid (Phase 13) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-            <CheckCircle2 className="w-6 h-6" />
-          </div>
-          <div>
-            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Topics Mastered
-            </div>
-            <div className="text-2xl font-extrabold text-slate-900 mt-0.5">
-              {overallProgress?.totalCompletedTopics ?? 0}
-            </div>
-          </div>
+      {/* 1. DashboardCards: Welcome & Core 4-Metric Grid (Phase 14) */}
+      <DashboardCards user={dashboardData?.user || user} stats={stats} />
+
+      {/* 2. Main Grid: Continue Learning + Track Overview (Phase 14) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        {/* Continue Learning Card */}
+        <div className="lg:col-span-1 h-full">
+          <ContinueLearning item={continueLearning} />
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
-            <BookOpen className="w-6 h-6" />
-          </div>
-          <div>
-            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Notes Read
-            </div>
-            <div className="text-2xl font-extrabold text-slate-900 mt-0.5">
-              {overallProgress?.totalCompletedNotes ?? 0}
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
-            <Award className="w-6 h-6" />
-          </div>
-          <div>
-            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Quizzes Passed
-            </div>
-            <div className="text-2xl font-extrabold text-purple-900 mt-0.5">
-              {overallProgress?.totalCompletedQuizzes ?? 0}
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
-            <Play className="w-6 h-6 fill-current text-amber-500" />
-          </div>
-          <div>
-            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Playgrounds Run
-            </div>
-            <div className="text-2xl font-extrabold text-amber-900 mt-0.5">
-              {overallProgress?.totalCompletedPlaygrounds ?? 0}
-            </div>
-          </div>
+        {/* Progress Overview across Tracks */}
+        <div className="lg:col-span-2">
+          <ProgressOverview learningPaths={learningPaths} />
         </div>
       </div>
 
-      {/* Enrolled Track Progress Overview (Phase 13) */}
-      {overallProgress?.learningPaths && overallProgress.learningPaths.length > 0 && (
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                <GraduationCap className="w-5 h-5 text-indigo-600" />
-                Track Progress & Milestones
-              </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Real-time completion tracking across learning paths
-              </p>
-            </div>
-            <Link
-              to="/learning-paths"
-              className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 transition self-start sm:self-auto"
-            >
-              Explore all paths →
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {overallProgress.learningPaths.map((lp) => (
-              <div
-                key={lp.id || lp.slug}
-                className="p-5 rounded-2xl border border-slate-200/80 bg-slate-50/50 hover:bg-white hover:border-indigo-200 hover:shadow-sm transition space-y-3"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold text-slate-900 line-clamp-1">
-                    {lp.title}
-                  </span>
-                  <span className="text-xs font-semibold text-slate-500">
-                    {lp.completedTopics} / {lp.totalTopics} topics
-                  </span>
-                </div>
-                <ProgressBar
-                  percentage={lp.percentage}
-                  size="sm"
-                  variant="auto"
-                  showLabel={false}
-                />
-                <div className="flex items-center justify-between text-xs pt-1">
-                  <span className="text-slate-600 font-semibold">
-                    {lp.percentage}% mastered
-                  </span>
-                  <Link
-                    to={`/learning-paths/${lp.slug}`}
-                    className="font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1"
-                  >
-                    <span>Resume Track</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Featured Learning Path Banner */}
-      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[11px] font-bold border border-amber-200">
-            Featured Curriculum
-          </div>
-          <h2 className="text-xl font-bold text-slate-900">
-            JavaScript Masterclass: From Fundamentals to Asynchronous & ES6+
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-600 max-w-2xl leading-relaxed">
-            4 comprehensive modules covering syntax, event loop, Promises, DOM manipulation, prototypes, and functional patterns.
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-3">
-          <Link
-            to="/learning-paths/javascript"
-            className="inline-flex items-center px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-100 transition"
-          >
-            <span>Start JavaScript Path</span>
-            <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
-          </Link>
-          <Link
-            to="/learning-paths"
-            className="inline-flex items-center px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold transition"
-          >
-            Browse All Paths
-          </Link>
-        </div>
-      </div>
-
-      {/* Main Content Grid */}
+      {/* 3. Account Details & JWT Session Info */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* User Profile Card */}
         <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6">
@@ -383,19 +271,19 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Recent Quiz Attempts & Knowledge Evaluation Section */}
+      {/* 4. Recent Quiz Attempts Section */}
       <div className="space-y-4 pt-4 border-t border-slate-200">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <History className="w-5 h-5 text-indigo-600" />
             <h2 className="text-base font-bold text-slate-900">
-              Recent Knowledge Quiz Attempts ({myAttempts?.length || 0})
+              Recent Knowledge Quiz Attempts ({recentQuizAttempts?.length || 0})
             </h2>
           </div>
         </div>
 
         <QuizHistoryTable
-          attempts={myAttempts}
+          attempts={recentQuizAttempts}
           showQuizTitle={true}
           onSelectAttempt={(attId) => setReviewAttemptId(attId)}
         />
@@ -404,7 +292,7 @@ export default function Dashboard() {
       {/* Modal for reviewing past attempt */}
       {reviewAttemptId && (
         <QuizAttemptReviewModal
-          attempt={myAttempts.find((a) => a.id === reviewAttemptId || a._id === reviewAttemptId)}
+          attempt={recentQuizAttempts.find((a) => a.id === reviewAttemptId || a._id === reviewAttemptId)}
           onClose={() => setReviewAttemptId(null)}
         />
       )}
