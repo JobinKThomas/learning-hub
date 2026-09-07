@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { useAuth } from '../hooks/useAuth';
 import authApi from '../api/authApi';
+import { fetchMyAttempts } from '../features/quizAttempts/quizAttemptSlice';
+import QuizHistoryTable from '../features/quizAttempts/components/QuizHistoryTable';
+import QuizAttemptReviewModal from '../features/quizAttempts/components/QuizAttemptReviewModal';
 import {
   User,
   Shield,
@@ -16,14 +20,22 @@ import {
   GraduationCap,
   Award,
   ArrowRight,
+  History,
 } from 'lucide-react';
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { user, role, isAdmin, accessToken, refreshToken, logout } = useAuth();
+  const { myAttempts, loading: attemptsLoading } = useSelector((state) => state.quizAttempts);
 
   const [testResponse, setTestResponse] = useState(null);
   const [testingApi, setTestingApi] = useState(false);
+  const [reviewAttemptId, setReviewAttemptId] = useState(null);
+
+  useEffect(() => {
+    dispatch(fetchMyAttempts({ limit: 5 }));
+  }, [dispatch]);
 
   const handleLogout = async () => {
     await logout();
@@ -284,6 +296,32 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Recent Quiz Attempts & Knowledge Evaluation Section */}
+      <div className="space-y-4 pt-4 border-t border-slate-200">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <History className="w-5 h-5 text-indigo-600" />
+            <h2 className="text-base font-bold text-slate-900">
+              Recent Knowledge Quiz Attempts ({myAttempts?.length || 0})
+            </h2>
+          </div>
+        </div>
+
+        <QuizHistoryTable
+          attempts={myAttempts}
+          showQuizTitle={true}
+          onSelectAttempt={(attId) => setReviewAttemptId(attId)}
+        />
+      </div>
+
+      {/* Modal for reviewing past attempt */}
+      {reviewAttemptId && (
+        <QuizAttemptReviewModal
+          attempt={myAttempts.find((a) => a.id === reviewAttemptId || a._id === reviewAttemptId)}
+          onClose={() => setReviewAttemptId(null)}
+        />
+      )}
     </div>
   );
 }

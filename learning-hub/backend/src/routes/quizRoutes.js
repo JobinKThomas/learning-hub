@@ -1,11 +1,13 @@
 import { Router } from 'express';
 import { quizController } from '../controllers/quizController.js';
+import { quizAttemptController } from '../controllers/quizAttemptController.js';
 import { requireAuth, requireAdmin } from '../middlewares/authMiddleware.js';
 import {
   validateCreateQuiz,
   validateUpdateQuiz,
   validateSubmitQuiz,
 } from '../middlewares/quizValidation.js';
+import { validateCreateAttempt } from '../middlewares/quizAttemptValidation.js';
 
 const router = Router();
 
@@ -94,6 +96,71 @@ router.get('/:id', quizController.getById);
  *         description: Quiz evaluation result with score and explanations
  */
 router.post('/:id/submit', validateSubmitQuiz, quizController.submitQuiz);
+
+/**
+ * @openapi
+ * /quizzes/{id}/attempts:
+ *   post:
+ *     summary: Submit a quiz attempt, evaluate answers, and persist attempt record
+ *     tags:
+ *       - Quizzes
+ *       - Quiz Attempts
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - answers
+ *             properties:
+ *               answers:
+ *                 type: object
+ *                 description: Map of questionId -> selectedOption index
+ *               timeSpentSeconds:
+ *                 type: number
+ *                 description: Total seconds taken
+ *     responses:
+ *       201:
+ *         description: Quiz attempt evaluated and recorded
+ *       400:
+ *         description: Validation failed
+ *       404:
+ *         description: Quiz not found
+ */
+router.post('/:id/attempts', validateCreateAttempt, quizAttemptController.createAttempt);
+
+/**
+ * @openapi
+ * /quizzes/{id}/attempts:
+ *   get:
+ *     summary: Get historical quiz attempts and statistics for a specific quiz
+ *     tags:
+ *       - Quizzes
+ *       - Quiz Attempts
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of attempts and performance stats for this quiz
+ *       404:
+ *         description: Quiz not found
+ */
+router.get('/:id/attempts', quizAttemptController.getQuizAttempts);
 
 /**
  * @openapi

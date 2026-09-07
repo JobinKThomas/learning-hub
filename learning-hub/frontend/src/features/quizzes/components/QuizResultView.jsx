@@ -8,17 +8,41 @@ import {
   Sparkles,
   Award,
   HelpCircle,
+  Clock,
+  History,
 } from 'lucide-react';
+
+function formatDuration(seconds) {
+  if (!seconds || seconds <= 0) return null;
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  if (mins === 0) return `${secs}s`;
+  if (secs === 0) return `${mins}m`;
+  return `${mins}m ${secs}s`;
+}
 
 export default function QuizResultView({
   evaluation,
   onRetake,
+  onViewHistory,
   topicSlug,
   topicTitle,
+  quizId,
 }) {
   if (!evaluation) return null;
 
-  const { score, totalQuestions, percentage, passingScore, passed, results } = evaluation;
+  const {
+    score,
+    totalQuestions,
+    percentage,
+    passingScore,
+    passed,
+    attemptNumber,
+    timeSpentSeconds,
+  } = evaluation;
+
+  const results = evaluation.results || evaluation.answers || [];
+  const durationText = formatDuration(timeSpentSeconds);
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
@@ -40,8 +64,21 @@ export default function QuizResultView({
 
         {/* Score & Percentage */}
         <div className="space-y-1">
-          <div className="text-xs font-mono uppercase tracking-widest text-slate-300">
-            Quiz Result
+          <div className="flex items-center justify-center gap-2">
+            <span className="text-xs font-mono uppercase tracking-widest text-slate-300">
+              Quiz Result
+            </span>
+            {attemptNumber && (
+              <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-white/20 text-white border border-white/20">
+                Attempt #{attemptNumber}
+              </span>
+            )}
+            {durationText && (
+              <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-white/10 text-slate-300 flex items-center gap-1 border border-white/10">
+                <Clock className="w-3 h-3 text-amber-300" />
+                <span>{durationText}</span>
+              </span>
+            )}
           </div>
           <div className="text-4xl sm:text-5xl font-extrabold tracking-tight font-sans">
             Score: {score} / {totalQuestions}
@@ -80,6 +117,27 @@ export default function QuizResultView({
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Retake Quiz</span>
           </button>
+
+          {onViewHistory && (
+            <button
+              type="button"
+              onClick={onViewHistory}
+              className="inline-flex items-center px-5 py-2.5 rounded-xl bg-indigo-600/60 hover:bg-indigo-600 text-white font-bold text-xs border border-indigo-400/40 shadow-md transition gap-1.5"
+            >
+              <History className="w-3.5 h-3.5 text-indigo-200" />
+              <span>Quiz History</span>
+            </button>
+          )}
+
+          {quizId && !onViewHistory && (
+            <Link
+              to={`/quizzes/${quizId}/history`}
+              className="inline-flex items-center px-5 py-2.5 rounded-xl bg-indigo-600/60 hover:bg-indigo-600 text-white font-bold text-xs border border-indigo-400/40 shadow-md transition gap-1.5"
+            >
+              <History className="w-3.5 h-3.5 text-indigo-200" />
+              <span>Quiz History</span>
+            </Link>
+          )}
 
           {topicSlug && (
             <Link

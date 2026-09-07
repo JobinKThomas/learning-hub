@@ -10,6 +10,7 @@ import noteRoutes from './noteRoutes.js';
 import resourceRoutes from './resourceRoutes.js';
 import playgroundRoutes from './playgroundRoutes.js';
 import quizRoutes from './quizRoutes.js';
+import quizAttemptRoutes from './quizAttemptRoutes.js';
 
 const router = Router();
 
@@ -24,5 +25,6 @@ router.use('/notes', noteRoutes);
 router.use('/resources', resourceRoutes);
 router.use('/playgrounds', playgroundRoutes);
 router.use('/quizzes', quizRoutes);
+router.use('/quiz-attempts', quizAttemptRoutes);
 
 export default router;
