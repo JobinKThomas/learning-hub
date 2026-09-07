@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useAuth } from '../hooks/useAuth';
 import authApi from '../api/authApi';
 import { fetchMyAttempts } from '../features/quizAttempts/quizAttemptSlice';
+import { fetchOverallProgress } from '../features/progress/progressSlice';
+import ProgressBar from '../features/progress/components/ProgressBar';
 import QuizHistoryTable from '../features/quizAttempts/components/QuizHistoryTable';
 import QuizAttemptReviewModal from '../features/quizAttempts/components/QuizAttemptReviewModal';
 import {
@@ -21,6 +23,9 @@ import {
   Award,
   ArrowRight,
   History,
+  CheckSquare,
+  Play,
+  Flame,
 } from 'lucide-react';
 
 export default function Dashboard() {
@@ -28,6 +33,7 @@ export default function Dashboard() {
   const dispatch = useDispatch();
   const { user, role, isAdmin, accessToken, refreshToken, logout } = useAuth();
   const { myAttempts, loading: attemptsLoading } = useSelector((state) => state.quizAttempts);
+  const { overallProgress } = useSelector((state) => state.progress);
 
   const [testResponse, setTestResponse] = useState(null);
   const [testingApi, setTestingApi] = useState(false);
@@ -35,6 +41,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     dispatch(fetchMyAttempts({ limit: 5 }));
+    dispatch(fetchOverallProgress());
   }, [dispatch]);
 
   const handleLogout = async () => {
@@ -111,44 +118,123 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Learning Progress Summary Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
+      {/* Learning Progress Summary Grid (Phase 13) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
+          <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+            <CheckCircle2 className="w-6 h-6" />
+          </div>
+          <div>
+            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Topics Mastered
+            </div>
+            <div className="text-2xl font-extrabold text-slate-900 mt-0.5">
+              {overallProgress?.totalCompletedTopics ?? 0}
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
           <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
             <BookOpen className="w-6 h-6" />
           </div>
           <div>
             <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Enrolled Courses
+              Notes Read
             </div>
-            <div className="text-2xl font-bold text-slate-900 mt-0.5">3 Active</div>
+            <div className="text-2xl font-extrabold text-slate-900 mt-0.5">
+              {overallProgress?.totalCompletedNotes ?? 0}
+            </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
+          <div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
             <Award className="w-6 h-6" />
           </div>
           <div>
             <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Completed Modules
+              Quizzes Passed
             </div>
-            <div className="text-2xl font-bold text-emerald-900 mt-0.5">12 Topics</div>
+            <div className="text-2xl font-extrabold text-purple-900 mt-0.5">
+              {overallProgress?.totalCompletedQuizzes ?? 0}
+            </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
-            <GraduationCap className="w-6 h-6" />
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
+          <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+            <Play className="w-6 h-6 fill-current text-amber-500" />
           </div>
           <div>
             <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Learning Journey
+              Playgrounds Run
             </div>
-            <div className="text-2xl font-bold text-purple-900 mt-0.5">85% On Track</div>
+            <div className="text-2xl font-extrabold text-amber-900 mt-0.5">
+              {overallProgress?.totalCompletedPlaygrounds ?? 0}
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Enrolled Track Progress Overview (Phase 13) */}
+      {overallProgress?.learningPaths && overallProgress.learningPaths.length > 0 && (
+        <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                <GraduationCap className="w-5 h-5 text-indigo-600" />
+                Track Progress & Milestones
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Real-time completion tracking across learning paths
+              </p>
+            </div>
+            <Link
+              to="/learning-paths"
+              className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 transition self-start sm:self-auto"
+            >
+              Explore all paths →
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {overallProgress.learningPaths.map((lp) => (
+              <div
+                key={lp.id || lp.slug}
+                className="p-5 rounded-2xl border border-slate-200/80 bg-slate-50/50 hover:bg-white hover:border-indigo-200 hover:shadow-sm transition space-y-3"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-bold text-slate-900 line-clamp-1">
+                    {lp.title}
+                  </span>
+                  <span className="text-xs font-semibold text-slate-500">
+                    {lp.completedTopics} / {lp.totalTopics} topics
+                  </span>
+                </div>
+                <ProgressBar
+                  percentage={lp.percentage}
+                  size="sm"
+                  variant="auto"
+                  showLabel={false}
+                />
+                <div className="flex items-center justify-between text-xs pt-1">
+                  <span className="text-slate-600 font-semibold">
+                    {lp.percentage}% mastered
+                  </span>
+                  <Link
+                    to={`/learning-paths/${lp.slug}`}
+                    className="font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1"
+                  >
+                    <span>Resume Track</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Featured Learning Path Banner */}
       <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-6">

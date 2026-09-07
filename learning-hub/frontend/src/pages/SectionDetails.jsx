@@ -3,6 +3,9 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSectionBySlug, clearCurrentSection } from '../features/sections/sectionSlice';
 import { fetchTopicsBySection } from '../features/topics/topicSlice';
+import { fetchModuleProgress } from '../features/progress/progressSlice';
+import ProgressBar from '../features/progress/components/ProgressBar';
+import TopicProgressBadge from '../features/progress/components/TopicProgressBadge';
 import { useAuth } from '../hooks/useAuth';
 import {
   ArrowLeft,
@@ -34,6 +37,9 @@ export default function SectionDetails() {
   const { topics, loading: topicsLoading } = useSelector(
     (state) => state.topics
   );
+  const { currentModuleProgress } = useSelector(
+    (state) => state.progress
+  );
   const { isAdmin } = useAuth();
 
   const [completedItems, setCompletedItems] = useState({});
@@ -48,6 +54,12 @@ export default function SectionDetails() {
       dispatch(clearCurrentSection());
     };
   }, [dispatch, slug]);
+
+  useEffect(() => {
+    if (section?.module?.slug) {
+      dispatch(fetchModuleProgress(section.module.slug));
+    }
+  }, [dispatch, section?.module?.slug]);
 
   const toggleItem = (itemKey) => {
     setCompletedItems((prev) => ({
@@ -102,10 +114,13 @@ export default function SectionDetails() {
     );
   }
 
+  const sectionProg = currentModuleProgress?.sections?.find(
+    (s) => s.slug === slug || String(s.id) === String(section?._id || section?.id)
+  );
   const items = section.items || [];
   const totalItems = items.length;
   const completedCount = Object.values(completedItems).filter(Boolean).length;
-  const progressPercent = totalItems > 0 ? Math.round((completedCount / totalItems) * 100) : 0;
+  const progressPercent = sectionProg?.percentage ?? (totalItems > 0 ? Math.round((completedCount / totalItems) * 100) : 0);
   const parentModule = section.module;
   const grandParentPath = parentModule?.learningPath;
 
@@ -236,27 +251,38 @@ export default function SectionDetails() {
               </div>
             ) : topics.length > 0 ? (
               <div className="space-y-3">
-                {topics.map((top, tIdx) => (
-                  <div
-                    key={top.id}
-                    className="p-4 rounded-xl border border-slate-200/80 bg-slate-50/50 hover:bg-white hover:border-indigo-200 hover:shadow-sm transition-all group"
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div className="space-y-1 flex-grow">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-100 text-indigo-700 font-mono">
-                            {top.title}
-                          </span>
-                          <span className="text-[11px] font-medium text-slate-500 flex items-center gap-1">
-                            <Clock className="w-3 h-3 text-amber-500" />
-                            {top.duration}
-                          </span>
-                          {top.codeExamplesCount > 0 && (
-                            <span className="text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
-                              {top.codeExamplesCount} code {top.codeExamplesCount === 1 ? 'example' : 'examples'}
+                {topics.map((top, tIdx) => {
+                  const topProg = sectionProg?.topics?.find(
+                    (t) => t.slug === top.slug || String(t.id) === String(top.id || top._id)
+                  );
+                  return (
+                    <div
+                      key={top.id}
+                      className="p-4 rounded-xl border border-slate-200/80 bg-slate-50/50 hover:bg-white hover:border-indigo-200 hover:shadow-sm transition-all group"
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="space-y-1 flex-grow">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-100 text-indigo-700 font-mono">
+                              {top.title}
                             </span>
-                          )}
-                        </div>
+                            <span className="text-[11px] font-medium text-slate-500 flex items-center gap-1">
+                              <Clock className="w-3 h-3 text-amber-500" />
+                              {top.duration}
+                            </span>
+                            {top.codeExamplesCount > 0 && (
+                              <span className="text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
+                                {top.codeExamplesCount} code {top.codeExamplesCount === 1 ? 'example' : 'examples'}
+                              </span>
+                            )}
+                            {topProg && (
+                              <TopicProgressBadge
+                                isCompleted={topProg.isCompleted}
+                                percentage={topProg.percentage}
+                                size="xs"
+                              />
+                            )}
+                          </div>
                         <h3 className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition">
                           <Link to={`/topics/${top.slug}`}>
                             {top.title} — {top.summary || top.description}
@@ -278,7 +304,8 @@ export default function SectionDetails() {
                       </div>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             ) : items.length > 0 ? (
               <div className="space-y-3">
@@ -409,18 +436,12 @@ export default function SectionDetails() {
             </div>
 
             {/* Progress Bar */}
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs font-semibold">
-                <span className="text-slate-600">Completion</span>
-                <span className="text-indigo-600">{progressPercent}%</span>
-              </div>
-              <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
-                <div
-                  className="h-full bg-emerald-500 rounded-full transition-all duration-300"
-                  style={{ width: `${progressPercent}%` }}
-                />
-              </div>
-            </div>
+            <ProgressBar
+              percentage={progressPercent}
+              label="Section Mastery"
+              variant="auto"
+              size="md"
+            />
 
             {/* Completion status feedback */}
             <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 text-xs space-y-1">

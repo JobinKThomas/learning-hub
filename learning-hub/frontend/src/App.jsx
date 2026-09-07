@@ -392,7 +392,7 @@ export default function App() {
         </Routes>
       </main>
       <footer className="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
-        <p>© 2026 Learning Hub — Phase 12 Interview Questions</p>
+        <p>© 2026 Learning Hub — Phase 13 Progress Tracking</p>
       </footer>
     </div>
   );

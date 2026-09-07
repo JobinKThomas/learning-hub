@@ -12,6 +12,7 @@ import playgroundRoutes from './playgroundRoutes.js';
 import quizRoutes from './quizRoutes.js';
 import quizAttemptRoutes from './quizAttemptRoutes.js';
 import interviewQuestionRoutes from './interviewQuestionRoutes.js';
+import progressRoutes from './progressRoutes.js';
 
 const router = Router();
 
@@ -28,5 +29,6 @@ router.use('/playgrounds', playgroundRoutes);
 router.use('/quizzes', quizRoutes);
 router.use('/quiz-attempts', quizAttemptRoutes);
 router.use('/interview-questions', interviewQuestionRoutes);
+router.use('/progress', progressRoutes);
 
 export default router;

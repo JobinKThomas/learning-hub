@@ -3,6 +3,9 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchLearningPathBySlug, clearCurrentPath } from '../features/learningPaths/learningPathSlice';
 import { fetchModulesByLearningPath } from '../features/modules/moduleSlice';
+import { fetchLearningPathProgress } from '../features/progress/progressSlice';
+import ProgressBar from '../features/progress/components/ProgressBar';
+import TopicProgressBadge from '../features/progress/components/TopicProgressBadge';
 import { useAuth } from '../hooks/useAuth';
 import {
   ArrowLeft,
@@ -37,6 +40,7 @@ export default function LearningPathDetails() {
     (state) => state.learningPaths
   );
   const { modules: standaloneModules } = useSelector((state) => state.modules);
+  const { currentPathProgress } = useSelector((state) => state.progress);
   const { isAdmin } = useAuth();
 
   const [expandedModules, setExpandedModules] = useState({});
@@ -47,6 +51,7 @@ export default function LearningPathDetails() {
     if (slug) {
       dispatch(fetchLearningPathBySlug(slug));
       dispatch(fetchModulesByLearningPath(slug));
+      dispatch(fetchLearningPathProgress(slug));
     }
     return () => {
       dispatch(clearCurrentPath());
@@ -239,6 +244,9 @@ export default function LearningPathDetails() {
               {displayModules.map((module, idx) => {
                 const isOpen = !!expandedModules[idx];
                 const moduleSlug = module.slug || `module-${idx + 1}`;
+                const moduleProg = currentPathProgress?.modules?.find(
+                  (m) => m.slug === moduleSlug || String(m.id) === String(module._id || module.id)
+                );
                 return (
                   <div
                     key={module._id || module.id || idx}
@@ -259,6 +267,13 @@ export default function LearningPathDetails() {
                               <Clock className="w-3 h-3 mr-1 text-slate-400" />
                               {module.duration}
                             </span>
+                            {moduleProg && (
+                              <TopicProgressBadge
+                                isCompleted={moduleProg.percentage === 100}
+                                percentage={moduleProg.percentage}
+                                size="xs"
+                              />
+                            )}
                           </div>
                           {module.description && (
                             <p className="text-xs text-slate-600 mt-1 leading-relaxed">
@@ -371,6 +386,19 @@ export default function LearningPathDetails() {
                   </>
                 )}
               </button>
+            </div>
+
+            {/* Track Progress Bar */}
+            <div className="border-t border-slate-100 pt-4 space-y-2">
+              <ProgressBar
+                percentage={currentPathProgress?.percentage ?? (enrolled ? 10 : 0)}
+                label="Track Mastery"
+                variant="auto"
+                size="md"
+              />
+              <div className="text-center text-[11px] text-slate-500 font-medium">
+                {currentPathProgress?.completedTopics ?? 0} of {currentPathProgress?.totalTopics ?? path.totalTopics ?? 0} topics completed
+              </div>
             </div>
 
             {/* Quick Specs */}

@@ -7,11 +7,17 @@ import { fetchResourcesByTopic } from '../features/resources/resourceSlice';
 import { fetchPlaygroundsByTopic } from '../features/playgrounds/playgroundSlice';
 import { fetchQuizzesByTopic } from '../features/quizzes/quizSlice';
 import { fetchInterviewQuestionsByTopic } from '../features/interviewQuestions/interviewQuestionSlice';
+import {
+  updateProgress,
+  fetchTopicProgress,
+} from '../features/progress/progressSlice';
 import NoteCard from '../features/notes/components/NoteCard';
 import ResourceCard from '../features/resources/components/ResourceCard';
 import PlaygroundCard from '../features/playgrounds/components/PlaygroundCard';
 import QuizCard from '../features/quizzes/components/QuizCard';
 import InterviewQuestionCard from '../features/interviewQuestions/components/InterviewQuestionCard';
+import ProgressBar from '../features/progress/components/ProgressBar';
+import CompleteButton from '../features/progress/components/CompleteButton';
 import { useAuth } from '../hooks/useAuth';
 import {
   ArrowLeft,
@@ -59,6 +65,9 @@ export default function TopicDetails() {
   const { questions: interviewQuestions, loading: interviewQuestionsLoading } = useSelector(
     (state) => state.interviewQuestions
   );
+  const { currentTopicProgress, actionLoading: progressLoading } = useSelector(
+    (state) => state.progress
+  );
   const { isAdmin } = useAuth();
 
   const [completedKeyPoints, setCompletedKeyPoints] = useState({});
@@ -74,17 +83,43 @@ export default function TopicDetails() {
       dispatch(fetchPlaygroundsByTopic(slug));
       dispatch(fetchQuizzesByTopic(slug));
       dispatch(fetchInterviewQuestionsByTopic({ topicId: slug }));
+      dispatch(fetchTopicProgress(slug));
     }
     return () => {
       dispatch(clearCurrentTopic());
     };
   }, [dispatch, slug]);
 
+  const isKeyPointChecked = (idx) => {
+    if (currentTopicProgress?.completedKeyPoints) {
+      return currentTopicProgress.completedKeyPoints.includes(idx);
+    }
+    return Boolean(completedKeyPoints[idx]);
+  };
+
   const toggleKeyPoint = (idx) => {
+    const isChecked = isKeyPointChecked(idx);
     setCompletedKeyPoints((prev) => ({
       ...prev,
-      [idx]: !prev[idx],
+      [idx]: !isChecked,
     }));
+    dispatch(
+      updateProgress({
+        topicId: slug,
+        keyPointIndex: idx,
+        completed: !isChecked,
+      })
+    );
+  };
+
+  const handleToggleTopicComplete = () => {
+    const isTopicCompleted = Boolean(currentTopicProgress?.isCompleted);
+    dispatch(
+      updateProgress({
+        topicId: slug,
+        isCompleted: !isTopicCompleted,
+      })
+    );
   };
 
   const handleCopyCode = (code, idx) => {
@@ -141,9 +176,10 @@ export default function TopicDetails() {
 
   const keyPoints = topic.keyPoints || [];
   const codeExamples = topic.codeExamples || [];
-  const completedCount = Object.values(completedKeyPoints).filter(Boolean).length;
+  const completedCount = currentTopicProgress?.completedKeyPoints?.length ?? Object.values(completedKeyPoints).filter(Boolean).length;
   const totalPoints = keyPoints.length;
-  const progressPercent = totalPoints > 0 ? Math.round((completedCount / totalPoints) * 100) : 0;
+  const isTopicCompleted = Boolean(currentTopicProgress?.isCompleted);
+  const progressPercent = currentTopicProgress?.completionPercentage ?? (isTopicCompleted ? 100 : (totalPoints > 0 ? Math.round((completedCount / totalPoints) * 100) : 0));
 
   const parentSection = topic.section;
   const grandParentModule = parentSection?.module;
@@ -191,15 +227,26 @@ export default function TopicDetails() {
           )}
         </nav>
 
-        {isAdmin && (
-          <Link
-            to={`/admin/topics/${topic.id}/edit`}
-            className="inline-flex items-center px-3 py-1.5 rounded-lg border border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100 text-xs font-semibold transition"
-          >
-            <Edit className="w-3.5 h-3.5 mr-1.5" />
-            Edit Topic (Admin)
-          </Link>
-        )}
+        <div className="flex items-center gap-2">
+          <CompleteButton
+            isCompleted={Boolean(currentTopicProgress?.isCompleted)}
+            onToggle={handleToggleTopicComplete}
+            loading={progressLoading}
+            labelActive="Topic Completed"
+            labelInactive="Mark Topic as Completed"
+            size="sm"
+          />
+
+          {isAdmin && (
+            <Link
+              to={`/admin/topics/${topic.id}/edit`}
+              className="inline-flex items-center px-3 py-1.5 rounded-lg border border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100 text-xs font-semibold transition"
+            >
+              <Edit className="w-3.5 h-3.5 mr-1.5" />
+              Edit Topic (Admin)
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* Topic Header Banner */}
@@ -388,13 +435,13 @@ export default function TopicDetails() {
                   </h2>
                 </div>
                 <span className="text-xs font-semibold text-slate-500">
-                  {completedCount} / {totalPoints} understood
+                  {currentTopicProgress?.completedKeyPoints?.length ?? completedCount} / {totalPoints} understood
                 </span>
               </div>
 
               <div className="space-y-2.5">
                 {keyPoints.map((point, idx) => {
-                  const isChecked = !!completedKeyPoints[idx];
+                  const isChecked = isKeyPointChecked(idx);
                   return (
                     <button
                       key={idx}
@@ -473,9 +520,19 @@ export default function TopicDetails() {
               </div>
             ) : notes && notes.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {notes.map((note) => (
-                  <NoteCard key={note.id} note={note} showTopic={false} />
-                ))}
+                {notes.map((note) => {
+                  const isNoteCompleted = currentTopicProgress?.completedNotes?.some(
+                    (id) => String(id) === String(note.id || note._id)
+                  );
+                  return (
+                    <NoteCard
+                      key={note.id}
+                      note={note}
+                      showTopic={false}
+                      isCompleted={isNoteCompleted}
+                    />
+                  );
+                })}
               </div>
             ) : (
               <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm text-center space-y-3">
@@ -727,30 +784,35 @@ export default function TopicDetails() {
             </div>
 
             {/* Progress Bar */}
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs font-semibold">
-                <span className="text-slate-600">Key Points Mastered</span>
-                <span className="text-indigo-600">{progressPercent}%</span>
-              </div>
-              <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
-                <div
-                  className="h-full bg-emerald-500 rounded-full transition-all duration-300"
-                  style={{ width: `${progressPercent}%` }}
-                />
-              </div>
+            <div className="space-y-4">
+              <ProgressBar
+                percentage={progressPercent}
+                label="Topic Mastery"
+                variant="auto"
+                size="md"
+              />
+
+              <CompleteButton
+                isCompleted={isTopicCompleted}
+                onToggle={handleToggleTopicComplete}
+                loading={progressLoading}
+                labelActive="Topic Completed"
+                labelInactive="Mark Topic as Completed"
+                className="w-full justify-center"
+              />
             </div>
 
             {/* Status card */}
             <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 text-xs space-y-1">
               <span className="font-semibold text-slate-800">
                 {progressPercent === 100
-                  ? '🎉 Topic Concept Understood!'
+                  ? '🎉 Topic Fully Mastered!'
                   : `${totalPoints - completedCount} key points remaining`}
               </span>
               <p className="text-[11px] text-slate-500">
                 {progressPercent === 100
-                  ? 'You have checked off all key points for this topic.'
-                  : 'Check off each key point as you test the code snippets.'}
+                  ? 'All exercises, key concepts, or topics have been completed.'
+                  : 'Check off each key point, complete notes, and pass quizzes to finish.'}
               </p>
             </div>
 

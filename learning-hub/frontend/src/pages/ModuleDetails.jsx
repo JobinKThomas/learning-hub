@@ -3,6 +3,9 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchModuleBySlug, clearCurrentModule } from '../features/modules/moduleSlice';
 import { fetchSectionsByModule } from '../features/sections/sectionSlice';
+import { fetchModuleProgress } from '../features/progress/progressSlice';
+import ProgressBar from '../features/progress/components/ProgressBar';
+import TopicProgressBadge from '../features/progress/components/TopicProgressBadge';
 import { useAuth } from '../hooks/useAuth';
 import {
   ArrowLeft,
@@ -32,6 +35,9 @@ export default function ModuleDetails() {
   const { sections, loading: sectionsLoading } = useSelector(
     (state) => state.sections
   );
+  const { currentModuleProgress } = useSelector(
+    (state) => state.progress
+  );
   const { isAdmin } = useAuth();
 
   const [completedTopics, setCompletedTopics] = useState({});
@@ -41,6 +47,7 @@ export default function ModuleDetails() {
     if (slug) {
       dispatch(fetchModuleBySlug(slug));
       dispatch(fetchSectionsByModule(slug));
+      dispatch(fetchModuleProgress(slug));
     }
     return () => {
       dispatch(clearCurrentModule());
@@ -102,9 +109,9 @@ export default function ModuleDetails() {
 
   const topics = module.topics || [];
   const objectives = module.learningObjectives || [];
-  const totalTopics = topics.length;
-  const completedCount = Object.values(completedTopics).filter(Boolean).length;
-  const progressPercent = totalTopics > 0 ? Math.round((completedCount / totalTopics) * 100) : 0;
+  const totalTopics = currentModuleProgress?.totalTopics ?? topics.length;
+  const completedCount = currentModuleProgress?.completedTopics ?? Object.values(completedTopics).filter(Boolean).length;
+  const progressPercent = currentModuleProgress?.percentage ?? (totalTopics > 0 ? Math.round((completedCount / totalTopics) * 100) : 0);
   const parentPath = module.learningPath;
 
   return (
@@ -258,22 +265,33 @@ export default function ModuleDetails() {
               </div>
             ) : (
               <div className="space-y-4">
-                {sections.map((section, sIdx) => (
-                  <div
-                    key={section.id}
-                    className="p-5 rounded-2xl border border-slate-200/80 bg-slate-50/40 hover:bg-white hover:border-indigo-200 hover:shadow-sm transition-all group"
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-                      <div className="space-y-1.5 flex-grow">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-700">
-                            Section {section.order || sIdx + 1}
-                          </span>
-                          <span className="text-[11px] font-medium text-slate-500 flex items-center gap-1">
-                            <Clock className="w-3 h-3 text-amber-500" />
-                            {section.duration}
-                          </span>
-                        </div>
+                {sections.map((section, sIdx) => {
+                  const sectionProg = currentModuleProgress?.sections?.find(
+                    (s) => String(s.id) === String(section.id || section._id) || s.slug === section.slug
+                  );
+                  return (
+                    <div
+                      key={section.id}
+                      className="p-5 rounded-2xl border border-slate-200/80 bg-slate-50/40 hover:bg-white hover:border-indigo-200 hover:shadow-sm transition-all group"
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                        <div className="space-y-1.5 flex-grow">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-700">
+                              Section {section.order || sIdx + 1}
+                            </span>
+                            <span className="text-[11px] font-medium text-slate-500 flex items-center gap-1">
+                              <Clock className="w-3 h-3 text-amber-500" />
+                              {section.duration}
+                            </span>
+                            {sectionProg && (
+                              <TopicProgressBadge
+                                isCompleted={sectionProg.percentage === 100}
+                                percentage={sectionProg.percentage}
+                                size="xs"
+                              />
+                            )}
+                          </div>
                         <h3 className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition">
                           <Link to={`/sections/${section.slug}`}>
                             {section.title}
@@ -312,7 +330,8 @@ export default function ModuleDetails() {
                       </div>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -391,18 +410,12 @@ export default function ModuleDetails() {
             </div>
 
             {/* Progress Bar */}
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs font-semibold">
-                <span className="text-slate-600">Completion Rate</span>
-                <span className="text-indigo-600">{progressPercent}%</span>
-              </div>
-              <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
-                <div
-                  className="h-full bg-indigo-600 rounded-full transition-all duration-300"
-                  style={{ width: `${progressPercent}%` }}
-                />
-              </div>
-            </div>
+            <ProgressBar
+              percentage={progressPercent}
+              label="Completion Rate"
+              variant="indigo"
+              size="md"
+            />
 
             {/* Completion status feedback */}
             <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 text-xs space-y-1">

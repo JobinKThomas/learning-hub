@@ -74,12 +74,13 @@ const LEVEL_COLORS = {
   Advanced: 'bg-purple-50 text-purple-700 border-purple-200',
 };
 
-export default function LearningPathCard({ path }) {
+export default function LearningPathCard({ path, progress }) {
   if (!path) return null;
 
   const IconComponent = ICON_MAP[path.icon] || Code;
   const colorTheme = COLOR_MAP[path.color] || COLOR_MAP.indigo;
   const levelStyle = LEVEL_COLORS[path.level] || LEVEL_COLORS.Beginner;
+  const progressVal = progress ?? path.progress;
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200/80 hover:border-indigo-300 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between overflow-hidden group">
@@ -145,6 +146,20 @@ export default function LearningPathCard({ path }) {
 
       {/* Card Footer / Action Button */}
       <div className="p-6 pt-0">
+        {typeof progressVal === 'number' && (
+          <div className="mb-3 space-y-1">
+            <div className="flex justify-between text-[11px] font-semibold text-slate-500">
+              <span>Path Progress</span>
+              <span className="text-indigo-600 font-bold">{progressVal}%</span>
+            </div>
+            <div className="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden">
+              <div
+                className="h-full bg-indigo-600 rounded-full transition-all duration-300"
+                style={{ width: `${progressVal}%` }}
+              />
+            </div>
+          </div>
+        )}
         <Link
           to={`/learning-paths/${path.slug}`}
           className="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-indigo-600 text-white font-semibold text-sm transition-all duration-200 shadow-sm group-hover:shadow group-hover:shadow-indigo-200"
