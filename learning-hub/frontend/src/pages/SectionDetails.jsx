@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSectionBySlug, clearCurrentSection } from '../features/sections/sectionSlice';
+import { fetchTopicsBySection } from '../features/topics/topicSlice';
 import { useAuth } from '../hooks/useAuth';
 import {
   ArrowLeft,
@@ -20,6 +21,7 @@ import {
   ArrowRight,
   Code2,
   FileText,
+  PlusCircle,
 } from 'lucide-react';
 
 export default function SectionDetails() {
@@ -29,6 +31,9 @@ export default function SectionDetails() {
   const { currentSection: section, detailsLoading: loading, error } = useSelector(
     (state) => state.sections
   );
+  const { topics, loading: topicsLoading } = useSelector(
+    (state) => state.topics
+  );
   const { isAdmin } = useAuth();
 
   const [completedItems, setCompletedItems] = useState({});
@@ -37,6 +42,7 @@ export default function SectionDetails() {
   useEffect(() => {
     if (slug) {
       dispatch(fetchSectionBySlug(slug));
+      dispatch(fetchTopicsBySection(slug));
     }
     return () => {
       dispatch(clearCurrentSection());
@@ -196,6 +202,117 @@ export default function SectionDetails() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         {/* Left Column: Topics Breakdown & Detailed Content */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Topics Roadmap (Phase 6 - Click topic to view TopicDetails) */}
+          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-4 gap-2">
+              <div>
+                <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <Code2 className="w-4 h-4 text-indigo-600" />
+                  Topics & In-Depth Lessons
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Click on any topic (e.g. <strong>let</strong>) to explore syntax, execution behavior, and code examples.
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold text-slate-500">
+                  {topics.length > 0 ? `${topics.length} Topics` : `${items.length} Concepts`}
+                </span>
+                {isAdmin && (
+                  <Link
+                    to={`/admin/topics/create?section=${section.slug}`}
+                    className="inline-flex items-center px-2.5 py-1 rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 text-[11px] font-semibold transition"
+                  >
+                    <PlusCircle className="w-3.5 h-3.5 mr-1" />
+                    + Add Topic
+                  </Link>
+                )}
+              </div>
+            </div>
+
+            {topicsLoading ? (
+              <div className="py-8 text-center text-slate-400 text-xs">
+                Loading topics...
+              </div>
+            ) : topics.length > 0 ? (
+              <div className="space-y-3">
+                {topics.map((top, tIdx) => (
+                  <div
+                    key={top.id}
+                    className="p-4 rounded-xl border border-slate-200/80 bg-slate-50/50 hover:bg-white hover:border-indigo-200 hover:shadow-sm transition-all group"
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="space-y-1 flex-grow">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-100 text-indigo-700 font-mono">
+                            {top.title}
+                          </span>
+                          <span className="text-[11px] font-medium text-slate-500 flex items-center gap-1">
+                            <Clock className="w-3 h-3 text-amber-500" />
+                            {top.duration}
+                          </span>
+                          {top.codeExamplesCount > 0 && (
+                            <span className="text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
+                              {top.codeExamplesCount} code {top.codeExamplesCount === 1 ? 'example' : 'examples'}
+                            </span>
+                          )}
+                        </div>
+                        <h3 className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition">
+                          <Link to={`/topics/${top.slug}`}>
+                            {top.title} — {top.summary || top.description}
+                          </Link>
+                        </h3>
+                        <p className="text-xs text-slate-600 line-clamp-1">
+                          {top.description}
+                        </p>
+                      </div>
+
+                      <div className="shrink-0 self-start sm:self-center">
+                        <Link
+                          to={`/topics/${top.slug}`}
+                          className="inline-flex items-center px-3.5 py-1.5 rounded-xl bg-indigo-50 text-indigo-700 hover:bg-indigo-600 hover:text-white font-semibold text-xs transition gap-1"
+                        >
+                          <span>Explore {top.title}</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : items.length > 0 ? (
+              <div className="space-y-3">
+                {items.map((item, iIdx) => (
+                  <div
+                    key={iIdx}
+                    className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-indigo-200 transition-all flex items-center justify-between group"
+                  >
+                    <div>
+                      <span className="font-mono text-sm font-bold text-slate-900">
+                        {item}
+                      </span>
+                      <p className="text-xs text-slate-500">
+                        Topic lesson in {section.title}
+                      </p>
+                    </div>
+                    <Link
+                      to={`/topics/${item.toLowerCase().replace(/[\s\W-]+/g, '-')}`}
+                      className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-600 hover:text-white text-xs font-semibold transition gap-1"
+                    >
+                      <span>View {item} Details</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-6 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center space-y-2">
+                <Code2 className="w-6 h-6 text-slate-400 mx-auto" />
+                <p className="text-xs text-slate-600">No topics added to this section yet.</p>
+              </div>
+            )}
+          </div>
+
           {/* Sub-lessons Interactive Checklist */}
           {items.length > 0 && (
             <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-5">
@@ -203,10 +320,10 @@ export default function SectionDetails() {
                 <div>
                   <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
                     <GraduationCap className="w-4 h-4 text-indigo-600" />
-                    Concepts & Sub-lessons
+                    Concepts Mastery Checklist
                   </h2>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Click each item to check it off as you master each concept.
+                    Click each concept to check it off as you master each topic.
                   </p>
                 </div>
                 <span className="text-xs font-semibold text-slate-500">

@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
   Shield,
   Layers,
+  Code2,
 } from 'lucide-react';
 
 export default function Navbar() {
@@ -114,6 +115,18 @@ export default function Navbar() {
                     >
                       <Layers className="w-4 h-4 mr-1.5 text-purple-600" />
                       Sections
+                    </Link>
+
+                    <Link
+                      to="/admin/topics"
+                      className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                        location.pathname.startsWith('/admin/topics')
+                          ? 'bg-purple-100 text-purple-800'
+                          : 'text-purple-700 hover:bg-purple-50'
+                      }`}
+                    >
+                      <Code2 className="w-4 h-4 mr-1.5 text-purple-600" />
+                      Topics
                     </Link>
                   </>
                 )}
