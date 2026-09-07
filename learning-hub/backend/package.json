@@ -10,11 +10,19 @@
     "test": "node --test tests/*.test.js",
     "db:start": "bash scripts/start-mongo.sh"
   },
-  "keywords": ["express", "mongodb", "mongoose", "swagger", "jwt", "learning-hub"],
+  "keywords": [
+    "express",
+    "mongodb",
+    "mongoose",
+    "swagger",
+    "jwt",
+    "learning-hub"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
