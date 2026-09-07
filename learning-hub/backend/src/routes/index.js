@@ -8,6 +8,7 @@ import sectionRoutes from './sectionRoutes.js';
 import topicRoutes from './topicRoutes.js';
 import noteRoutes from './noteRoutes.js';
 import resourceRoutes from './resourceRoutes.js';
+import playgroundRoutes from './playgroundRoutes.js';
 
 const router = Router();
 
@@ -20,5 +21,6 @@ router.use('/sections', sectionRoutes);
 router.use('/topics', topicRoutes);
 router.use('/notes', noteRoutes);
 router.use('/resources', resourceRoutes);
+router.use('/playgrounds', playgroundRoutes);
 
 export default router;
