@@ -44,6 +44,10 @@ import QuizHistory from './pages/QuizHistory';
 import AdminQuizzes from './pages/admin/AdminQuizzes';
 import CreateQuiz from './pages/admin/CreateQuiz';
 import EditQuiz from './pages/admin/EditQuiz';
+import InterviewQuestions from './pages/InterviewQuestions';
+import AdminInterviewQuestions from './pages/admin/AdminInterviewQuestions';
+import CreateInterviewQuestion from './pages/admin/CreateInterviewQuestion';
+import EditInterviewQuestion from './pages/admin/EditInterviewQuestion';
 
 export default function App() {
   const dispatch = useDispatch();
@@ -149,6 +153,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <QuizHistory />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/interview-questions"
+            element={
+              <ProtectedRoute>
+                <InterviewQuestions />
               </ProtectedRoute>
             }
           />
@@ -352,11 +364,35 @@ export default function App() {
               </AdminRoute>
             }
           />
+          <Route
+            path="/admin/interview-questions"
+            element={
+              <AdminRoute>
+                <AdminInterviewQuestions />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/interview-questions/create"
+            element={
+              <AdminRoute>
+                <CreateInterviewQuestion />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/interview-questions/:id/edit"
+            element={
+              <AdminRoute>
+                <EditInterviewQuestion />
+              </AdminRoute>
+            }
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
       <footer className="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
-        <p>© 2026 Learning Hub — Phase 11 Quiz Attempts</p>
+        <p>© 2026 Learning Hub — Phase 12 Interview Questions</p>
       </footer>
     </div>
   );

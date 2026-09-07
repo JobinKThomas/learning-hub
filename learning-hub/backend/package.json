@@ -16,7 +16,8 @@
     "seed:notes": "node scripts/seedNotes.js",
     "seed:resources": "node scripts/seedResources.js",
     "seed:playgrounds": "node scripts/seedPlaygrounds.js",
-    "seed:quizzes": "node scripts/seedQuizzes.js"
+    "seed:quizzes": "node scripts/seedQuizzes.js",
+    "seed:interview-questions": "node scripts/seedInterviewQuestions.js"
   },
   "keywords": [
     "express",

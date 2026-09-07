@@ -21,6 +21,7 @@ import {
   Link2,
   Terminal,
   HelpCircle,
+  Flame,
 } from 'lucide-react';
 
 export default function AdminDashboard() {
@@ -143,6 +144,13 @@ export default function AdminDashboard() {
           >
             <HelpCircle className="w-3.5 h-3.5 mr-1.5" />
             Quizzes
+          </Link>
+          <Link
+            to="/admin/interview-questions"
+            className="inline-flex items-center px-3.5 py-2 rounded-xl bg-rose-700 hover:bg-rose-600 text-white text-xs font-semibold shadow-md shadow-rose-700/30 transition"
+          >
+            <Flame className="w-3.5 h-3.5 mr-1.5" />
+            Interview
           </Link>
           <button
             onClick={fetchAdminData}
