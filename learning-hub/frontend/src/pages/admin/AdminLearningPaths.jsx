@@ -6,6 +6,7 @@ import {
   deleteLearningPath,
   clearActionState,
 } from '../../features/learningPaths/learningPathSlice';
+import Pagination from '../../components/Pagination';
 import {
   Shield,
   PlusCircle,
@@ -20,26 +21,87 @@ import {
   RefreshCw,
   ArrowLeft,
   Check,
+  Filter,
+  ArrowUpDown,
+  X,
 } from 'lucide-react';
+
+const CATEGORIES = ['All', 'Frontend', 'Backend', 'Full Stack', 'Mobile', 'DevOps'];
+const DIFFICULTIES = ['All', 'Beginner', 'Intermediate', 'Advanced'];
+const STATUSES = ['All', 'Published', 'Draft'];
+const SORT_OPTIONS = [
+  { label: 'Newest First', value: 'createdAt', order: 'desc' },
+  { label: 'Oldest First', value: 'createdAt', order: 'asc' },
+  { label: 'Title (A–Z)', value: 'title', order: 'asc' },
+  { label: 'Title (Z–A)', value: 'title', order: 'desc' },
+];
 
 export default function AdminLearningPaths() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { paths, loading, actionLoading, error, actionSuccess } = useSelector(
+  const { paths, count, loading, actionLoading, error, actionSuccess, pagination } = useSelector(
     (state) => state.learningPaths
   );
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedDifficulty, setSelectedDifficulty] = useState('All');
+  const [selectedStatus, setSelectedStatus] = useState('All');
+  const [selectedSort, setSelectedSort] = useState('createdAt-desc');
+  const [currentPage, setCurrentPage] = useState(1);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [statusMessage, setStatusMessage] = useState(null);
 
+  const loadData = (page = currentPage) => {
+    const [sort, order] = selectedSort.split('-');
+    dispatch(
+      fetchLearningPaths({
+        search: searchTerm.trim() || undefined,
+        category: selectedCategory !== 'All' ? selectedCategory : undefined,
+        difficulty: selectedDifficulty !== 'All' ? selectedDifficulty : undefined,
+        status: selectedStatus !== 'All' ? selectedStatus.toLowerCase() : undefined,
+        sort: sort || 'createdAt',
+        order: order || 'desc',
+        page,
+        limit: 8,
+      })
+    );
+  };
+
   useEffect(() => {
-    // Admin fetches all paths including unpublished
-    dispatch(fetchLearningPaths());
+    loadData(currentPage);
     return () => {
       dispatch(clearActionState());
     };
-  }, [dispatch]);
+  }, [dispatch, selectedCategory, selectedDifficulty, selectedStatus, selectedSort, currentPage]);
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    setCurrentPage(1);
+    loadData(1);
+  };
+
+  const handleClearSearch = () => {
+    setSearchTerm('');
+    setCurrentPage(1);
+    const [sort, order] = selectedSort.split('-');
+    dispatch(
+      fetchLearningPaths({
+        search: undefined,
+        category: selectedCategory !== 'All' ? selectedCategory : undefined,
+        difficulty: selectedDifficulty !== 'All' ? selectedDifficulty : undefined,
+        status: selectedStatus !== 'All' ? selectedStatus.toLowerCase() : undefined,
+        sort,
+        order,
+        page: 1,
+        limit: 8,
+      })
+    );
+  };
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
 
   const handleDelete = async (id) => {
     try {
@@ -47,19 +109,11 @@ export default function AdminLearningPaths() {
       setStatusMessage('Learning path deleted successfully.');
       setDeleteConfirmId(null);
       setTimeout(() => setStatusMessage(null), 3000);
+      loadData(currentPage);
     } catch (err) {
       alert(`Error deleting path: ${err}`);
     }
   };
-
-  const filteredPaths = paths.filter((p) => {
-    const term = searchTerm.toLowerCase();
-    return (
-      p.title.toLowerCase().includes(term) ||
-      p.slug.toLowerCase().includes(term) ||
-      p.category.toLowerCase().includes(term)
-    );
-  });
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
@@ -98,10 +152,10 @@ export default function AdminLearningPaths() {
 
         <Link
           to="/admin/learning-paths/create"
-          className="inline-flex items-center px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm shadow-md shadow-purple-600/30 transition"
+          className="inline-flex items-center px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm shadow-md shadow-purple-600/30 transition gap-2"
         >
-          <PlusCircle className="w-4 h-4 mr-2" />
-          Create Learning Path
+          <PlusCircle className="w-4 h-4" />
+          <span>Create Learning Path</span>
         </Link>
       </div>
 
@@ -113,33 +167,114 @@ export default function AdminLearningPaths() {
         </div>
       )}
 
-      {/* Action Table & Search */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-        {/* Search & Actions Bar */}
-        <div className="p-5 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="relative w-full sm:w-80">
+      {/* Filter & Search Bar */}
+      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-center">
+          {/* Search Form */}
+          <form onSubmit={handleSearchSubmit} className="lg:col-span-4 relative flex items-center">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="text"
-              placeholder="Filter by title, slug, category..."
+              placeholder="Search: JavaScript, Python..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
+              className="w-full pl-9 pr-16 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
             />
+            {searchTerm && (
+              <button
+                type="button"
+                onClick={handleClearSearch}
+                className="absolute right-12 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+            <button
+              type="submit"
+              className="absolute right-1 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold rounded-lg transition"
+            >
+              Go
+            </button>
+          </form>
+
+          {/* Status Filter */}
+          <div className="lg:col-span-2 flex items-center gap-1.5">
+            <span className="text-xs font-bold text-slate-500">Status:</span>
+            <select
+              value={selectedStatus}
+              onChange={(e) => {
+                setSelectedStatus(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="w-full px-2.5 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
+            >
+              {STATUSES.map((st) => (
+                <option key={st} value={st}>
+                  {st === 'All' ? 'All Statuses' : st}
+                </option>
+              ))}
+            </select>
           </div>
 
-          <div className="flex items-center gap-3 text-xs text-slate-500">
-            <span>
-              Total paths: <strong className="text-slate-900 font-bold">{paths.length}</strong>
-            </span>
-            <button
-              onClick={() => dispatch(fetchLearningPaths())}
-              className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 transition"
-              title="Refresh"
+          {/* Difficulty Filter */}
+          <div className="lg:col-span-3 flex items-center gap-1.5">
+            <span className="text-xs font-bold text-slate-500">Difficulty:</span>
+            <select
+              value={selectedDifficulty}
+              onChange={(e) => {
+                setSelectedDifficulty(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="w-full px-2.5 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
             >
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-            </button>
+              {DIFFICULTIES.map((d) => (
+                <option key={d} value={d}>
+                  {d === 'All' ? 'All Difficulties' : d}
+                </option>
+              ))}
+            </select>
           </div>
+
+          {/* Sort Selector */}
+          <div className="lg:col-span-3 flex items-center gap-1.5">
+            <span className="text-xs font-bold text-slate-500 flex items-center gap-1">
+              <ArrowUpDown className="w-3.5 h-3.5" />
+              Sort:
+            </span>
+            <select
+              value={selectedSort}
+              onChange={(e) => {
+                setSelectedSort(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="w-full px-2.5 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
+            >
+              {SORT_OPTIONS.map((opt) => (
+                <option key={`${opt.value}-${opt.order}`} value={`${opt.value}-${opt.order}`}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Action Table & Search Results */}
+      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+        {/* Table Header Controls */}
+        <div className="p-5 border-b border-slate-100 flex items-center justify-between text-xs text-slate-500">
+          <div>
+            Showing <strong className="text-slate-900 font-bold">{paths.length}</strong> of{' '}
+            <strong className="text-slate-900 font-bold">{pagination?.total ?? count}</strong> paths
+          </div>
+          <button
+            onClick={() => loadData(currentPage)}
+            className="inline-flex items-center gap-1 text-purple-600 hover:text-purple-800 font-bold"
+            title="Refresh Table"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            <span>Refresh</span>
+          </button>
         </div>
 
         {/* Paths Table */}
@@ -164,14 +299,14 @@ export default function AdminLearningPaths() {
                     <span>Loading paths...</span>
                   </td>
                 </tr>
-              ) : filteredPaths.length === 0 ? (
+              ) : paths.length === 0 ? (
                 <tr>
                   <td colSpan="7" className="py-12 text-center text-slate-500">
-                    No learning paths found matching "{searchTerm}".
+                    No learning paths found matching filter criteria.
                   </td>
                 </tr>
               ) : (
-                filteredPaths.map((p) => (
+                paths.map((p) => (
                   <tr key={p.id} className="hover:bg-slate-50/80 transition-colors">
                     <td className="py-4 px-5">
                       <div className="font-bold text-slate-900">{p.title}</div>
@@ -237,13 +372,28 @@ export default function AdminLearningPaths() {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        <div className="p-4 border-t border-slate-100">
+          <Pagination
+            currentPage={pagination?.page || currentPage}
+            totalPages={pagination?.totalPages || 1}
+            onPageChange={handlePageChange}
+            hasNextPage={pagination?.hasNextPage}
+            hasPrevPage={pagination?.hasPrevPage}
+            totalItems={pagination?.total || count}
+            itemsPerPage={pagination?.limit || 8}
+            itemName="learning paths"
+            colorScheme="purple"
+          />
+        </div>
       </div>
 
       {/* Delete Confirmation Modal */}
       {deleteConfirmId && (
         <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 border border-slate-200">
-            <div className="w-12 h-12 rounded-xl bg-red-100 text-red-600 flex items-center justify-center">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 border border-slate-200">
+            <div className="w-12 h-12 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center">
               <AlertTriangle className="w-6 h-6" />
             </div>
             <h3 className="text-lg font-bold text-slate-900">Delete Learning Path?</h3>

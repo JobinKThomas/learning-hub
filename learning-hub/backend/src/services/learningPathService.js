@@ -10,30 +10,95 @@ export class LearningPathService {
   }
 
   /**
-   * Retrieve all learning paths with optional filtering
+   * Retrieve learning paths with search, filter, sort, and pagination
    */
-  async getAllPaths({ category, level, search, includeUnpublished = false } = {}) {
+  async getAllPaths({
+    category,
+    level,
+    difficulty,
+    status,
+    published,
+    search,
+    sort = 'createdAt',
+    order = 'desc',
+    page = 1,
+    limit = 10,
+    includeUnpublished = false,
+  } = {}) {
     const filter = {};
 
+    // 1. Status / Published Filter
     if (!includeUnpublished) {
       filter.published = { $ne: false };
+    } else {
+      if (status) {
+        const s = status.toLowerCase().trim();
+        if (s === 'published') {
+          filter.published = true;
+        } else if (s === 'draft' || s === 'unpublished') {
+          filter.published = false;
+        }
+      } else if (published !== undefined) {
+        filter.published = String(published) === 'true';
+      }
     }
 
+    // 2. Category Filter
     if (category && category !== 'All') {
-      filter.category = category;
+      filter.category = new RegExp(`^${category.trim()}$`, 'i');
     }
 
-    if (level && level !== 'All') {
-      filter.level = level;
+    // 3. Difficulty / Level Filter
+    const targetLevel = level || difficulty;
+    if (targetLevel && targetLevel !== 'All') {
+      filter.level = new RegExp(`^${targetLevel.trim()}$`, 'i');
     }
 
-    if (search) {
+    // 4. Search Filter
+    if (search && search.trim()) {
       const searchRegex = new RegExp(search.trim(), 'i');
-      filter.$or = [{ title: searchRegex }, { description: searchRegex }];
+      filter.$or = [
+        { title: searchRegex },
+        { description: searchRegex },
+        { category: searchRegex },
+        { tags: searchRegex },
+      ];
     }
 
-    const paths = await this.repository.findAll(filter);
-    return this.presenter.formatMany(paths);
+    // 5. Sorting
+    let sortField = sort;
+    let sortDir = order === 'asc' || order === '1' || order === 1 ? 1 : -1;
+    if (typeof sort === 'string') {
+      if (sort.startsWith('-')) {
+        sortField = sort.substring(1);
+        sortDir = -1;
+      } else if (sort.startsWith('+')) {
+        sortField = sort.substring(1);
+        sortDir = 1;
+      }
+    }
+
+    const allowedSortFields = ['createdAt', 'title', 'level', 'order', 'category', 'updatedAt'];
+    if (!allowedSortFields.includes(sortField)) {
+      sortField = 'createdAt';
+    }
+    const sortObj = { [sortField]: sortDir };
+
+    // 6. Pagination
+    const pageNum = Math.max(1, parseInt(page, 10) || 1);
+    const limitNum = Math.max(1, parseInt(limit, 10) || 10);
+
+    const { paths, pagination } = await this.repository.findPaginated(
+      filter,
+      sortObj,
+      pageNum,
+      limitNum
+    );
+
+    return {
+      paths: this.presenter.formatMany(paths),
+      pagination,
+    };
   }
 
   /**
