@@ -5,9 +5,11 @@ import { fetchTopicBySlug, clearCurrentTopic } from '../features/topics/topicSli
 import { fetchNotesByTopic } from '../features/notes/noteSlice';
 import { fetchResourcesByTopic } from '../features/resources/resourceSlice';
 import { fetchPlaygroundsByTopic } from '../features/playgrounds/playgroundSlice';
+import { fetchQuizzesByTopic } from '../features/quizzes/quizSlice';
 import NoteCard from '../features/notes/components/NoteCard';
 import ResourceCard from '../features/resources/components/ResourceCard';
 import PlaygroundCard from '../features/playgrounds/components/PlaygroundCard';
+import QuizCard from '../features/quizzes/components/QuizCard';
 import { useAuth } from '../hooks/useAuth';
 import {
   ArrowLeft,
@@ -32,6 +34,8 @@ import {
   ExternalLink,
   Globe,
   Play,
+  HelpCircle,
+  Award,
 } from 'lucide-react';
 
 export default function TopicDetails() {
@@ -46,6 +50,9 @@ export default function TopicDetails() {
   const { topicPlaygrounds: playgrounds, loading: playgroundsLoading } = useSelector(
     (state) => state.playgrounds
   );
+  const { topicQuizzes: quizzes, loading: quizzesLoading } = useSelector(
+    (state) => state.quizzes
+  );
   const { isAdmin } = useAuth();
 
   const [completedKeyPoints, setCompletedKeyPoints] = useState({});
@@ -59,6 +66,7 @@ export default function TopicDetails() {
       dispatch(fetchNotesByTopic(slug));
       dispatch(fetchResourcesByTopic({ topicId: slug }));
       dispatch(fetchPlaygroundsByTopic(slug));
+      dispatch(fetchQuizzesByTopic(slug));
     }
     return () => {
       dispatch(clearCurrentTopic());
@@ -595,6 +603,57 @@ export default function TopicDetails() {
               </div>
             )}
           </div>
+
+          {/* Quizzes Section: Topic -> Quiz -> Question 1 -> Question 2 -> Question 3 -> Submit -> Result */}
+          <div className="space-y-4 pt-4 border-t border-slate-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <HelpCircle className="w-4 h-4 text-indigo-600" />
+                <h2 className="text-base font-bold text-slate-900">
+                  Knowledge Check Quizzes ({quizzes?.length || 0})
+                </h2>
+              </div>
+
+              {isAdmin && (
+                <Link
+                  to={`/admin/quizzes/create?topic=${topic.slug}`}
+                  className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-xs font-semibold transition gap-1 border border-indigo-200"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add Quiz</span>
+                </Link>
+              )}
+            </div>
+
+            {quizzesLoading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="h-36 bg-slate-100 rounded-2xl animate-pulse" />
+                <div className="h-36 bg-slate-100 rounded-2xl animate-pulse" />
+              </div>
+            ) : quizzes && quizzes.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {quizzes.map((quiz) => (
+                  <QuizCard key={quiz.id} quiz={quiz} showTopic={false} />
+                ))}
+              </div>
+            ) : (
+              <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm text-center space-y-3">
+                <HelpCircle className="w-8 h-8 text-slate-300 mx-auto" />
+                <p className="text-xs text-slate-500">
+                  No evaluation quizzes published for this topic yet.
+                </p>
+                {isAdmin && (
+                  <Link
+                    to={`/admin/quizzes/create?topic=${topic.slug}`}
+                    className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition"
+                  >
+                    <Plus className="w-3.5 h-3.5 mr-1" />
+                    Create First Quiz
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Right Column: Mastery & Quick Navigation */}
@@ -645,6 +704,17 @@ export default function TopicDetails() {
               >
                 <Play className="w-3.5 h-3.5 fill-current text-emerald-400" />
                 <span>Launch Interactive Playground</span>
+              </Link>
+            )}
+
+            {/* Direct Quiz CTA */}
+            {quizzes && quizzes.length > 0 && (
+              <Link
+                to={`/quizzes/${quizzes[0].slug || quizzes[0].id}`}
+                className="w-full inline-flex items-center justify-center px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-xs font-bold shadow-lg shadow-indigo-200 transition gap-2"
+              >
+                <Award className="w-4 h-4 text-amber-300" />
+                <span>Take Knowledge Quiz ({quizzes[0].questions?.length || 0} Questions)</span>
               </Link>
             )}
 

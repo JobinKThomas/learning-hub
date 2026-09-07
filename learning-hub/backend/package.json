@@ -15,7 +15,8 @@
     "seed:topics": "node scripts/seedTopics.js",
     "seed:notes": "node scripts/seedNotes.js",
     "seed:resources": "node scripts/seedResources.js",
-    "seed:playgrounds": "node scripts/seedPlaygrounds.js"
+    "seed:playgrounds": "node scripts/seedPlaygrounds.js",
+    "seed:quizzes": "node scripts/seedQuizzes.js"
   },
   "keywords": [
     "express",

@@ -7,6 +7,7 @@ import topicReducer from '../features/topics/topicSlice';
 import noteReducer from '../features/notes/noteSlice';
 import resourceReducer from '../features/resources/resourceSlice';
 import playgroundReducer from '../features/playgrounds/playgroundSlice';
+import quizReducer from '../features/quizzes/quizSlice';
 
 export const store = configureStore({
   reducer: {
@@ -18,6 +19,7 @@ export const store = configureStore({
     notes: noteReducer,
     resources: resourceReducer,
     playgrounds: playgroundReducer,
+    quizzes: quizReducer,
   },
   devTools: process.env.NODE_ENV !== 'production',
 });

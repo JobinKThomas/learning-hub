@@ -15,6 +15,7 @@ import {
   FileText,
   Link2,
   Terminal,
+  HelpCircle,
 } from 'lucide-react';
 
 export default function Navbar() {
@@ -178,6 +179,18 @@ export default function Navbar() {
                     >
                       <Terminal className="w-4 h-4 mr-1.5 text-purple-600" />
                       Playgrounds
+                    </Link>
+
+                    <Link
+                      to="/admin/quizzes"
+                      className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                        location.pathname.startsWith('/admin/quizzes')
+                          ? 'bg-purple-100 text-purple-800'
+                          : 'text-purple-700 hover:bg-purple-50'
+                      }`}
+                    >
+                      <HelpCircle className="w-4 h-4 mr-1.5 text-purple-600" />
+                      Quizzes
                     </Link>
                   </>
                 )}

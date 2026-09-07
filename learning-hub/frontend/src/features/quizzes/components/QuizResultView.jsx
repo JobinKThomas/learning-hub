@@ -1,0 +1,199 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import {
+  CheckCircle2,
+  XCircle,
+  RotateCcw,
+  ArrowLeft,
+  Sparkles,
+  Award,
+  HelpCircle,
+} from 'lucide-react';
+
+export default function QuizResultView({
+  evaluation,
+  onRetake,
+  topicSlug,
+  topicTitle,
+}) {
+  if (!evaluation) return null;
+
+  const { score, totalQuestions, percentage, passingScore, passed, results } = evaluation;
+
+  return (
+    <div className="max-w-3xl mx-auto space-y-8">
+      {/* Result Score Banner */}
+      <div
+        className={`rounded-3xl p-8 text-center border shadow-xl space-y-4 ${
+          passed
+            ? 'bg-gradient-to-b from-emerald-900 via-slate-900 to-slate-950 border-emerald-500/30 text-white'
+            : 'bg-gradient-to-b from-rose-950 via-slate-900 to-slate-950 border-rose-500/30 text-white'
+        }`}
+      >
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/10 backdrop-blur border border-white/10 mb-2">
+          {passed ? (
+            <Award className="w-8 h-8 text-emerald-400" />
+          ) : (
+            <XCircle className="w-8 h-8 text-rose-400" />
+          )}
+        </div>
+
+        {/* Score & Percentage */}
+        <div className="space-y-1">
+          <div className="text-xs font-mono uppercase tracking-widest text-slate-300">
+            Quiz Result
+          </div>
+          <div className="text-4xl sm:text-5xl font-extrabold tracking-tight font-sans">
+            Score: {score} / {totalQuestions}
+          </div>
+          <div className="text-3xl font-bold text-slate-200">
+            {percentage}%
+          </div>
+        </div>
+
+        {/* Status Badge */}
+        <div className="pt-2">
+          <span
+            className={`inline-flex items-center px-4 py-1.5 rounded-full text-sm font-extrabold tracking-wide uppercase ${
+              passed
+                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/40'
+                : 'bg-rose-500/20 text-rose-300 border border-rose-400/40'
+            }`}
+          >
+            {passed ? 'Passed ✅' : 'Failed ❌'}
+          </span>
+        </div>
+
+        <p className="text-xs sm:text-sm text-slate-300 max-w-md mx-auto leading-relaxed pt-2">
+          {passed
+            ? 'Great job! You have demonstrated strong mastery of this topic concept.'
+            : `You need at least ${passingScore}% to pass this quiz. Review the detailed explanations below and try again.`}
+        </p>
+
+        {/* Action Buttons */}
+        <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
+          <button
+            type="button"
+            onClick={onRetake}
+            className="inline-flex items-center px-5 py-2.5 rounded-xl bg-white text-slate-900 hover:bg-slate-100 font-bold text-xs shadow-md transition gap-1.5"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>Retake Quiz</span>
+          </button>
+
+          {topicSlug && (
+            <Link
+              to={`/topics/${topicSlug}`}
+              className="inline-flex items-center px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/10 transition gap-1.5"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Back to {topicTitle || 'Topic'}</span>
+            </Link>
+          )}
+        </div>
+      </div>
+
+      {/* Itemized Questions Breakdown & Explanations */}
+      {results && results.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-center space-x-2 border-b border-slate-200 pb-3">
+            <HelpCircle className="w-4 h-4 text-indigo-600" />
+            <h3 className="text-base font-bold text-slate-900">
+              Detailed Question Review & Explanations
+            </h3>
+          </div>
+
+          <div className="space-y-4">
+            {results.map((res, idx) => (
+              <div
+                key={idx}
+                className={`bg-white rounded-2xl p-5 sm:p-6 border shadow-sm space-y-4 ${
+                  res.isCorrect ? 'border-emerald-200/80' : 'border-rose-200/80'
+                }`}
+              >
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-400 font-mono">
+                    Question {res.questionIndex || idx + 1}
+                  </span>
+
+                  <span
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                      res.isCorrect
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                        : 'bg-rose-50 text-rose-700 border border-rose-200'
+                    }`}
+                  >
+                    {res.isCorrect ? (
+                      <>
+                        <CheckCircle2 className="w-3 h-3 mr-1 text-emerald-600" />
+                        Correct
+                      </>
+                    ) : (
+                      <>
+                        <XCircle className="w-3 h-3 mr-1 text-rose-600" />
+                        Incorrect
+                      </>
+                    )}
+                  </span>
+                </div>
+
+                {/* Question */}
+                <div className="space-y-2">
+                  <h4 className="text-sm font-bold text-slate-900 leading-snug">
+                    {res.question}
+                  </h4>
+                  {res.codeSnippet && (
+                    <pre className="p-3 bg-slate-950 text-emerald-400 font-mono text-xs rounded-xl overflow-x-auto leading-relaxed">
+                      <code>{res.codeSnippet}</code>
+                    </pre>
+                  )}
+                </div>
+
+                {/* Answers Comparison */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs">
+                  <div
+                    className={`p-3 rounded-xl border ${
+                      res.isCorrect
+                        ? 'bg-emerald-50/50 border-emerald-200 text-emerald-900'
+                        : 'bg-rose-50/50 border-rose-200 text-rose-900'
+                    }`}
+                  >
+                    <span className="block text-[10px] font-bold uppercase tracking-wider opacity-70 mb-0.5">
+                      Your Answer:
+                    </span>
+                    <span className="font-semibold">
+                      {res.selectedOptionText || '(Not answered)'}
+                    </span>
+                  </div>
+
+                  {!res.isCorrect && (
+                    <div className="p-3 rounded-xl border bg-emerald-50/50 border-emerald-200 text-emerald-900">
+                      <span className="block text-[10px] font-bold uppercase tracking-wider opacity-70 mb-0.5">
+                        Correct Answer:
+                      </span>
+                      <span className="font-semibold">
+                        {res.correctAnswerText || 'Option ' + (res.correctAnswer + 1)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Explanation */}
+                {res.explanation && (
+                  <div className="p-3.5 bg-slate-50 border border-slate-100 rounded-xl text-xs text-slate-600 space-y-1">
+                    <div className="flex items-center space-x-1.5 font-bold text-slate-800 text-[11px]">
+                      <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+                      <span>Explanation:</span>
+                    </div>
+                    <p className="leading-relaxed pl-5">{res.explanation}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
