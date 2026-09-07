@@ -1,13 +1,15 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import {
   fetchLearningPaths,
   setFilters,
+  setPage,
   resetFilters,
 } from '../features/learningPaths/learningPathSlice';
 import { fetchOverallProgress } from '../features/progress/progressSlice';
 import LearningPathCard from '../features/learningPaths/components/LearningPathCard';
+import Pagination from '../components/Pagination';
 import { useAuth } from '../hooks/useAuth';
 import {
   Search,
@@ -18,14 +20,25 @@ import {
   PlusCircle,
   AlertCircle,
   Compass,
+  SlidersHorizontal,
+  ArrowUpDown,
+  CheckCircle2,
+  X,
 } from 'lucide-react';
 
 const CATEGORIES = ['All', 'Frontend', 'Backend', 'Full Stack', 'Mobile', 'DevOps'];
-const LEVELS = ['All', 'Beginner', 'Intermediate', 'Advanced'];
+const DIFFICULTIES = ['All', 'Beginner', 'Intermediate', 'Advanced'];
+const STATUSES = ['All', 'Published', 'Draft'];
+const SORT_OPTIONS = [
+  { label: 'Newest First', value: 'createdAt', order: 'desc' },
+  { label: 'Oldest First', value: 'createdAt', order: 'asc' },
+  { label: 'Title (A–Z)', value: 'title', order: 'asc' },
+  { label: 'Title (Z–A)', value: 'title', order: 'desc' },
+];
 
 export default function LearningPaths() {
   const dispatch = useDispatch();
-  const { paths, count, loading, error, filters } = useSelector(
+  const { paths, count, loading, error, filters, pagination } = useSelector(
     (state) => state.learningPaths
   );
   const { overallProgress } = useSelector((state) => state.progress);
@@ -33,16 +46,32 @@ export default function LearningPaths() {
 
   const [searchInput, setSearchInput] = useState(filters.search || '');
 
-  // Fetch when filters change
+  // Dispatch fetch when filters or pagination change
   useEffect(() => {
     dispatch(
       fetchLearningPaths({
         category: filters.category !== 'All' ? filters.category : undefined,
+        difficulty: filters.level !== 'All' ? filters.level : undefined,
         level: filters.level !== 'All' ? filters.level : undefined,
+        status: filters.status !== 'All' ? filters.status.toLowerCase() : undefined,
         search: filters.search ? filters.search : undefined,
+        sort: filters.sort || 'createdAt',
+        order: filters.order || 'desc',
+        page: filters.page || 1,
+        limit: filters.limit || 6,
       })
     );
-  }, [dispatch, filters.category, filters.level, filters.search]);
+  }, [
+    dispatch,
+    filters.category,
+    filters.level,
+    filters.status,
+    filters.search,
+    filters.sort,
+    filters.order,
+    filters.page,
+    filters.limit,
+  ]);
 
   useEffect(() => {
     if (user) {
@@ -50,24 +79,51 @@ export default function LearningPaths() {
     }
   }, [dispatch, user]);
 
-  // Handle Search Input submit / debounced
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     dispatch(setFilters({ search: searchInput }));
+  };
+
+  const handleClearSearch = () => {
+    setSearchInput('');
+    dispatch(setFilters({ search: '' }));
   };
 
   const handleCategorySelect = (category) => {
     dispatch(setFilters({ category }));
   };
 
-  const handleLevelSelect = (e) => {
+  const handleDifficultySelect = (e) => {
     dispatch(setFilters({ level: e.target.value }));
+  };
+
+  const handleStatusSelect = (status) => {
+    dispatch(setFilters({ status }));
+  };
+
+  const handleSortChange = (e) => {
+    const selected = SORT_OPTIONS.find((s) => `${s.value}-${s.order}` === e.target.value);
+    if (selected) {
+      dispatch(setFilters({ sort: selected.value, order: selected.order }));
+    }
+  };
+
+  const handlePageChange = (newPage) => {
+    dispatch(setPage(newPage));
+    window.scrollTo({ top: 400, behavior: 'smooth' });
   };
 
   const handleResetFilters = () => {
     setSearchInput('');
     dispatch(resetFilters());
   };
+
+  const activeSortValue = `${filters.sort || 'createdAt'}-${filters.order || 'desc'}`;
+  const hasActiveFilters =
+    filters.category !== 'All' ||
+    filters.level !== 'All' ||
+    filters.status !== 'All' ||
+    Boolean(filters.search);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
@@ -107,80 +163,144 @@ export default function LearningPaths() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-5">
-        <div className="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center">
+      <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-5">
+        {/* Top Controls: Search Form, Status, Difficulty, Sort */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
           {/* Search Form */}
-          <form onSubmit={handleSearchSubmit} className="relative flex-grow max-w-lg">
+          <form
+            onSubmit={handleSearchSubmit}
+            className="md:col-span-5 relative flex items-center"
+          >
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="text"
-              placeholder="Search by topic, language, or keyword..."
+              placeholder="Search: JavaScript, React, Backend..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full pl-10 pr-24 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              className="w-full pl-10 pr-20 py-2.5 rounded-2xl border border-slate-200 bg-slate-50 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
             />
+            {searchInput && (
+              <button
+                type="button"
+                onClick={handleClearSearch}
+                className="absolute right-16 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
             <button
               type="submit"
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg transition"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl transition shadow-2xs"
             >
               Search
             </button>
           </form>
 
-          {/* Level Filter Dropdown */}
-          <div className="flex items-center gap-3">
-            <div className="flex items-center text-xs font-semibold text-slate-500 whitespace-nowrap">
-              <Filter className="w-3.5 h-3.5 mr-1" />
-              <span>Level:</span>
-            </div>
+          {/* Difficulty / Level Dropdown */}
+          <div className="md:col-span-3 flex items-center gap-2">
+            <span className="text-xs font-bold text-slate-500 whitespace-nowrap">
+              Difficulty:
+            </span>
             <select
               value={filters.level}
-              onChange={handleLevelSelect}
-              className="px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-medium text-slate-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+              onChange={handleDifficultySelect}
+              className="w-full px-3 py-2 rounded-2xl border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
             >
-              {LEVELS.map((lvl) => (
+              {DIFFICULTIES.map((lvl) => (
                 <option key={lvl} value={lvl}>
-                  {lvl === 'All' ? 'All Levels' : lvl}
+                  {lvl === 'All' ? 'All Difficulties' : lvl}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Sort Dropdown */}
+          <div className="md:col-span-4 flex items-center gap-2">
+            <span className="text-xs font-bold text-slate-500 whitespace-nowrap flex items-center gap-1">
+              <ArrowUpDown className="w-3.5 h-3.5" />
+              Sort:
+            </span>
+            <select
+              value={activeSortValue}
+              onChange={handleSortChange}
+              className="w-full px-3 py-2 rounded-2xl border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+            >
+              {SORT_OPTIONS.map((opt) => (
+                <option key={`${opt.value}-${opt.order}`} value={`${opt.value}-${opt.order}`}>
+                  {opt.label}
                 </option>
               ))}
             </select>
           </div>
         </div>
 
-        {/* Category Pills */}
-        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100">
-          <span className="text-xs font-medium text-slate-500 mr-2">Categories:</span>
-          {CATEGORIES.map((cat) => {
-            const isSelected = filters.category === cat;
-            return (
-              <button
-                key={cat}
-                onClick={() => handleCategorySelect(cat)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                  isSelected
-                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-200'
-                    : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
-                }`}
-              >
-                {cat}
-              </button>
-            );
-          })}
+        {/* Secondary Row: Status (if Admin) & Category Pills */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-3 border-t border-slate-100">
+          {/* Category Pills */}
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-xs font-bold text-slate-500 mr-1.5">Category:</span>
+            {CATEGORIES.map((cat) => {
+              const isSelected = filters.category === cat;
+              return (
+                <button
+                  key={cat}
+                  onClick={() => handleCategorySelect(cat)}
+                  className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all ${
+                    isSelected
+                      ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-200'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
+                  }`}
+                >
+                  {cat}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Status Filter (Admin visible or general) */}
+          {isAdmin && (
+            <div className="flex items-center gap-1.5 self-start sm:self-auto">
+              <span className="text-xs font-bold text-slate-500 mr-1">Status:</span>
+              {STATUSES.map((st) => {
+                const isSelected = filters.status === st;
+                return (
+                  <button
+                    key={st}
+                    onClick={() => handleStatusSelect(st)}
+                    className={`px-2.5 py-0.5 rounded-lg text-xs font-bold border transition ${
+                      isSelected
+                        ? 'bg-purple-100 text-purple-800 border-purple-300'
+                        : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                    }`}
+                  >
+                    {st}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Results Header */}
+      {/* Results Header with Active Filters */}
       <div className="flex items-center justify-between text-xs font-medium text-slate-500 px-1">
-        <span>
-          Showing <strong className="text-slate-900 font-bold">{paths.length}</strong> learning
-          paths
-        </span>
-        {(filters.category !== 'All' || filters.level !== 'All' || filters.search) && (
+        <div>
+          Showing{' '}
+          <strong className="text-slate-900 font-bold">
+            {paths.length}
+          </strong>{' '}
+          of{' '}
+          <strong className="text-slate-900 font-bold">
+            {pagination?.total ?? count}
+          </strong>{' '}
+          learning paths
+        </div>
+        {hasActiveFilters && (
           <button
             onClick={handleResetFilters}
-            className="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-semibold"
+            className="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-bold gap-1"
           >
-            <RefreshCw className="w-3.5 h-3.5 mr-1" />
+            <RefreshCw className="w-3.5 h-3.5" />
             Reset all filters
           </button>
         )}
@@ -189,7 +309,7 @@ export default function LearningPaths() {
       {/* Error Message */}
       {error && (
         <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-3">
-          <AlertCircle className="w-5 h-5 flex-shrink-0 text-red-500" />
+          <AlertCircle className="w-5 h-5 shrink-0 text-red-500" />
           <span>{error}</span>
         </div>
       )}
@@ -200,35 +320,52 @@ export default function LearningPaths() {
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div
               key={i}
-              className="bg-white rounded-2xl border border-slate-200 p-6 h-72 animate-pulse flex flex-col justify-between"
+              className="bg-white rounded-3xl border border-slate-200 p-6 h-72 animate-pulse flex flex-col justify-between"
             >
               <div className="space-y-4">
-                <div className="w-12 h-12 rounded-xl bg-slate-200" />
+                <div className="w-12 h-12 rounded-2xl bg-slate-200" />
                 <div className="h-6 bg-slate-200 rounded w-3/4" />
                 <div className="space-y-2">
                   <div className="h-4 bg-slate-100 rounded" />
                   <div className="h-4 bg-slate-100 rounded w-5/6" />
                 </div>
               </div>
-              <div className="h-10 bg-slate-200 rounded-xl w-full" />
+              <div className="h-10 bg-slate-200 rounded-2xl w-full" />
             </div>
           ))}
         </div>
       ) : paths.length > 0 ? (
         /* Grid of Learning Paths */
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {paths.map((path) => {
-            const prog = overallProgress?.learningPaths?.find(
-              (lp) => lp.slug === path.slug || String(lp.id) === String(path.id || path._id)
-            );
-            return (
-              <LearningPathCard
-                key={path.id || path.slug}
-                path={path}
-                progress={prog?.percentage}
-              />
-            );
-          })}
+        <div className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {paths.map((path) => {
+              const prog = overallProgress?.learningPaths?.find(
+                (lp) => lp.slug === path.slug || String(lp.id) === String(path.id || path._id)
+              );
+              return (
+                <LearningPathCard
+                  key={path.id || path.slug}
+                  path={path}
+                  progress={prog?.percentage}
+                />
+              );
+            })}
+          </div>
+
+          {/* Pagination Controls */}
+          <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-sm">
+            <Pagination
+              currentPage={pagination?.page || 1}
+              totalPages={pagination?.totalPages || 1}
+              onPageChange={handlePageChange}
+              hasNextPage={pagination?.hasNextPage}
+              hasPrevPage={pagination?.hasPrevPage}
+              totalItems={pagination?.total || count}
+              itemsPerPage={pagination?.limit || 6}
+              itemName="learning paths"
+              colorScheme="indigo"
+            />
+          </div>
         </div>
       ) : (
         /* Empty State */
@@ -243,7 +380,7 @@ export default function LearningPaths() {
           </p>
           <button
             onClick={handleResetFilters}
-            className="inline-flex items-center px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition"
+            className="inline-flex items-center px-4 py-2 rounded-2xl bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition shadow-sm"
           >
             Clear Filters
           </button>

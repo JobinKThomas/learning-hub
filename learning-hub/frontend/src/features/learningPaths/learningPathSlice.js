@@ -103,7 +103,20 @@ const initialState = {
   filters: {
     category: 'All',
     level: 'All',
+    status: 'All',
     search: '',
+    sort: 'createdAt',
+    order: 'desc',
+    page: 1,
+    limit: 6,
+  },
+  pagination: {
+    page: 1,
+    limit: 6,
+    total: 0,
+    totalPages: 1,
+    hasNextPage: false,
+    hasPrevPage: false,
   },
 };
 
@@ -113,9 +126,24 @@ const learningPathSlice = createSlice({
   reducers: {
     setFilters: (state, action) => {
       state.filters = { ...state.filters, ...action.payload };
+      if (action.payload.page === undefined) {
+        state.filters.page = 1;
+      }
+    },
+    setPage: (state, action) => {
+      state.filters.page = action.payload;
     },
     resetFilters: (state) => {
-      state.filters = { category: 'All', level: 'All', search: '' };
+      state.filters = {
+        category: 'All',
+        level: 'All',
+        status: 'All',
+        search: '',
+        sort: 'createdAt',
+        order: 'desc',
+        page: 1,
+        limit: 6,
+      };
     },
     clearCurrentPath: (state) => {
       state.currentPath = null;
@@ -137,7 +165,15 @@ const learningPathSlice = createSlice({
       .addCase(fetchLearningPaths.fulfilled, (state, action) => {
         state.loading = false;
         state.paths = action.payload.paths || [];
-        state.count = action.payload.count || 0;
+        state.count = action.payload.count ?? (action.payload.paths ? action.payload.paths.length : 0);
+        state.pagination = action.payload.pagination || {
+          page: state.filters.page,
+          limit: state.filters.limit,
+          total: state.count,
+          totalPages: Math.ceil(state.count / state.filters.limit) || 1,
+          hasNextPage: false,
+          hasPrevPage: false,
+        };
       })
       .addCase(fetchLearningPaths.rejected, (state, action) => {
         state.loading = false;
@@ -235,7 +271,12 @@ const learningPathSlice = createSlice({
   },
 });
 
-export const { setFilters, resetFilters, clearCurrentPath, clearActionState } =
-  learningPathSlice.actions;
+export const {
+  setFilters,
+  setPage,
+  resetFilters,
+  clearCurrentPath,
+  clearActionState,
+} = learningPathSlice.actions;
 
 export default learningPathSlice.reducer;

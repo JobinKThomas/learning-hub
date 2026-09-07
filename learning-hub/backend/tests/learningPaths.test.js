@@ -184,6 +184,90 @@ test('10. Admin → DELETE /api/learning-paths/:id returns 200 and deletes path'
   assert.strictEqual(verifyRes.status, 404);
 });
 
+// 11. Search: GET /api/learning-paths?search=JavaScript
+test('11. Authenticated User → GET /api/learning-paths?search=JavaScript filters by keyword', async () => {
+  const res = await request(app)
+    .get('/api/learning-paths?search=JavaScript')
+    .set('Authorization', `Bearer ${userToken}`);
+
+  assert.strictEqual(res.status, 200);
+  assert.strictEqual(res.body.success, true);
+  assert.ok(res.body.data.paths.length >= 1);
+  assert.ok(
+    res.body.data.paths.every(
+      (p) =>
+        p.title.toLowerCase().includes('javascript') ||
+        p.description.toLowerCase().includes('javascript')
+    )
+  );
+});
+
+// 12. Difficulty / Level Filter: GET /api/learning-paths?difficulty=Beginner
+test('12. Authenticated User → GET /api/learning-paths?difficulty=Beginner filters by level', async () => {
+  const res = await request(app)
+    .get('/api/learning-paths?difficulty=Beginner')
+    .set('Authorization', `Bearer ${userToken}`);
+
+  assert.strictEqual(res.status, 200);
+  assert.strictEqual(res.body.success, true);
+  assert.ok(res.body.data.paths.length >= 1);
+  assert.ok(res.body.data.paths.every((p) => p.level.toLowerCase() === 'beginner'));
+});
+
+// 13. Status Filter (Admin): GET /api/learning-paths?status=published
+test('13. Admin → GET /api/learning-paths?status=published filters by published status', async () => {
+  const res = await request(app)
+    .get('/api/learning-paths?status=published')
+    .set('Authorization', `Bearer ${adminToken}`);
+
+  assert.strictEqual(res.status, 200);
+  assert.strictEqual(res.body.success, true);
+  assert.ok(res.body.data.paths.length >= 1);
+  assert.ok(res.body.data.paths.every((p) => p.published === true));
+  assert.ok(res.body.data.pagination);
+  assert.strictEqual(typeof res.body.data.pagination.total, 'number');
+});
+
+// 14. Sort: GET /api/learning-paths?sort=title&order=asc
+test('14. Authenticated User → GET /api/learning-paths?sort=title&order=asc sorts alphabetically', async () => {
+  const res = await request(app)
+    .get('/api/learning-paths?sort=title&order=asc&limit=10')
+    .set('Authorization', `Bearer ${userToken}`);
+
+  assert.strictEqual(res.status, 200);
+  assert.strictEqual(res.body.success, true);
+  const titles = res.body.data.paths.map((p) => p.title);
+  const sortedTitles = [...titles].sort((a, b) => a.localeCompare(b));
+  assert.deepStrictEqual(titles, sortedTitles);
+});
+
+// 15. Pagination: GET /api/learning-paths?page=1&limit=2
+test('15. Authenticated User → GET /api/learning-paths?page=1&limit=2 returns paginated response', async () => {
+  const res1 = await request(app)
+    .get('/api/learning-paths?page=1&limit=2')
+    .set('Authorization', `Bearer ${userToken}`);
+
+  assert.strictEqual(res1.status, 200);
+  assert.strictEqual(res1.body.success, true);
+  assert.strictEqual(res1.body.data.paths.length, 2);
+  assert.strictEqual(res1.body.data.pagination.page, 1);
+  assert.strictEqual(res1.body.data.pagination.limit, 2);
+  assert.ok(res1.body.data.pagination.totalPages >= 2);
+  assert.strictEqual(res1.body.data.pagination.hasNextPage, true);
+  assert.strictEqual(res1.body.data.pagination.hasPrevPage, false);
+
+  // Page 2
+  const res2 = await request(app)
+    .get('/api/learning-paths?page=2&limit=2')
+    .set('Authorization', `Bearer ${userToken}`);
+
+  assert.strictEqual(res2.status, 200);
+  assert.strictEqual(res2.body.data.pagination.page, 2);
+  assert.strictEqual(res2.body.data.pagination.hasPrevPage, true);
+  // Different items on page 2
+  assert.notStrictEqual(res1.body.data.paths[0].id, res2.body.data.paths[0].id);
+});
+
 test.after(async () => {
   await disconnectDB();
 });

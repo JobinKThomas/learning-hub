@@ -14,16 +14,43 @@ export class LearningPathController {
   getAll = async (req, res, next) => {
     try {
       const isAdmin = (req.user?.role || '').toUpperCase() === 'ADMIN';
-      const { category, level, search } = req.query;
-
-      const paths = await this.service.getAllPaths({
+      const {
         category,
         level,
+        difficulty,
+        status,
+        published,
         search,
+        sort,
+        order,
+        page,
+        limit,
+      } = req.query;
+
+      const result = await this.service.getAllPaths({
+        category,
+        level: level || difficulty,
+        difficulty,
+        status,
+        published,
+        search,
+        sort,
+        order,
+        page,
+        limit,
         includeUnpublished: isAdmin,
       });
 
-      return sendSuccess(res, 'Learning paths retrieved successfully', { paths, count: paths.length }, 200);
+      return sendSuccess(
+        res,
+        'Learning paths retrieved successfully',
+        {
+          paths: result.paths,
+          count: result.pagination.total,
+          pagination: result.pagination,
+        },
+        200
+      );
     } catch (error) {
       next(error);
     }
