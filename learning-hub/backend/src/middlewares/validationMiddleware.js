@@ -23,8 +23,9 @@ export const validateRegister = (req, res, next) => {
     errors.push({ field: 'password', message: 'Password must be at least 6 characters long' });
   }
 
-  if (role && !['student', 'instructor', 'admin'].includes(role)) {
-    errors.push({ field: 'role', message: "Role must be 'student', 'instructor', or 'admin'" });
+  const validRoles = ['USER', 'ADMIN', 'STUDENT', 'INSTRUCTOR', 'user', 'admin', 'student', 'instructor'];
+  if (role && !validRoles.includes(role)) {
+    errors.push({ field: 'role', message: "Role must be 'USER' or 'ADMIN'" });
   }
 
   if (errors.length > 0) {

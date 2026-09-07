@@ -52,7 +52,7 @@ const options = {
             _id: { type: 'string', example: '66dc4b5f884a1e4922e96410' },
             name: { type: 'string', example: 'Jane Doe' },
             email: { type: 'string', format: 'email', example: 'jane@example.com' },
-            role: { type: 'string', enum: ['student', 'instructor', 'admin'], example: 'student' },
+            role: { type: 'string', enum: ['USER', 'ADMIN'], example: 'USER' },
             createdAt: { type: 'string', format: 'date-time' },
             updatedAt: { type: 'string', format: 'date-time' },
           },

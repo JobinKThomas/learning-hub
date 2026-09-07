@@ -8,7 +8,7 @@ export default function Register() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('student');
+  const [role, setRole] = useState('USER');
   const [formErrors, setFormErrors] = useState({});
 
   const dispatch = useDispatch();
@@ -172,10 +172,10 @@ export default function Register() {
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"
+                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition font-medium"
               >
-                <option value="student">Student</option>
-                <option value="instructor">Instructor</option>
+                <option value="USER">USER (Standard Learner)</option>
+                <option value="ADMIN">ADMIN (Platform Administrator)</option>
               </select>
             </div>
           </div>
