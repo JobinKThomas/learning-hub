@@ -63,6 +63,17 @@ test('3. Admin → admin API returns 200 OK', async () => {
   assert.ok(res.body.data.metrics);
   assert.ok(typeof res.body.data.metrics.totalUsers === 'number');
   assert.ok(res.body.data.metrics.totalAdmins >= 1);
+  assert.ok(typeof res.body.data.metrics.totalContentItems === 'number');
+  assert.ok(res.body.data.contentMetrics);
+  assert.strictEqual(typeof res.body.data.contentMetrics.learningPaths, 'number');
+  assert.strictEqual(typeof res.body.data.contentMetrics.modules, 'number');
+  assert.strictEqual(typeof res.body.data.contentMetrics.sections, 'number');
+  assert.strictEqual(typeof res.body.data.contentMetrics.topics, 'number');
+  assert.strictEqual(typeof res.body.data.contentMetrics.notes, 'number');
+  assert.strictEqual(typeof res.body.data.contentMetrics.resources, 'number');
+  assert.strictEqual(typeof res.body.data.contentMetrics.playgrounds, 'number');
+  assert.strictEqual(typeof res.body.data.contentMetrics.quizzes, 'number');
+  assert.strictEqual(typeof res.body.data.contentMetrics.interviewQuestions, 'number');
   assert.strictEqual(res.body.data.caller.role, 'ADMIN');
 });
 
