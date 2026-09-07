@@ -11,6 +11,10 @@ const readyStates = {
  * Connect to MongoDB database
  */
 export const connectDB = async (uri = process.env.MONGODB_URI) => {
+  if (mongoose.connection.readyState === 1) {
+    return mongoose.connection;
+  }
+
   if (!uri) {
     throw new Error('MONGODB_URI environment variable is not defined.');
   }

@@ -34,13 +34,25 @@ export default function Navbar() {
               </div>
               <div className="flex flex-col">
                 <span className="font-bold text-lg text-slate-900 leading-tight">Learning Hub</span>
-                <span className="text-xs text-indigo-600 font-semibold tracking-wide uppercase">Phase 2 RBAC</span>
+                <span className="text-xs text-indigo-600 font-semibold tracking-wide uppercase">Learning Paths</span>
               </div>
             </Link>
 
-            {/* Role-Based Links */}
+            {/* Role-Based & Content Links */}
             {isAuthenticated && (
               <div className="hidden md:flex items-center space-x-2">
+                <Link
+                  to="/learning-paths"
+                  className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                    location.pathname.startsWith('/learning-paths')
+                      ? 'bg-indigo-50 text-indigo-700'
+                      : 'text-slate-600 hover:text-indigo-600 hover:bg-slate-50'
+                  }`}
+                >
+                  <BookOpen className="w-4 h-4 mr-1.5 text-indigo-500" />
+                  Learning Paths
+                </Link>
+
                 <Link
                   to="/dashboard"
                   className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
@@ -50,21 +62,35 @@ export default function Navbar() {
                   }`}
                 >
                   <LayoutDashboard className="w-4 h-4 mr-1.5 text-indigo-500" />
-                  Learning Dashboard
+                  Dashboard
                 </Link>
 
                 {isAdmin && (
-                  <Link
-                    to="/admin"
-                    className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                      location.pathname === '/admin'
-                        ? 'bg-purple-100 text-purple-800'
-                        : 'text-purple-700 hover:bg-purple-50'
-                    }`}
-                  >
-                    <Shield className="w-4 h-4 mr-1.5 text-purple-600" />
-                    Admin Dashboard
-                  </Link>
+                  <>
+                    <Link
+                      to="/admin"
+                      className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                        location.pathname === '/admin'
+                          ? 'bg-purple-100 text-purple-800'
+                          : 'text-purple-700 hover:bg-purple-50'
+                      }`}
+                    >
+                      <Shield className="w-4 h-4 mr-1.5 text-purple-600" />
+                      Admin
+                    </Link>
+
+                    <Link
+                      to="/admin/learning-paths"
+                      className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                        location.pathname.startsWith('/admin/learning-paths')
+                          ? 'bg-purple-100 text-purple-800'
+                          : 'text-purple-700 hover:bg-purple-50'
+                      }`}
+                    >
+                      <Layers className="w-4 h-4 mr-1.5 text-purple-600" />
+                      Manage Paths
+                    </Link>
+                  </>
                 )}
               </div>
             )}

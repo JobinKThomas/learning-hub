@@ -35,10 +35,6 @@ test.before(async () => {
   userToken = userResult.accessToken;
 });
 
-test.after(async () => {
-  await disconnectDB();
-});
-
 test('1. Anonymous → admin API returns 401 Unauthorized', async () => {
   const res = await request(app).get('/api/admin/overview');
 
@@ -79,4 +75,8 @@ test('4. Admin → GET /api/admin/users returns 200 and list of users', async ()
   assert.strictEqual(res.body.success, true);
   assert.ok(Array.isArray(res.body.data.users));
   assert.ok(res.body.data.count >= 2);
+});
+
+test.after(async () => {
+  await disconnectDB();
 });
