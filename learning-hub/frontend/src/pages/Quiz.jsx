@@ -1,14 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   fetchQuizById,
-  submitQuizAnswers,
   clearSubmissionResult,
   clearCurrentQuiz,
 } from '../features/quizzes/quizSlice';
+import {
+  submitQuizAttempt,
+  fetchQuizAttempts,
+  clearCurrentAttempt,
+} from '../features/quizAttempts/quizAttemptSlice';
 import QuestionCard from '../features/quizzes/components/QuestionCard';
 import QuizResultView from '../features/quizzes/components/QuizResultView';
+import QuizHistoryTable from '../features/quizAttempts/components/QuizHistoryTable';
+import QuizAttemptReviewModal from '../features/quizAttempts/components/QuizAttemptReviewModal';
 import { useAuth } from '../hooks/useAuth';
 import {
   ArrowLeft,
@@ -19,6 +25,10 @@ import {
   HelpCircle,
   Award,
   Edit,
+  History,
+  RotateCcw,
+  CheckCircle2,
+  Play,
 } from 'lucide-react';
 
 export default function Quiz() {
@@ -30,21 +40,32 @@ export default function Quiz() {
   const {
     currentQuiz: quiz,
     detailsLoading: loading,
-    submissionResult,
-    submitting,
     error,
   } = useSelector((state) => state.quizzes);
+
+  const {
+    quizAttempts,
+    quizStats,
+    currentAttempt,
+    submitting,
+  } = useSelector((state) => state.quizAttempts);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState({});
   const [showWarning, setShowWarning] = useState(false);
+  const [activeTab, setActiveTab] = useState('take'); // 'take' | 'history'
+  const [startTime, setStartTime] = useState(Date.now());
+  const [reviewAttemptId, setReviewAttemptId] = useState(null);
 
   useEffect(() => {
     if (id) {
       dispatch(fetchQuizById({ id }));
+      dispatch(fetchQuizAttempts(id));
+      setStartTime(Date.now());
     }
     return () => {
       dispatch(clearCurrentQuiz());
+      dispatch(clearCurrentAttempt());
     };
   }, [dispatch, id]);
 
@@ -73,28 +94,49 @@ export default function Quiz() {
     }
   };
 
-  const handleSubmit = () => {
-    // Check if all questions are answered
+  const handleSubmit = async () => {
     const answeredCount = Object.keys(answers).length;
     if (answeredCount < totalQuestions && !showWarning) {
       setShowWarning(true);
       return;
     }
 
-    dispatch(
-      submitQuizAnswers({
-        id: quiz.id,
+    const timeSpentSeconds = Math.max(1, Math.round((Date.now() - startTime) / 1000));
+
+    await dispatch(
+      submitQuizAttempt({
+        quizId: quiz.id,
         answers,
+        timeSpentSeconds,
+        startedAt: new Date(startTime).toISOString(),
       })
     );
+
+    // Refresh attempts list
+    dispatch(fetchQuizAttempts(quiz.id));
   };
 
   const handleRetake = () => {
     setAnswers({});
     setCurrentIndex(0);
     setShowWarning(false);
-    dispatch(clearSubmissionResult());
+    setStartTime(Date.now());
+    dispatch(clearCurrentAttempt());
+    setActiveTab('take');
   };
+
+  const handleOpenReview = (attemptId) => {
+    setReviewAttemptId(attemptId);
+  };
+
+  const handleCloseReview = () => {
+    setReviewAttemptId(null);
+  };
+
+  const selectedReviewAttempt = reviewAttemptId
+    ? quizAttempts.find((a) => (a.id === reviewAttemptId || a._id === reviewAttemptId)) ||
+      (currentAttempt?.id === reviewAttemptId ? currentAttempt : null)
+    : null;
 
   if (loading) {
     return (
@@ -195,16 +237,93 @@ export default function Quiz() {
         </div>
       </div>
 
-      {/* If Quiz Already Submitted: Show Results Screen */}
-      {submissionResult ? (
+      {/* Tabs Header (Take Quiz vs Past Attempts) */}
+      <div className="flex items-center justify-between gap-2 border-b border-slate-200 pb-3">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setActiveTab('take')}
+            className={`inline-flex items-center px-3.5 py-1.5 rounded-xl text-xs font-bold transition gap-1.5 ${
+              activeTab === 'take'
+                ? 'bg-slate-900 text-white shadow-sm'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            <Play className="w-3 h-3 fill-current" />
+            <span>{currentAttempt ? 'Latest Result' : 'Take Quiz'}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('history')}
+            className={`inline-flex items-center px-3.5 py-1.5 rounded-xl text-xs font-bold transition gap-1.5 ${
+              activeTab === 'history'
+                ? 'bg-slate-900 text-white shadow-sm'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            <History className="w-3.5 h-3.5" />
+            <span>Past Attempts ({quizAttempts?.length || 0})</span>
+          </button>
+        </div>
+
+        {quizStats?.hasPassed && (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 gap-1">
+            <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+            <span>Mastered (Best: {quizStats.bestPercentage}%)</span>
+          </span>
+        )}
+      </div>
+
+      {/* VIEW 1: History Tab */}
+      {activeTab === 'history' ? (
+        <div className="space-y-6">
+          {/* Summary Stats Banner */}
+          {quizStats && (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm text-center">
+                <div className="text-[10px] uppercase font-bold text-slate-400">Total Attempts</div>
+                <div className="text-xl font-extrabold text-slate-900 mt-1">{quizStats.totalAttempts}</div>
+              </div>
+              <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm text-center">
+                <div className="text-[10px] uppercase font-bold text-slate-400">Highest Score</div>
+                <div className="text-xl font-extrabold text-indigo-600 mt-1">{quizStats.bestScore} pts</div>
+              </div>
+              <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm text-center">
+                <div className="text-[10px] uppercase font-bold text-slate-400">Best %</div>
+                <div className="text-xl font-extrabold text-slate-900 mt-1">{quizStats.bestPercentage}%</div>
+              </div>
+              <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm text-center">
+                <div className="text-[10px] uppercase font-bold text-slate-400">Passing Status</div>
+                <div className="text-sm font-bold mt-1.5">
+                  {quizStats.hasPassed ? (
+                    <span className="text-emerald-600">Passed ✅</span>
+                  ) : (
+                    <span className="text-amber-600">In Progress</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <QuizHistoryTable
+            attempts={quizAttempts}
+            onSelectAttempt={handleOpenReview}
+            onRetake={handleRetake}
+          />
+        </div>
+      ) : currentAttempt ? (
+        /* VIEW 2: Newly Finished Attempt Results Screen */
         <QuizResultView
-          evaluation={submissionResult}
+          evaluation={currentAttempt}
           onRetake={handleRetake}
+          onViewHistory={() => setActiveTab('history')}
           topicSlug={topic?.slug}
           topicTitle={topic?.title}
+          quizId={quiz.id}
         />
       ) : (
-        /* Taking Quiz Flow: Question 1 -> Question 2 -> Question 3 -> Submit */
+        /* VIEW 3: Active Quiz Runner Stepper: Question 1 -> Question 2 -> Question 3 -> Submit */
         <div className="space-y-6">
           {/* Quiz Header Banner */}
           <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-sm space-y-4">
@@ -316,7 +435,7 @@ export default function Quiz() {
                   {submitting ? (
                     <>
                       <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>Grading...</span>
+                      <span>Grading & Saving...</span>
                     </>
                   ) : (
                     <>
@@ -329,6 +448,14 @@ export default function Quiz() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Review Modal for past attempts */}
+      {selectedReviewAttempt && (
+        <QuizAttemptReviewModal
+          attempt={selectedReviewAttempt}
+          onClose={handleCloseReview}
+        />
       )}
     </div>
   );

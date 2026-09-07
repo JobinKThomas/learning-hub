@@ -40,6 +40,7 @@ import AdminPlaygrounds from './pages/admin/AdminPlaygrounds';
 import CreatePlayground from './pages/admin/CreatePlayground';
 import EditPlayground from './pages/admin/EditPlayground';
 import Quiz from './pages/Quiz';
+import QuizHistory from './pages/QuizHistory';
 import AdminQuizzes from './pages/admin/AdminQuizzes';
 import CreateQuiz from './pages/admin/CreateQuiz';
 import EditQuiz from './pages/admin/EditQuiz';
@@ -140,6 +141,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Quiz />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/quizzes/:id/history"
+            element={
+              <ProtectedRoute>
+                <QuizHistory />
               </ProtectedRoute>
             }
           />
@@ -347,7 +356,7 @@ export default function App() {
         </Routes>
       </main>
       <footer className="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
-        <p>© 2026 Learning Hub — Phase 10 Quiz</p>
+        <p>© 2026 Learning Hub — Phase 11 Quiz Attempts</p>
       </footer>
     </div>
   );
