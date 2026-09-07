@@ -97,127 +97,17 @@ export default function Navbar() {
                 </Link>
 
                 {isAdmin && (
-                  <>
-                    <Link
-                      to="/admin"
-                      className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                        location.pathname === '/admin'
-                          ? 'bg-purple-100 text-purple-800'
-                          : 'text-purple-700 hover:bg-purple-50'
-                      }`}
-                    >
-                      <Shield className="w-4 h-4 mr-1.5 text-purple-600" />
-                      Admin
-                    </Link>
-
-                    <Link
-                      to="/admin/learning-paths"
-                      className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                        location.pathname.startsWith('/admin/learning-paths')
-                          ? 'bg-purple-100 text-purple-800'
-                          : 'text-purple-700 hover:bg-purple-50'
-                      }`}
-                    >
-                      <Layers className="w-4 h-4 mr-1.5 text-purple-600" />
-                      Paths
-                    </Link>
-
-                    <Link
-                      to="/admin/modules"
-                      className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                        location.pathname.startsWith('/admin/modules')
-                          ? 'bg-purple-100 text-purple-800'
-                          : 'text-purple-700 hover:bg-purple-50'
-                      }`}
-                    >
-                      <BookOpen className="w-4 h-4 mr-1.5 text-purple-600" />
-                      Modules
-                    </Link>
-
-                    <Link
-                      to="/admin/sections"
-                      className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                        location.pathname.startsWith('/admin/sections')
-                          ? 'bg-purple-100 text-purple-800'
-                          : 'text-purple-700 hover:bg-purple-50'
-                      }`}
-                    >
-                      <Layers className="w-4 h-4 mr-1.5 text-purple-600" />
-                      Sections
-                    </Link>
-
-                    <Link
-                      to="/admin/topics"
-                      className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                        location.pathname.startsWith('/admin/topics')
-                          ? 'bg-purple-100 text-purple-800'
-                          : 'text-purple-700 hover:bg-purple-50'
-                      }`}
-                    >
-                      <Code2 className="w-4 h-4 mr-1.5 text-purple-600" />
-                      Topics
-                    </Link>
-
-                    <Link
-                      to="/admin/notes"
-                      className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                        location.pathname.startsWith('/admin/notes')
-                          ? 'bg-purple-100 text-purple-800'
-                          : 'text-purple-700 hover:bg-purple-50'
-                      }`}
-                    >
-                      <FileText className="w-4 h-4 mr-1.5 text-purple-600" />
-                      Notes
-                    </Link>
-
-                    <Link
-                      to="/admin/resources"
-                      className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                        location.pathname.startsWith('/admin/resources')
-                          ? 'bg-purple-100 text-purple-800'
-                          : 'text-purple-700 hover:bg-purple-50'
-                      }`}
-                    >
-                      <Link2 className="w-4 h-4 mr-1.5 text-purple-600" />
-                      Resources
-                    </Link>
-
-                    <Link
-                      to="/admin/playgrounds"
-                      className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                        location.pathname.startsWith('/admin/playgrounds')
-                          ? 'bg-purple-100 text-purple-800'
-                          : 'text-purple-700 hover:bg-purple-50'
-                      }`}
-                    >
-                      <Terminal className="w-4 h-4 mr-1.5 text-purple-600" />
-                      Playgrounds
-                    </Link>
-
-                    <Link
-                      to="/admin/quizzes"
-                      className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                        location.pathname.startsWith('/admin/quizzes')
-                          ? 'bg-purple-100 text-purple-800'
-                          : 'text-purple-700 hover:bg-purple-50'
-                      }`}
-                    >
-                      <HelpCircle className="w-4 h-4 mr-1.5 text-purple-600" />
-                      Quizzes
-                    </Link>
-
-                    <Link
-                      to="/admin/interview-questions"
-                      className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                        location.pathname.startsWith('/admin/interview-questions')
-                          ? 'bg-purple-100 text-purple-800'
-                          : 'text-purple-700 hover:bg-purple-50'
-                      }`}
-                    >
-                      <Flame className="w-4 h-4 mr-1.5 text-rose-600" />
-                      Interview
-                    </Link>
-                  </>
+                  <Link
+                    to="/admin"
+                    className={`inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold transition ${
+                      location.pathname.startsWith('/admin')
+                        ? 'bg-purple-600 text-white shadow-sm shadow-purple-600/30'
+                        : 'bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200/60'
+                    }`}
+                  >
+                    <Shield className="w-3.5 h-3.5 mr-1.5" />
+                    Admin Console
+                  </Link>
                 )}
               </div>
             )}

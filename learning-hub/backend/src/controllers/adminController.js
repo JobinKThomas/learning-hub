@@ -1,4 +1,13 @@
 import { User } from '../models/User.js';
+import { LearningPath } from '../models/LearningPath.js';
+import { Module } from '../models/Module.js';
+import { Section } from '../models/Section.js';
+import { Topic } from '../models/Topic.js';
+import { Note } from '../models/Note.js';
+import { Resource } from '../models/Resource.js';
+import { Playground } from '../models/Playground.js';
+import { Quiz } from '../models/Quiz.js';
+import { InterviewQuestion } from '../models/InterviewQuestion.js';
 import { getDbStatus } from '../config/db.js';
 import { sendSuccess } from '../utils/apiResponse.js';
 
@@ -10,13 +19,45 @@ export class AdminController {
    */
   getOverview = async (req, res, next) => {
     try {
-      const [totalUsers, totalAdmins, recentUsers] = await Promise.all([
+      const [
+        totalUsers,
+        totalAdmins,
+        recentUsers,
+        learningPathsCount,
+        modulesCount,
+        sectionsCount,
+        topicsCount,
+        notesCount,
+        resourcesCount,
+        playgroundsCount,
+        quizzesCount,
+        interviewQuestionsCount,
+      ] = await Promise.all([
         User.countDocuments(),
         User.countDocuments({ role: 'ADMIN' }),
         User.find().select('name email role createdAt').sort({ createdAt: -1 }).limit(5),
+        LearningPath.countDocuments(),
+        Module.countDocuments(),
+        Section.countDocuments(),
+        Topic.countDocuments(),
+        Note.countDocuments(),
+        Resource.countDocuments(),
+        Playground.countDocuments(),
+        Quiz.countDocuments(),
+        InterviewQuestion.countDocuments(),
       ]);
 
       const standardUsers = totalUsers - totalAdmins;
+      const totalContentItems =
+        learningPathsCount +
+        modulesCount +
+        sectionsCount +
+        topicsCount +
+        notesCount +
+        resourcesCount +
+        playgroundsCount +
+        quizzesCount +
+        interviewQuestionsCount;
       const dbStatus = getDbStatus();
 
       const overviewData = {
@@ -24,6 +65,18 @@ export class AdminController {
           totalUsers,
           totalAdmins,
           standardUsers,
+          totalContentItems,
+        },
+        contentMetrics: {
+          learningPaths: learningPathsCount,
+          modules: modulesCount,
+          sections: sectionsCount,
+          topics: topicsCount,
+          notes: notesCount,
+          resources: resourcesCount,
+          playgrounds: playgroundsCount,
+          quizzes: quizzesCount,
+          interviewQuestions: interviewQuestionsCount,
         },
         system: {
           uptimeSeconds: Math.floor(process.uptime()),

@@ -2,6 +2,7 @@ import React from 'react';
 import { Navigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { ShieldAlert, ArrowLeft, LayoutDashboard } from 'lucide-react';
+import AdminLayout from './AdminLayout';
 
 export default function AdminRoute({ children }) {
   const { isAuthenticated, isAdmin, loading, role } = useAuth();
@@ -53,5 +54,5 @@ export default function AdminRoute({ children }) {
     );
   }
 
-  return children;
+  return <AdminLayout>{children}</AdminLayout>;
 }
