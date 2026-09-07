@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import api from '../api/axios';
 import {
@@ -14,6 +15,7 @@ import {
   CheckCircle2,
   AlertCircle,
   Code2,
+  Layers,
 } from 'lucide-react';
 
 export default function AdminDashboard() {
@@ -80,14 +82,23 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <button
-          onClick={fetchAdminData}
-          disabled={loading}
-          className="inline-flex items-center px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-semibold border border-white/10 transition disabled:opacity-50"
-        >
-          <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-          Refresh Stats
-        </button>
+        <div className="flex items-center gap-3">
+          <Link
+            to="/admin/learning-paths"
+            className="inline-flex items-center px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-sm font-semibold shadow-md shadow-purple-600/30 transition"
+          >
+            <Layers className="w-4 h-4 mr-2" />
+            Manage Learning Paths
+          </Link>
+          <button
+            onClick={fetchAdminData}
+            disabled={loading}
+            className="inline-flex items-center px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-semibold border border-white/10 transition disabled:opacity-50"
+          >
+            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            Refresh Stats
+          </button>
+        </div>
       </div>
 
       {error && (

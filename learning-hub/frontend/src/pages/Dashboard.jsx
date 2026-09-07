@@ -138,6 +138,37 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* Featured Learning Path Banner */}
+      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[11px] font-bold border border-amber-200">
+            Featured Curriculum
+          </div>
+          <h2 className="text-xl font-bold text-slate-900">
+            JavaScript Masterclass: From Fundamentals to Asynchronous & ES6+
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-600 max-w-2xl leading-relaxed">
+            4 comprehensive modules covering syntax, event loop, Promises, DOM manipulation, prototypes, and functional patterns.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            to="/learning-paths/javascript"
+            className="inline-flex items-center px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-100 transition"
+          >
+            <span>Start JavaScript Path</span>
+            <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+          </Link>
+          <Link
+            to="/learning-paths"
+            className="inline-flex items-center px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold transition"
+          >
+            Browse All Paths
+          </Link>
+        </div>
+      </div>
+
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* User Profile Card */}

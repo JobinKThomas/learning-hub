@@ -11,10 +11,6 @@ test.before(async () => {
   await connectDB();
 });
 
-test.after(async () => {
-  await disconnectDB();
-});
-
 test('Full E2E Auth Cycle: Register -> Login -> Me -> Refresh -> Rotation -> Logout', async () => {
   const timestamp = Date.now();
   const testUser = {
@@ -104,4 +100,8 @@ test('Full E2E Auth Cycle: Register -> Login -> Me -> Refresh -> Rotation -> Log
     .send({ refreshToken: newRefreshToken });
 
   assert.strictEqual(afterLogoutRes.status, 401);
+});
+
+test.after(async () => {
+  await disconnectDB();
 });
