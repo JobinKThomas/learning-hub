@@ -2,10 +2,16 @@
   "name": "learning-hub-root",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "backend": "npm --prefix backend run dev",
     "frontend": "npm --prefix frontend run dev",
     "backend:test": "npm --prefix backend test",
-    "frontend:build": "npm --prefix frontend run build"
+    "frontend:build": "npm --prefix frontend run build",
+    "test:unit": "npm --prefix backend run test:unit",
+    "test:api": "npm --prefix backend run test:api",
+    "test:frontend": "npm --prefix frontend test",
+    "test:e2e": "node --test e2e/*.e2e.test.js",
+    "test:all": "npm run test:unit && npm run test:api && npm run test:frontend && npm run test:e2e"
   }
 }
