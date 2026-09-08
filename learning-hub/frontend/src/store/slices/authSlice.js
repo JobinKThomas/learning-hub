@@ -103,6 +103,50 @@ export const fetchCurrentUser = createAsyncThunk(
   }
 );
 
+/**
+ * Update user profile thunk
+ */
+export const updateUserProfile = createAsyncThunk(
+  'auth/updateUserProfile',
+  async ({ name }, { rejectWithValue }) => {
+    try {
+      const response = await authApi.updateProfile({ name });
+      const updatedUser = response.data.user;
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      return updatedUser;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || error.message || 'Failed to update profile'
+      );
+    }
+  }
+);
+
+/**
+ * Change password thunk
+ */
+export const changeUserPassword = createAsyncThunk(
+  'auth/changeUserPassword',
+  async ({ currentPassword, newPassword }, { rejectWithValue }) => {
+    try {
+      const response = await authApi.updatePassword({ currentPassword, newPassword });
+      const { accessToken, refreshToken } = response.data;
+      if (accessToken) {
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('token', accessToken);
+      }
+      if (refreshToken) {
+        localStorage.setItem('refreshToken', refreshToken);
+      }
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || error.message || 'Failed to update password'
+      );
+    }
+  }
+);
+
 const initialState = {
   user: initialUser,
   accessToken: initialAccessToken,
@@ -200,6 +244,37 @@ const authSlice = createSlice({
         state.accessToken = null;
         state.refreshToken = null;
         state.isAuthenticated = false;
+      })
+      // Update Profile
+      .addCase(updateUserProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateUserProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
+      .addCase(updateUserProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Change Password
+      .addCase(changeUserPassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(changeUserPassword.fulfilled, (state, action) => {
+        state.loading = false;
+        if (action.payload.accessToken) {
+          state.accessToken = action.payload.accessToken;
+        }
+        if (action.payload.refreshToken) {
+          state.refreshToken = action.payload.refreshToken;
+        }
+      })
+      .addCase(changeUserPassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });

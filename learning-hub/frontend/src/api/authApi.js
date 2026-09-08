@@ -47,6 +47,43 @@ export const authApi = {
     const response = await api.get('/auth/me');
     return response.data;
   },
+
+  /**
+   * Update authenticated user profile name
+   * @param {Object} data - { name }
+   */
+  updateProfile: async (data) => {
+    const response = await api.put('/auth/profile', data);
+    return response.data;
+  },
+
+  /**
+   * Update authenticated user password
+   * @param {Object} data - { currentPassword, newPassword }
+   */
+  updatePassword: async (data) => {
+    const response = await api.put('/auth/update-password', data);
+    return response.data;
+  },
+
+  /**
+   * Request password reset link
+   * @param {string} email
+   */
+  forgotPassword: async (email) => {
+    const response = await api.post('/auth/forgot-password', { email });
+    return response.data;
+  },
+
+  /**
+   * Reset password with token
+   * @param {string} token
+   * @param {string} password
+   */
+  resetPassword: async (token, password) => {
+    const response = await api.post(`/auth/reset-password/${token}`, { password });
+    return response.data;
+  },
 };
 
 export default authApi;

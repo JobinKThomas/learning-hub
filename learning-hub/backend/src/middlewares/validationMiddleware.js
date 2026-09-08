@@ -70,3 +70,82 @@ export const validateRefresh = (req, res, next) => {
   req.refreshToken = refreshToken;
   next();
 };
+
+/**
+ * Validate profile update payload
+ */
+export const validateUpdateProfile = (req, res, next) => {
+  const { name } = req.body || {};
+  const errors = [];
+
+  if (!name || typeof name !== 'string' || name.trim().length < 2) {
+    errors.push({ field: 'name', message: 'Name must be at least 2 characters long' });
+  } else if (name.trim().length > 50) {
+    errors.push({ field: 'name', message: 'Name cannot exceed 50 characters' });
+  }
+
+  if (errors.length > 0) {
+    return next(new ApiError('Validation failed', 400, errors));
+  }
+
+  next();
+};
+
+/**
+ * Validate password update payload
+ */
+export const validateUpdatePassword = (req, res, next) => {
+  const { currentPassword, newPassword } = req.body || {};
+  const errors = [];
+
+  if (!currentPassword || typeof currentPassword !== 'string') {
+    errors.push({ field: 'currentPassword', message: 'Current password is required' });
+  }
+
+  if (!newPassword || typeof newPassword !== 'string' || newPassword.length < 6) {
+    errors.push({ field: 'newPassword', message: 'New password must be at least 6 characters long' });
+  }
+
+  if (errors.length > 0) {
+    return next(new ApiError('Validation failed', 400, errors));
+  }
+
+  next();
+};
+
+/**
+ * Validate forgot password payload
+ */
+export const validateForgotPassword = (req, res, next) => {
+  const { email } = req.body || {};
+  const errors = [];
+
+  if (!email || typeof email !== 'string' || !emailRegex.test(email.trim())) {
+    errors.push({ field: 'email', message: 'Please provide a valid email address' });
+  }
+
+  if (errors.length > 0) {
+    return next(new ApiError('Validation failed', 400, errors));
+  }
+
+  next();
+};
+
+/**
+ * Validate reset password payload
+ */
+export const validateResetPassword = (req, res, next) => {
+  const { password } = req.body || {};
+  const errors = [];
+
+  if (!password || typeof password !== 'string' || password.length < 6) {
+    errors.push({ field: 'password', message: 'Password must be at least 6 characters long' });
+  }
+
+  if (errors.length > 0) {
+    return next(new ApiError('Validation failed', 400, errors));
+  }
+
+  next();
+};
+

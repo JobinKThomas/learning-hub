@@ -16,9 +16,6 @@ import {
   Shield,
   LogOut,
   RefreshCw,
-  CheckCircle2,
-  Calendar,
-  Mail,
   History,
   RotateCcw,
 } from 'lucide-react';
@@ -41,14 +38,6 @@ export default function Dashboard() {
     await logout();
     navigate('/login');
   };
-
-  const formattedDate = user?.createdAt
-    ? new Date(user.createdAt).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })
-    : 'Recently';
 
   const stats = dashboardData?.stats;
   const continueLearning = dashboardData?.continueLearning;
@@ -148,58 +137,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* 3. Learner Profile Summary */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm">
-        <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
-          <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center">
-            <User className="w-4 h-4 text-indigo-600 dark:text-indigo-400 mr-2" />
-            Learner Profile
-          </h2>
-          <span className="text-xs bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 font-semibold px-2.5 py-0.5 rounded-full flex items-center">
-            <CheckCircle2 className="w-3 h-3 mr-1" /> Active Account
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 text-sm">
-          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-            <span className="text-slate-500 dark:text-slate-400 flex items-center text-xs mb-1">
-              <User className="w-3.5 h-3.5 mr-1.5 text-slate-400" /> Full Name
-            </span>
-            <span className="font-semibold text-slate-800 dark:text-slate-200 block truncate">{user?.name}</span>
-          </div>
-
-          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-            <span className="text-slate-500 dark:text-slate-400 flex items-center text-xs mb-1">
-              <Mail className="w-3.5 h-3.5 mr-1.5 text-slate-400" /> Email Address
-            </span>
-            <span className="font-semibold text-slate-800 dark:text-slate-200 font-mono text-xs block truncate">{user?.email}</span>
-          </div>
-
-          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-            <span className="text-slate-500 dark:text-slate-400 flex items-center text-xs mb-1">
-              <Shield className="w-3.5 h-3.5 mr-1.5 text-slate-400" /> Assigned Role
-            </span>
-            <span
-              className={`inline-block font-semibold font-mono text-xs px-2 py-0.5 rounded ${
-                isAdmin
-                  ? 'bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300'
-                  : 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300'
-              }`}
-            >
-              {role || 'USER'}
-            </span>
-          </div>
-
-          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-            <span className="text-slate-500 dark:text-slate-400 flex items-center text-xs mb-1">
-              <Calendar className="w-3.5 h-3.5 mr-1.5 text-slate-400" /> Member Since
-            </span>
-            <span className="font-medium text-slate-700 dark:text-slate-300 block">{formattedDate}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* 4. Recent Quiz Attempts Section */}
+      {/* 3. Recent Quiz Attempts Section */}
       <div className="space-y-4 pt-4 border-t border-slate-200 dark:border-slate-800">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">

@@ -26,12 +26,37 @@ export class AuthRepository {
   /**
    * Find a user by ID
    */
-  async findById(id, { includeRefreshTokens = false } = {}) {
+  async findById(id, { includePassword = false, includeRefreshTokens = false } = {}) {
     let query = User.findById(id);
-    if (includeRefreshTokens) {
-      query = query.select('+refreshTokens');
+    const selectFields = [];
+    if (includePassword) selectFields.push('+password');
+    if (includeRefreshTokens) selectFields.push('+refreshTokens');
+
+    if (selectFields.length > 0) {
+      query = query.select(selectFields.join(' '));
     }
     return await query.exec();
+  }
+
+  /**
+   * Update user profile name
+   */
+  async updateName(userId, name) {
+    return await User.findByIdAndUpdate(
+      userId,
+      { $set: { name } },
+      { new: true, runValidators: true }
+    );
+  }
+
+  /**
+   * Find a user by valid password reset token
+   */
+  async findByResetToken(hashedToken) {
+    return await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpire: { $gt: Date.now() },
+    }).select('+password');
   }
 
   /**

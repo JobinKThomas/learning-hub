@@ -131,6 +131,98 @@ export class AuthController {
       next(error);
     }
   };
+
+  /**
+   * @desc    Update current authenticated user profile
+   * @route   PUT /api/auth/profile
+   * @access  Private
+   */
+  updateProfile = async (req, res, next) => {
+    try {
+      const { name } = req.body;
+      const user = await this.service.updateProfile(req.user._id, { name });
+
+      return sendSuccess(
+        res,
+        'Profile updated successfully',
+        { user },
+        200
+      );
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * @desc    Update current authenticated user password
+   * @route   PUT /api/auth/update-password
+   * @access  Private
+   */
+  updatePassword = async (req, res, next) => {
+    try {
+      const { currentPassword, newPassword } = req.body;
+      const result = await this.service.updatePassword(req.user._id, {
+        currentPassword,
+        newPassword,
+      });
+
+      res.cookie('refreshToken', result.refreshToken, REFRESH_COOKIE_OPTIONS);
+
+      return sendSuccess(
+        res,
+        result.message || 'Password updated successfully',
+        result,
+        200
+      );
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * @desc    Request password reset token
+   * @route   POST /api/auth/forgot-password
+   * @access  Public
+   */
+  forgotPassword = async (req, res, next) => {
+    try {
+      const { email } = req.body;
+      const result = await this.service.forgotPassword(email);
+
+      return sendSuccess(
+        res,
+        result.message,
+        result,
+        200
+      );
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * @desc    Reset password using token
+   * @route   POST /api/auth/reset-password/:token
+   * @access  Public
+   */
+  resetPassword = async (req, res, next) => {
+    try {
+      const { token } = req.params;
+      const { password } = req.body;
+      const result = await this.service.resetPassword(token, password);
+
+      res.cookie('refreshToken', result.refreshToken, REFRESH_COOKIE_OPTIONS);
+
+      return sendSuccess(
+        res,
+        result.message || 'Password reset successfully',
+        result,
+        200
+      );
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export const authController = new AuthController();
@@ -141,3 +233,7 @@ export const login = authController.login;
 export const refresh = authController.refresh;
 export const logout = authController.logout;
 export const getMe = authController.getMe;
+export const updateProfile = authController.updateProfile;
+export const updatePassword = authController.updatePassword;
+export const forgotPassword = authController.forgotPassword;
+export const resetPassword = authController.resetPassword;
