@@ -188,15 +188,15 @@ export default function ModuleDetails() {
         <div className="lg:col-span-2 space-y-6">
           {/* Learning Objectives */}
           {objectives.length > 0 && (
-            <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-4">
-              <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <Target className="w-4 h-4 text-indigo-600" />
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
+              <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                <Target className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                 Key Learning Objectives
               </h2>
               <ul className="space-y-2.5">
                 {objectives.map((obj, oIdx) => (
-                  <li key={oIdx} className="flex items-start gap-3 text-xs text-slate-700">
-                    <div className="w-4 h-4 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 mt-0.5">
+                  <li key={oIdx} className="flex items-start gap-3 text-xs text-slate-700 dark:text-slate-300">
+                    <div className="w-4 h-4 rounded-full bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 mt-0.5">
                       <Sparkles className="w-2.5 h-2.5" />
                     </div>
                     <span className="leading-relaxed">{obj}</span>
@@ -207,25 +207,25 @@ export default function ModuleDetails() {
           )}
 
           {/* Curriculum Sections & Sub-lessons (Phase 5) */}
-          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-4 gap-2">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4 gap-2">
               <div>
-                <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <Layers className="w-4 h-4 text-indigo-600" />
+                <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                  <Layers className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                   Module Sections & Lessons
                 </h2>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   Deep-dive sections covering essential concepts and syntax breakdown.
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-slate-500">
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
                   {sections.length} {sections.length === 1 ? 'Section' : 'Sections'}
                 </span>
                 {isAdmin && (
                   <Link
                     to={`/admin/sections/create?module=${module.slug}`}
-                    className="inline-flex items-center px-2.5 py-1 rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 text-[11px] font-semibold transition"
+                    className="inline-flex items-center px-2.5 py-1 rounded-lg bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900/50 border border-purple-200 dark:border-purple-800 text-[11px] font-semibold transition"
                   >
                     <PlusCircle className="w-3.5 h-3.5 mr-1" />
                     + Add Section
@@ -262,15 +262,15 @@ export default function ModuleDetails() {
                   return (
                     <div
                       key={section.id}
-                      className="p-5 rounded-2xl border border-slate-200/80 bg-slate-50/40 hover:bg-white hover:border-indigo-200 hover:shadow-sm transition-all group"
+                      className="p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/40 dark:bg-slate-950/40 hover:bg-white dark:hover:bg-slate-800/60 hover:border-indigo-200 dark:hover:border-indigo-800 hover:shadow-sm transition-all group"
                     >
                       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                         <div className="space-y-1.5 flex-grow">
                           <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-700">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-100 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300">
                               Section {section.order || sIdx + 1}
                             </span>
-                            <span className="text-[11px] font-medium text-slate-500 flex items-center gap-1">
+                            <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1">
                               <Clock className="w-3 h-3 text-amber-500" />
                               {section.duration}
                             </span>
@@ -282,25 +282,25 @@ export default function ModuleDetails() {
                               />
                             )}
                           </div>
-                        <h3 className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition">
+                        <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition">
                           <Link to={`/sections/${section.slug}`}>
                             {section.title}
                           </Link>
                         </h3>
-                        <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                        <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed">
                           {section.description}
                         </p>
 
                         {/* Sub-lesson items pills (e.g. var, let, const) */}
                         {section.items && section.items.length > 0 && (
                           <div className="flex flex-wrap items-center gap-1.5 pt-2">
-                            <span className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">
+                            <span className="text-[10px] uppercase font-semibold text-slate-400 dark:text-slate-500 tracking-wider">
                               Topics:
                             </span>
                             {section.items.map((item, itemIdx) => (
                               <span
                                 key={itemIdx}
-                                className="px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200 text-slate-700 font-mono text-[11px] font-medium"
+                                className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-mono text-[11px] font-medium"
                               >
                                 {item}
                               </span>
@@ -312,7 +312,7 @@ export default function ModuleDetails() {
                       <div className="shrink-0 self-start sm:self-center">
                         <Link
                           to={`/sections/${section.slug}`}
-                          className="inline-flex items-center px-3.5 py-1.5 rounded-xl bg-indigo-50 text-indigo-700 hover:bg-indigo-600 hover:text-white font-semibold text-xs transition gap-1"
+                          className="inline-flex items-center px-3.5 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-600 dark:hover:bg-indigo-600 hover:text-white font-semibold text-xs transition gap-1"
                         >
                           <span>Study Section</span>
                           <ArrowRight className="w-3.5 h-3.5" />
@@ -327,18 +327,18 @@ export default function ModuleDetails() {
           </div>
 
           {/* Topics / Lessons Checklist */}
-          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-5">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-5">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
               <div>
-                <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <GraduationCap className="w-4 h-4 text-indigo-600" />
+                <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                  <GraduationCap className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                   Module Curriculum & Lessons
                 </h2>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   Check off lessons as you complete exercises and master the concepts.
                 </p>
               </div>
-              <span className="text-xs font-semibold text-slate-500">
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
                 {completedCount} / {totalTopics} completed
               </span>
             </div>
@@ -353,27 +353,27 @@ export default function ModuleDetails() {
                     onClick={() => toggleTopic(idx)}
                     className={`w-full p-4 rounded-xl border text-left flex items-start gap-4 transition-all ${
                       isCompleted
-                        ? 'bg-emerald-50/60 border-emerald-200 text-slate-900'
-                        : 'bg-slate-50/50 hover:bg-slate-100/70 border-slate-200 text-slate-800'
+                        ? 'bg-emerald-50/60 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800/60 text-slate-900 dark:text-slate-100'
+                        : 'bg-slate-50/50 dark:bg-slate-950/40 hover:bg-slate-100/70 dark:hover:bg-slate-800/60 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200'
                     }`}
                   >
                     <div className="mt-0.5 shrink-0">
                       {isCompleted ? (
-                        <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                        <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                       ) : (
-                        <Circle className="w-5 h-5 text-slate-400 hover:text-indigo-600" />
+                        <Circle className="w-5 h-5 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400" />
                       )}
                     </div>
                     <div className="flex-grow">
                       <div className="flex items-center justify-between">
-                        <span className={`text-xs font-bold ${isCompleted ? 'line-through text-slate-500' : 'text-slate-900'}`}>
+                        <span className={`text-xs font-bold ${isCompleted ? 'line-through text-slate-500 dark:text-slate-500' : 'text-slate-900 dark:text-slate-100'}`}>
                           Lesson {idx + 1}: {topic}
                         </span>
                         <span
                           className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
                             isCompleted
-                              ? 'bg-emerald-100 text-emerald-800'
-                              : 'bg-slate-200 text-slate-600'
+                              ? 'bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300'
+                              : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                           }`}
                         >
                           {isCompleted ? 'Completed' : 'To Do'}
@@ -389,12 +389,12 @@ export default function ModuleDetails() {
 
         {/* Right Column: Progress & Actions Card */}
         <div className="space-y-6">
-          <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-md space-y-6 sticky top-24">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-md space-y-6 sticky top-24">
             <div>
-              <span className="text-[10px] font-semibold uppercase text-slate-400 tracking-wider">
+              <span className="text-[10px] font-semibold uppercase text-slate-400 dark:text-slate-500 tracking-wider">
                 Progress Tracker
               </span>
-              <h3 className="text-lg font-bold text-slate-900 mt-1">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mt-1">
                 Module Completion
               </h3>
             </div>
@@ -408,13 +408,13 @@ export default function ModuleDetails() {
             />
 
             {/* Completion status feedback */}
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 text-xs space-y-1">
-              <span className="font-semibold text-slate-800">
+            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-100 dark:border-slate-800 text-xs space-y-1">
+              <span className="font-semibold text-slate-800 dark:text-slate-200">
                 {progressPercent === 100
                   ? '🎉 Module Complete!'
                   : `${totalTopics - completedCount} lessons remaining`}
               </span>
-              <p className="text-[11px] text-slate-500">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
                 {progressPercent === 100
                   ? 'Great job! You have completed all lessons in this module.'
                   : 'Click on each topic card to mark it as completed as you study.'}
@@ -425,7 +425,7 @@ export default function ModuleDetails() {
             {parentPath && (
               <Link
                 to={`/learning-paths/${parentPath.slug}`}
-                className="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-100 transition"
+                className="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-100 dark:shadow-none transition"
               >
                 <span>Continue {parentPath.title} Track</span>
                 <ArrowRight className="w-4 h-4 ml-1.5" />
@@ -435,16 +435,16 @@ export default function ModuleDetails() {
             {/* Share action */}
             <button
               onClick={handleShare}
-              className="w-full py-2 px-3 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition flex items-center justify-center gap-2"
+              className="w-full py-2 px-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition flex items-center justify-center gap-2"
             >
               {copied ? (
                 <>
-                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                   <span>Link Copied!</span>
                 </>
               ) : (
                 <>
-                  <Share2 className="w-3.5 h-3.5 text-slate-500" />
+                  <Share2 className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                   <span>Share Module</span>
                 </>
               )}

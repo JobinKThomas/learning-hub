@@ -101,7 +101,7 @@ export default function AdminLayout({ children }) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 transition-colors duration-200">
       {/* Top Admin Sub-Header */}
       <div className="bg-slate-900 text-white border-b border-slate-800 sticky top-16 z-30 shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -142,8 +142,8 @@ export default function AdminLayout({ children }) {
                       className="fixed inset-0 z-40"
                       onClick={() => setQuickCreateOpen(false)}
                     />
-                    <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white text-slate-900 shadow-2xl border border-slate-200 py-2 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
-                      <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100">
+                    <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xl border border-slate-200 dark:border-slate-800 py-2 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+                      <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
                         Create New Content
                       </div>
                       <div className="py-1 max-h-80 overflow-y-auto">
@@ -154,9 +154,9 @@ export default function AdminLayout({ children }) {
                               key={item.createPath}
                               to={item.createPath}
                               onClick={() => setQuickCreateOpen(false)}
-                              className="flex items-center px-3 py-2 text-xs font-medium text-slate-700 hover:bg-purple-50 hover:text-purple-700 transition"
+                              className="flex items-center px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-purple-50 dark:hover:bg-purple-950/40 hover:text-purple-700 dark:hover:text-purple-300 transition"
                             >
-                              <IconComponent className="w-3.5 h-3.5 mr-2 text-purple-600" />
+                              <IconComponent className="w-3.5 h-3.5 mr-2 text-purple-600 dark:text-purple-400" />
                               <span>New {item.name.replace(/s$/, '')}</span>
                             </Link>
                           );

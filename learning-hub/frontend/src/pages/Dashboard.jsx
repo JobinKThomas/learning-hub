@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAuth } from '../hooks/useAuth';
-import authApi from '../api/authApi';
 import { fetchDashboardData } from '../features/dashboard/dashboardSlice';
 import DashboardCards from '../features/dashboard/components/DashboardCards';
 import ContinueLearning from '../features/dashboard/components/ContinueLearning';
@@ -15,11 +14,9 @@ import { normalizeList } from '../utils/normalize';
 import {
   User,
   Shield,
-  Key,
   LogOut,
   RefreshCw,
   CheckCircle2,
-  AlertCircle,
   Calendar,
   Mail,
   History,
@@ -29,13 +26,11 @@ import {
 export default function Dashboard() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { user, role, isAdmin, accessToken, refreshToken, logout } = useAuth();
+  const { user, role, isAdmin, logout } = useAuth();
   const { data: dashboardData, loading: dashboardLoading, error: dashboardError } = useSelector(
     (state) => state.dashboard
   );
 
-  const [testResponse, setTestResponse] = useState(null);
-  const [testingApi, setTestingApi] = useState(false);
   const [reviewAttemptId, setReviewAttemptId] = useState(null);
 
   useEffect(() => {
@@ -45,18 +40,6 @@ export default function Dashboard() {
   const handleLogout = async () => {
     await logout();
     navigate('/login');
-  };
-
-  const handleTestProtected = async () => {
-    setTestingApi(true);
-    try {
-      const res = await authApi.getMe();
-      setTestResponse({ success: true, data: res.data });
-    } catch (err) {
-      setTestResponse({ success: false, error: err.message });
-    } finally {
-      setTestingApi(false);
-    }
   };
 
   const formattedDate = user?.createdAt
@@ -165,128 +148,63 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* 3. Account Details & JWT Session Info */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* User Profile Card */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-            <h2 className="text-base font-bold text-slate-900 flex items-center">
-              <User className="w-4 h-4 text-indigo-600 mr-2" />
-              Learner Profile
-            </h2>
-            <span className="text-xs bg-emerald-100 text-emerald-700 font-semibold px-2 py-0.5 rounded-full flex items-center">
-              <CheckCircle2 className="w-3 h-3 mr-1" /> Active
+      {/* 3. Learner Profile Summary */}
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm">
+        <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+          <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center">
+            <User className="w-4 h-4 text-indigo-600 dark:text-indigo-400 mr-2" />
+            Learner Profile
+          </h2>
+          <span className="text-xs bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 font-semibold px-2.5 py-0.5 rounded-full flex items-center">
+            <CheckCircle2 className="w-3 h-3 mr-1" /> Active Account
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 text-sm">
+          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+            <span className="text-slate-500 dark:text-slate-400 flex items-center text-xs mb-1">
+              <User className="w-3.5 h-3.5 mr-1.5 text-slate-400" /> Full Name
+            </span>
+            <span className="font-semibold text-slate-800 dark:text-slate-200 block truncate">{user?.name}</span>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+            <span className="text-slate-500 dark:text-slate-400 flex items-center text-xs mb-1">
+              <Mail className="w-3.5 h-3.5 mr-1.5 text-slate-400" /> Email Address
+            </span>
+            <span className="font-semibold text-slate-800 dark:text-slate-200 font-mono text-xs block truncate">{user?.email}</span>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+            <span className="text-slate-500 dark:text-slate-400 flex items-center text-xs mb-1">
+              <Shield className="w-3.5 h-3.5 mr-1.5 text-slate-400" /> Assigned Role
+            </span>
+            <span
+              className={`inline-block font-semibold font-mono text-xs px-2 py-0.5 rounded ${
+                isAdmin
+                  ? 'bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300'
+                  : 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300'
+              }`}
+            >
+              {role || 'USER'}
             </span>
           </div>
 
-          <div className="space-y-4 text-sm">
-            <div className="flex items-start justify-between">
-              <span className="text-slate-500 flex items-center text-xs">
-                <User className="w-3.5 h-3.5 mr-1.5 text-slate-400" /> Full Name
-              </span>
-              <span className="font-semibold text-slate-800">{user?.name}</span>
-            </div>
-
-            <div className="flex items-start justify-between">
-              <span className="text-slate-500 flex items-center text-xs">
-                <Mail className="w-3.5 h-3.5 mr-1.5 text-slate-400" /> Email Address
-              </span>
-              <span className="font-semibold text-slate-800 font-mono text-xs">{user?.email}</span>
-            </div>
-
-            <div className="flex items-start justify-between">
-              <span className="text-slate-500 flex items-center text-xs">
-                <Shield className="w-3.5 h-3.5 mr-1.5 text-slate-400" /> Assigned Role
-              </span>
-              <span
-                className={`font-semibold font-mono text-xs px-2 py-0.5 rounded ${
-                  isAdmin ? 'bg-purple-100 text-purple-700' : 'bg-indigo-50 text-indigo-700'
-                }`}
-              >
-                {role || 'USER'}
-              </span>
-            </div>
-
-            <div className="flex items-start justify-between">
-              <span className="text-slate-500 flex items-center text-xs">
-                <Calendar className="w-3.5 h-3.5 mr-1.5 text-slate-400" /> Member Since
-              </span>
-              <span className="font-medium text-slate-700">{formattedDate}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Active Session & Tokens Card */}
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-            <div>
-              <h2 className="text-base font-bold text-slate-900 flex items-center">
-                <Key className="w-4 h-4 text-indigo-600 mr-2" />
-                Active Dual-JWT Session
-              </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Redux Toolkit state authenticated with role-based scope
-              </p>
-            </div>
-            <button
-              onClick={handleTestProtected}
-              disabled={testingApi}
-              className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-xs font-semibold border border-indigo-200 transition disabled:opacity-50"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${testingApi ? 'animate-spin' : ''}`} />
-              Test GET /api/auth/me
-            </button>
-          </div>
-
-          <div className="space-y-4">
-            {/* Access Token */}
-            <div>
-              <div className="flex justify-between items-center text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
-                <span>Access Token (Bearer Header)</span>
-                <span className="text-indigo-600 font-mono text-[10px]">15m expiry</span>
-              </div>
-              <div className="bg-slate-900 text-emerald-400 p-3 rounded-xl font-mono text-xs overflow-x-auto shadow-inner break-all">
-                {accessToken || 'None'}
-              </div>
-            </div>
-
-            {/* Refresh Token */}
-            <div>
-              <div className="flex justify-between items-center text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
-                <span>Refresh Token (Secure Invalidation)</span>
-                <span className="text-indigo-600 font-mono text-[10px]">7d expiry</span>
-              </div>
-              <div className="bg-slate-900 text-amber-300 p-3 rounded-xl font-mono text-xs overflow-x-auto shadow-inner break-all">
-                {refreshToken || 'None'}
-              </div>
-            </div>
-
-            {/* Test response panel */}
-            {testResponse && (
-              <div className="mt-4 pt-4 border-t border-slate-100">
-                <div className="text-xs font-semibold text-slate-700 mb-2 flex items-center">
-                  {testResponse.success ? (
-                    <CheckCircle2 className="w-4 h-4 text-emerald-500 mr-1.5" />
-                  ) : (
-                    <AlertCircle className="w-4 h-4 text-red-500 mr-1.5" />
-                  )}
-                  API Response from <code>GET /api/auth/me</code>:
-                </div>
-                <pre className="bg-slate-900 text-slate-200 p-3 rounded-xl text-xs font-mono overflow-x-auto">
-                  {JSON.stringify(testResponse, null, 2)}
-                </pre>
-              </div>
-            )}
+          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+            <span className="text-slate-500 dark:text-slate-400 flex items-center text-xs mb-1">
+              <Calendar className="w-3.5 h-3.5 mr-1.5 text-slate-400" /> Member Since
+            </span>
+            <span className="font-medium text-slate-700 dark:text-slate-300 block">{formattedDate}</span>
           </div>
         </div>
       </div>
 
       {/* 4. Recent Quiz Attempts Section */}
-      <div className="space-y-4 pt-4 border-t border-slate-200">
+      <div className="space-y-4 pt-4 border-t border-slate-200 dark:border-slate-800">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <History className="w-5 h-5 text-indigo-600" />
-            <h2 className="text-base font-bold text-slate-900">
+            <History className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+            <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
               Recent Knowledge Quiz Attempts ({recentQuizAttempts?.length || 0})
             </h2>
           </div>

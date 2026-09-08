@@ -46,6 +46,7 @@ test.before(async () => {
     testQuiz = await Quiz.create({
       topic: letTopic._id,
       title: 'Scoping & Declaration Quiz',
+      slug: 'scoping-and-declaration-quiz',
       passingScore: 70,
       questions: [
         {

@@ -28,7 +28,7 @@ export default function ProgressBar({
     } else if (clamped > 0) {
       barColorClass = 'bg-amber-500';
     } else {
-      barColorClass = 'bg-slate-300';
+      barColorClass = 'bg-slate-300 dark:bg-slate-700';
     }
   } else if (color === 'emerald') {
     barColorClass = 'bg-emerald-500';
@@ -45,18 +45,18 @@ export default function ProgressBar({
       {(showLabel || subText) && (
         <div className="flex items-center justify-between text-xs font-semibold">
           {label ? (
-            <span className="text-slate-700 font-medium truncate">{label}</span>
+            <span className="text-slate-700 dark:text-slate-300 font-medium truncate">{label}</span>
           ) : (
-            <span className="text-slate-500">{subText}</span>
+            <span className="text-slate-500 dark:text-slate-400">{subText}</span>
           )}
-          <span className="text-slate-900 font-bold ml-2 shrink-0">
+          <span className="text-slate-900 dark:text-slate-100 font-bold ml-2 shrink-0">
             {clamped}%
           </span>
         </div>
       )}
 
       {/* Progress Track */}
-      <div className={`w-full ${heightClasses} rounded-full bg-slate-100 overflow-hidden`}>
+      <div className={`w-full ${heightClasses} rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden`}>
         <div
           className={`${heightClasses} ${barColorClass} rounded-full transition-all duration-500 ease-out`}
           style={{ width: `${clamped}%` }}
@@ -64,7 +64,7 @@ export default function ProgressBar({
       </div>
 
       {showLabel && subText && label && (
-        <div className="text-[11px] text-slate-500">
+        <div className="text-[11px] text-slate-500 dark:text-slate-400">
           {subText}
         </div>
       )}

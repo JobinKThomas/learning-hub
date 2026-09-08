@@ -10,7 +10,7 @@ export default function ProtectedRoute({ children }) {
     return (
       <div className="min-h-[50vh] flex flex-col items-center justify-center space-y-3">
         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
-        <span className="text-xs text-slate-500 font-medium">Verifying authentication...</span>
+        <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Verifying authentication...</span>
       </div>
     );
   }
