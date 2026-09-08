@@ -7,7 +7,9 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "node --test tests/*.test.js",
+    "test": "cross-env MONGODB_URI=mongodb://127.0.0.1:27017/learning_hub_test node --test --test-concurrency=1 tests/*.test.js",
+    "db:clean-learning-content": "node scripts/clearLearningContent.js",
+    "db:clean-unwanted": "node scripts/cleanUnwantedData.js",
     "db:start": "bash scripts/start-mongo.sh",
     "seed:paths": "node scripts/seedLearningPaths.js",
     "seed:modules": "node scripts/seedModules.js",

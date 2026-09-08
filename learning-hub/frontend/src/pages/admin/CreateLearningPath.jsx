@@ -43,14 +43,7 @@ export default function CreateLearningPath() {
     published: true,
   });
 
-  const [modules, setModules] = useState([
-    {
-      title: '1. Foundations & Setup',
-      description: 'Core concepts, tooling, and development environment setup.',
-      duration: '4 hours',
-      topicsInput: 'Setup & Installation, Syntax Fundamentals, First Project',
-    },
-  ]);
+  const [modules, setModules] = useState([]);
 
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
   const [formError, setFormError] = useState(null);
@@ -374,16 +367,28 @@ export default function CreateLearningPath() {
           </div>
 
           <div className="space-y-4">
-            {modules.map((mod, index) => (
-              <div
-                key={index}
-                className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3 relative group"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-purple-800 bg-purple-100 px-2.5 py-0.5 rounded-full">
-                    Module {index + 1}
-                  </span>
-                  {modules.length > 1 && (
+            {modules.length === 0 ? (
+              <div className="text-center py-6 border-2 border-dashed border-slate-200 rounded-xl">
+                <p className="text-xs text-slate-500">No modules added yet. You can add modules now or create them later.</p>
+                <button
+                  type="button"
+                  onClick={handleAddModule}
+                  className="mt-2 inline-flex items-center px-3 py-1.5 rounded-lg bg-purple-50 text-purple-700 border border-purple-200 text-xs font-semibold hover:bg-purple-100 transition"
+                >
+                  <PlusCircle className="w-3.5 h-3.5 mr-1" />
+                  Add Module
+                </button>
+              </div>
+            ) : (
+              modules.map((mod, index) => (
+                <div
+                  key={index}
+                  className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3 relative group"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-purple-800 bg-purple-100 px-2.5 py-0.5 rounded-full">
+                      Module {index + 1}
+                    </span>
                     <button
                       type="button"
                       onClick={() => handleRemoveModule(index)}
@@ -392,8 +397,7 @@ export default function CreateLearningPath() {
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
-                  )}
-                </div>
+                  </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="sm:col-span-2">
@@ -450,7 +454,7 @@ export default function CreateLearningPath() {
                   />
                 </div>
               </div>
-            ))}
+            )))}
           </div>
         </div>
 

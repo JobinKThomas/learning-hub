@@ -38,10 +38,10 @@ export default function CreateNote() {
     slug: '',
     topic: preselectedTopic || '',
     summary: '',
-    readingTime: '5 mins',
+    readingTime: '',
     order: 1,
-    tagsInput: 'javascript, es6',
-    content: `# Introduction\n\nWrite your rich markdown content here...\n\n\`\`\`javascript\nconst example = "Hello Learning Hub";\nconsole.log(example);\n\`\`\``,
+    tagsInput: '',
+    content: '',
     published: true,
   });
 

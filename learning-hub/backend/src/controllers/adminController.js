@@ -34,7 +34,7 @@ export class AdminController {
         interviewQuestionsCount,
       ] = await Promise.all([
         User.countDocuments(),
-        User.countDocuments({ role: 'ADMIN' }),
+        User.countDocuments({ role: { $regex: /^admin$/i } }),
         User.find().select('name email role createdAt').sort({ createdAt: -1 }).limit(5),
         LearningPath.countDocuments(),
         Module.countDocuments(),

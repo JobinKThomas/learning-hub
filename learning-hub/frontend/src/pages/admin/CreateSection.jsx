@@ -35,9 +35,9 @@ export default function CreateSection() {
     slug: '',
     module: preselectedModule || '',
     description: '',
-    duration: '45 mins',
+    duration: '',
     order: 1,
-    itemsInput: 'var, let, const',
+    itemsInput: '',
     content: '',
     published: true,
   });

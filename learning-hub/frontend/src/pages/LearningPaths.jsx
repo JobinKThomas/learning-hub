@@ -376,7 +376,11 @@ export default function LearningPaths() {
         <EmptyState
           icon={Layers}
           title="No learning paths found"
-          description="We couldn't find any learning paths matching your current filter criteria. Try adjusting your search term or clearing filters."
+          description={
+            hasActiveFilters
+              ? "We couldn't find any learning paths matching your current filter criteria. Try adjusting your search term or clearing filters."
+              : "No learning paths have been created yet. When administrators create learning tracks, they will appear here."
+          }
           actionText={hasActiveFilters ? "Clear Filters" : isAdmin ? "Create Learning Path" : undefined}
           onAction={hasActiveFilters ? handleResetFilters : undefined}
           actionLink={!hasActiveFilters && isAdmin ? "/admin/learning-paths/create" : undefined}

@@ -27,7 +27,7 @@ export default function CreatePlayground() {
     topic: '',
     description: '',
     instructions: '',
-    initialCode: '// Write your code here\nconsole.log("Hello from Learning Hub!");\n',
+    initialCode: '',
     solutionCode: '',
     expectedOutput: '',
     hintsText: '',
