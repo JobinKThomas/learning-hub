@@ -105,23 +105,23 @@ export default function ModuleDetails() {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       {/* Breadcrumb Navigation */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center space-x-2 text-xs font-semibold text-slate-500">
           {parentPath ? (
             <Link
               to={`/learning-paths/${parentPath.slug}`}
-              className="inline-flex items-center hover:text-indigo-600 transition"
+              className="inline-flex items-center hover:text-indigo-600 transition min-h-[36px]"
             >
               <ArrowLeft className="w-4 h-4 mr-1.5" />
-              Back to {parentPath.title}
+              <span>Back to {parentPath.title}</span>
             </Link>
           ) : (
             <Link
               to="/learning-paths"
-              className="inline-flex items-center hover:text-indigo-600 transition"
+              className="inline-flex items-center hover:text-indigo-600 transition min-h-[36px]"
             >
               <ArrowLeft className="w-4 h-4 mr-1.5" />
-              Back to Learning Paths
+              <span>Back to Learning Paths</span>
             </Link>
           )}
         </div>
@@ -129,16 +129,16 @@ export default function ModuleDetails() {
         {isAdmin && (
           <Link
             to={`/admin/modules/${module.id}/edit`}
-            className="inline-flex items-center px-3 py-1.5 rounded-lg border border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100 text-xs font-semibold transition"
+            className="inline-flex items-center px-3 py-1.5 rounded-lg border border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100 text-xs font-semibold transition min-h-[36px]"
           >
             <Edit className="w-3.5 h-3.5 mr-1.5" />
-            Edit Module (Admin)
+            <span>Edit Module (Admin)</span>
           </Link>
         )}
       </div>
 
       {/* Module Header Banner */}
-      <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-8 text-white shadow-xl space-y-4">
+      <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-2xl sm:rounded-3xl p-5 sm:p-8 text-white shadow-xl space-y-3 sm:space-y-4">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-bold px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
             Module {module.order || 1}
@@ -158,15 +158,15 @@ export default function ModuleDetails() {
           )}
         </div>
 
-        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight">
           {module.title}
         </h1>
 
-        <p className="text-slate-300 text-sm sm:text-base max-w-3xl leading-relaxed">
+        <p className="text-slate-300 text-xs sm:text-sm md:text-base max-w-3xl leading-relaxed">
           {module.description}
         </p>
 
-        <div className="flex flex-wrap items-center gap-6 pt-3 text-xs sm:text-sm text-slate-300 border-t border-white/10">
+        <div className="flex flex-wrap items-center gap-4 sm:gap-6 pt-3 text-xs sm:text-sm text-slate-300 border-t border-white/10">
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4 text-amber-400" />
             <span>

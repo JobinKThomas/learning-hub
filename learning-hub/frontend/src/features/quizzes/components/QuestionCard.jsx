@@ -13,7 +13,7 @@ export default function QuestionCard({
   if (!question) return null;
 
   return (
-    <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-6">
+    <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-slate-200/80 shadow-sm space-y-5 sm:space-y-6">
       {/* Question Header */}
       <div className="flex items-center justify-between text-xs font-semibold text-slate-500 border-b border-slate-100 pb-3">
         <span className="uppercase tracking-wider text-indigo-600 font-bold">
@@ -24,20 +24,20 @@ export default function QuestionCard({
 
       {/* Question Text */}
       <div className="space-y-3">
-        <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 leading-snug">
+        <h2 className="text-base sm:text-lg md:text-xl font-extrabold text-slate-900 leading-snug">
           {question.question}
         </h2>
 
         {/* Optional Code Snippet */}
         {question.codeSnippet && (
-          <pre className="p-4 bg-slate-950 text-emerald-400 font-mono text-xs rounded-2xl overflow-x-auto leading-relaxed border border-slate-800">
+          <pre className="p-3 sm:p-4 bg-slate-950 text-emerald-400 font-mono text-xs rounded-xl sm:rounded-2xl overflow-x-auto leading-relaxed border border-slate-800">
             <code>{question.codeSnippet}</code>
           </pre>
         )}
       </div>
 
       {/* Options List */}
-      <div className="space-y-3 pt-2">
+      <div className="space-y-2.5 sm:space-y-3 pt-2">
         {question.options.map((option, idx) => {
           const isSelected = selectedOption === idx;
           const letter = OPTION_LETTERS[idx] || `${idx + 1}`;
@@ -47,7 +47,7 @@ export default function QuestionCard({
               key={idx}
               type="button"
               onClick={() => onSelectOption(idx)}
-              className={`w-full text-left p-4 rounded-2xl border text-xs sm:text-sm font-medium transition-all flex items-center justify-between gap-4 group ${
+              className={`w-full text-left p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border text-xs sm:text-sm font-medium transition-all flex items-center justify-between gap-3 sm:gap-4 group min-h-[48px] ${
                 isSelected
                   ? 'bg-indigo-50/70 border-indigo-600 text-indigo-950 shadow-sm ring-1 ring-indigo-600'
                   : 'bg-slate-50/50 hover:bg-slate-100/70 border-slate-200 text-slate-800'

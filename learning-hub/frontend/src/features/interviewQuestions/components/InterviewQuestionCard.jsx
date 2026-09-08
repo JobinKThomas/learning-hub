@@ -179,10 +179,10 @@ export default function InterviewQuestionCard({
       </div>
 
       {/* Action Footer & Reveal Button */}
-      <div className="px-5 py-3 bg-slate-50/60 border-t border-slate-100 flex items-center justify-between">
+      <div className="px-4 sm:px-5 py-3 bg-slate-50/60 border-t border-slate-100 flex items-center justify-between">
         <button
           onClick={() => setIsRevealed(!isRevealed)}
-          className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition duration-150 ${
+          className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition duration-150 min-h-[40px] ${
             isRevealed
               ? 'bg-slate-200 text-slate-700 hover:bg-slate-300'
               : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm shadow-indigo-200'

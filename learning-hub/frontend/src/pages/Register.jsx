@@ -54,12 +54,12 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-xl shadow-slate-100">
+    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-3 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <div className="max-w-md w-full space-y-6 sm:space-y-8 bg-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-xl shadow-slate-100">
         <div>
           <Link
             to="/"
-            className="inline-flex items-center text-xs font-semibold text-slate-500 hover:text-indigo-600 transition mb-6"
+            className="inline-flex items-center text-xs font-semibold text-slate-500 hover:text-indigo-600 transition mb-4 sm:mb-6 min-h-[36px]"
           >
             <ArrowLeft className="w-3.5 h-3.5 mr-1" />
             Back to Home

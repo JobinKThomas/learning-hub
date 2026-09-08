@@ -13,7 +13,7 @@ import {
 export default function ContinueLearning({ item }) {
   if (!item || !item.topic) {
     return (
-      <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-sm space-y-4 flex flex-col justify-between">
+      <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-sm space-y-4 flex flex-col justify-between">
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-indigo-600">
             <Compass className="w-5 h-5" />
@@ -26,7 +26,7 @@ export default function ContinueLearning({ item }) {
         </div>
         <Link
           to="/learning-paths"
-          className="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-100 transition gap-2"
+          className="w-full inline-flex items-center justify-center px-4 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-100 transition gap-2 min-h-[44px]"
         >
           <span>Explore Learning Paths</span>
           <ArrowRight className="w-3.5 h-3.5" />
@@ -38,7 +38,7 @@ export default function ContinueLearning({ item }) {
   const { learningPath, module, section, topic, progress = 0, continueUrl, isNew } = item;
 
   return (
-    <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-sm hover:shadow-md transition space-y-5 flex flex-col justify-between">
+    <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-sm hover:shadow-md transition space-y-5 flex flex-col justify-between">
       <div className="space-y-4">
         {/* Header Title */}
         <div className="flex items-center justify-between">
@@ -100,7 +100,7 @@ export default function ContinueLearning({ item }) {
       <div className="pt-2">
         <Link
           to={continueUrl || `/topics/${topic.slug}`}
-          className="w-full inline-flex items-center justify-center px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white text-xs font-bold shadow-md shadow-indigo-200 transition gap-2 group"
+          className="w-full inline-flex items-center justify-center px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white text-xs font-bold shadow-md shadow-indigo-200 transition gap-2 group min-h-[44px]"
         >
           <span>{isNew ? 'Start Topic' : 'Continue'}</span>
           <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />

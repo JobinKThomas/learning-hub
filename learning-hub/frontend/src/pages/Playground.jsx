@@ -198,7 +198,7 @@ export default function Playground() {
       </div>
 
       {/* Playground Header Banner */}
-      <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-5">
+      <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-5">
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-2">
             <span className={`text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${diffBadge}`}>
@@ -215,7 +215,7 @@ export default function Playground() {
             )}
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
             {playground.title}
           </h1>
 
@@ -227,12 +227,12 @@ export default function Playground() {
         </div>
 
         {/* Primary Action Button */}
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex items-center gap-3 shrink-0 w-full md:w-auto">
           <button
             type="button"
             onClick={handleRun}
             disabled={isExecuting}
-            className="inline-flex items-center px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 transition disabled:opacity-50 disabled:pointer-events-none gap-2"
+            className="w-full md:w-auto min-h-[44px] justify-center inline-flex items-center px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 transition disabled:opacity-50 disabled:pointer-events-none gap-2"
           >
             {isExecuting ? (
               <>

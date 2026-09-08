@@ -55,15 +55,16 @@ export default function Pagination({
       </div>
 
       {/* Pagination Controls */}
-      <div className="flex items-center space-x-1.5">
+      <div className="flex items-center space-x-1 sm:space-x-1.5 flex-wrap justify-center gap-y-2">
         {/* Previous Button */}
         <button
           type="button"
           onClick={() => onPageChange(currentPage - 1)}
           disabled={!hasPrevPage && currentPage <= 1}
-          className="inline-flex items-center px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 disabled:opacity-40 disabled:pointer-events-none transition gap-1"
+          className="inline-flex items-center justify-center px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 disabled:opacity-40 disabled:pointer-events-none transition gap-1 min-h-[36px]"
+          aria-label="Previous page"
         >
-          <ChevronLeft className="w-3.5 h-3.5" />
+          <ChevronLeft className="w-4 h-4" />
           <span className="hidden sm:inline">Prev</span>
         </button>
 
@@ -74,7 +75,7 @@ export default function Pagination({
               return (
                 <span
                   key={`ellipsis-${index}`}
-                  className="px-2 py-1 text-xs text-slate-400 select-none"
+                  className="px-1.5 py-1 text-xs text-slate-400 select-none"
                 >
                   ...
                 </span>
@@ -87,7 +88,7 @@ export default function Pagination({
                 key={page}
                 type="button"
                 onClick={() => onPageChange(page)}
-                className={`min-w-8 h-8 px-2 rounded-xl text-xs font-bold transition flex items-center justify-center ${
+                className={`min-w-[34px] h-[36px] px-2 rounded-xl text-xs font-bold transition flex items-center justify-center ${
                   isCurrent
                     ? activeBtnClass
                     : 'text-slate-600 hover:bg-slate-100 border border-transparent hover:border-slate-200'
@@ -104,10 +105,11 @@ export default function Pagination({
           type="button"
           onClick={() => onPageChange(currentPage + 1)}
           disabled={!hasNextPage && currentPage >= totalPages}
-          className="inline-flex items-center px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 disabled:opacity-40 disabled:pointer-events-none transition gap-1"
+          className="inline-flex items-center justify-center px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 disabled:opacity-40 disabled:pointer-events-none transition gap-1 min-h-[36px]"
+          aria-label="Next page"
         >
           <span className="hidden sm:inline">Next</span>
-          <ChevronRight className="w-3.5 h-3.5" />
+          <ChevronRight className="w-4 h-4" />
         </button>
       </div>
     </div>

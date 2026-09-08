@@ -397,8 +397,8 @@ export default function App() {
         </Routes>
       </ErrorBoundary>
     </main>
-    <footer className="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
-      <p>© 2026 Learning Hub — Phase 17 Error Handling & UX</p>
+    <footer className="bg-white border-t border-slate-200 px-4 py-6 text-center text-xs text-slate-500">
+      <p>© 2026 Learning Hub — Full-Stack Interactive Platform (Mobile, Tablet & Desktop)</p>
     </footer>
   </div>
 );

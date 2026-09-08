@@ -133,22 +133,22 @@ export default function LearningPaths() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-8 sm:p-10 text-white shadow-xl relative overflow-hidden">
+      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 text-white shadow-xl relative overflow-hidden">
         <div className="absolute right-0 top-0 bottom-0 opacity-10 pointer-events-none flex items-center pr-10">
           <Compass className="w-96 h-96 text-white" />
         </div>
 
-        <div className="relative z-10 max-w-2xl space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-semibold border border-indigo-400/30">
+        <div className="relative z-10 max-w-2xl space-y-3 sm:space-y-4">
+          <div className="inline-flex items-center gap-2 px-2.5 sm:px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-[11px] sm:text-xs font-semibold border border-indigo-400/30">
             <Sparkles className="w-3.5 h-3.5" />
             <span>Structured Curricula & Hands-on Mastery</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight leading-tight">
             Explore Learning Paths
           </h1>
 
-          <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
+          <p className="text-slate-300 text-xs sm:text-sm md:text-base leading-relaxed">
             Follow comprehensive, sequential curricula designed by industry experts.
             Master key developer skills from fundamentals to production-grade architecture.
           </p>
@@ -157,10 +157,10 @@ export default function LearningPaths() {
             <div className="pt-2">
               <Link
                 to="/admin/learning-paths/create"
-                className="inline-flex items-center px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/30 transition"
+                className="inline-flex items-center px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/30 transition min-h-[44px]"
               >
                 <PlusCircle className="w-4 h-4 mr-1.5" />
-                Create New Learning Path (Admin)
+                <span>Create New Learning Path (Admin)</span>
               </Link>
             </div>
           )}
@@ -168,9 +168,9 @@ export default function LearningPaths() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-5">
+      <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200 shadow-sm space-y-5">
         {/* Top Controls: Search Form, Status, Difficulty, Sort */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4 items-center">
           {/* Search Form */}
           <form
             onSubmit={handleSearchSubmit}
