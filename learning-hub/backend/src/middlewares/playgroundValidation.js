@@ -10,8 +10,8 @@ export const validateCreatePlayground = (req, res, next) => {
     errors.push('Topic reference (topic or topicId) is required');
   }
 
-  if (language && !['javascript', 'typescript', 'python'].includes(language.toLowerCase())) {
-    errors.push('Language must be one of: javascript, typescript, python');
+  if (language && !['javascript', 'typescript', 'python', 'cpp'].includes(language.toLowerCase())) {
+    errors.push('Language must be one of: javascript, typescript, python, cpp');
   }
 
   if (difficulty && !['BEGINNER', 'INTERMEDIATE', 'ADVANCED'].includes(difficulty.toUpperCase())) {
@@ -41,8 +41,8 @@ export const validateUpdatePlayground = (req, res, next) => {
     errors.push('Playground title must be at least 2 characters');
   }
 
-  if (language && !['javascript', 'typescript', 'python'].includes(language.toLowerCase())) {
-    errors.push('Language must be one of: javascript, typescript, python');
+  if (language && !['javascript', 'typescript', 'python', 'cpp'].includes(language.toLowerCase())) {
+    errors.push('Language must be one of: javascript, typescript, python, cpp');
   }
 
   if (difficulty && !['BEGINNER', 'INTERMEDIATE', 'ADVANCED'].includes(difficulty.toUpperCase())) {

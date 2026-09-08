@@ -221,6 +221,9 @@ export default function CreatePlayground() {
                 className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white transition"
               >
                 <option value="javascript">JavaScript (Node.js Sandbox)</option>
+                <option value="cpp">C++</option>
+                <option value="python">Python</option>
+                <option value="typescript">TypeScript</option>
               </select>
             </div>
 

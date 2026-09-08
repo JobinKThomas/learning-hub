@@ -55,7 +55,7 @@ const playgroundSchema = new mongoose.Schema(
     ],
     language: {
       type: String,
-      enum: ['javascript', 'typescript', 'python'],
+      enum: ['javascript', 'typescript', 'python', 'cpp'],
       default: 'javascript',
     },
     difficulty: {
