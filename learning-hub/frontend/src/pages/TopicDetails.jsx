@@ -242,7 +242,7 @@ export default function TopicDetails() {
       </div>
 
       {/* Topic Header Banner */}
-      <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-8 text-white shadow-xl space-y-4">
+      <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-2xl sm:rounded-3xl p-5 sm:p-8 text-white shadow-xl space-y-3 sm:space-y-4">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-bold px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
             Topic {topic.order || 1}
@@ -272,11 +272,11 @@ export default function TopicDetails() {
         </div>
 
         <div className="space-y-1">
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-mono">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight font-mono">
             {topic.title}
           </h1>
           {topic.summary && (
-            <p className="text-indigo-300 text-sm sm:text-base font-medium">
+            <p className="text-indigo-300 text-xs sm:text-sm md:text-base font-medium">
               {topic.summary}
             </p>
           )}
@@ -286,7 +286,7 @@ export default function TopicDetails() {
           {topic.description}
         </p>
 
-        <div className="flex flex-wrap items-center gap-6 pt-3 text-xs sm:text-sm text-slate-300 border-t border-white/10">
+        <div className="flex flex-wrap items-center gap-4 sm:gap-6 pt-3 text-xs sm:text-sm text-slate-300 border-t border-white/10">
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4 text-amber-400" />
             <span>

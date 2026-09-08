@@ -95,14 +95,14 @@ export default function Dashboard() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       {/* Learning Dashboard Header */}
-      <div className="bg-gradient-to-r from-indigo-700 via-indigo-800 to-slate-900 rounded-3xl p-8 text-white shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div className="flex items-center space-x-5">
-          <div className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur border border-white/20 text-white font-extrabold text-2xl flex items-center justify-center shadow-lg">
+      <div className="bg-gradient-to-r from-indigo-700 via-indigo-800 to-slate-900 rounded-2xl sm:rounded-3xl p-5 sm:p-8 text-white shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div className="flex items-center space-x-4 sm:space-x-5">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-white/10 backdrop-blur border border-white/20 text-white font-extrabold text-xl sm:text-2xl flex items-center justify-center shadow-lg shrink-0">
             {user?.name?.charAt(0).toUpperCase() || 'U'}
           </div>
           <div>
-            <div className="flex items-center space-x-2">
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">
                 Learning Dashboard
               </h1>
               <span
@@ -115,16 +115,16 @@ export default function Dashboard() {
                 {role || 'USER'}
               </span>
             </div>
-            <p className="text-indigo-200 text-sm mt-1">
+            <p className="text-indigo-200 text-xs sm:text-sm mt-1">
               Welcome back, {user?.name || 'Learner'}! Track your progress and resume your active track.
             </p>
           </div>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 w-full md:w-auto">
           <button
             onClick={() => dispatch(fetchDashboardData())}
-            className="inline-flex items-center px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/10 transition"
+            className="inline-flex items-center justify-center px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/10 transition min-h-[44px] flex-1 sm:flex-initial"
             title="Refresh Dashboard"
           >
             <RefreshCw className="w-4 h-4 mr-1.5" />
@@ -133,18 +133,18 @@ export default function Dashboard() {
           {isAdmin && (
             <Link
               to="/admin"
-              className="inline-flex items-center px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold shadow-md transition"
+              className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm font-semibold shadow-md transition min-h-[44px] flex-1 sm:flex-initial"
             >
               <Shield className="w-4 h-4 mr-1.5" />
-              Switch to Admin
+              <span>Admin Console</span>
             </Link>
           )}
           <button
             onClick={handleLogout}
-            className="inline-flex items-center px-4 py-2.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-200 hover:text-white border border-red-400/30 text-sm font-semibold transition"
+            className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-200 hover:text-white border border-red-400/30 text-xs sm:text-sm font-semibold transition min-h-[44px] w-full sm:w-auto"
           >
             <LogOut className="w-4 h-4 mr-2" />
-            Log Out
+            <span>Log Out</span>
           </button>
         </div>
       </div>

@@ -181,18 +181,20 @@ export default function AdminLayout({ children }) {
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white"
+                className="lg:hidden p-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white min-h-[40px] min-w-[40px] flex items-center justify-center transition focus:outline-none focus:ring-2 focus:ring-purple-500"
+                aria-label="Toggle admin navigation menu"
+                aria-expanded={mobileMenuOpen}
               >
-                {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
             </div>
           </div>
         </div>
 
         {/* Horizontal Navigation Pills (Desktop & Tablet) */}
-        <div className="border-t border-slate-800/80 bg-slate-950/60 backdrop-blur-sm overflow-x-auto scrollbar-thin">
+        <div className="border-t border-slate-800/80 bg-slate-950/70 backdrop-blur-sm overflow-x-auto scrollbar-thin">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <nav className="flex items-center space-x-1 py-1.5 whitespace-nowrap min-w-max">
+            <nav className="flex items-center space-x-1 py-2 whitespace-nowrap min-w-max">
               {ADMIN_NAV_ITEMS.map((item) => {
                 const active = isActive(item);
                 const IconComponent = item.icon;
@@ -200,7 +202,7 @@ export default function AdminLayout({ children }) {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                    className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition min-h-[36px] ${
                       active
                         ? 'bg-purple-600 text-white shadow-sm shadow-purple-600/30'
                         : 'text-slate-300 hover:text-white hover:bg-slate-800/70'
@@ -217,7 +219,7 @@ export default function AdminLayout({ children }) {
 
         {/* Mobile Accordion Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-slate-800 bg-slate-900 px-4 py-3 space-y-1">
+          <div className="lg:hidden border-t border-slate-800 bg-slate-900 px-4 py-3 space-y-1 shadow-2xl animate-in slide-in-from-top-1 duration-150">
             <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 px-2 pb-1">
               Admin Sections
             </div>
@@ -227,21 +229,23 @@ export default function AdminLayout({ children }) {
               return (
                 <div
                   key={item.path}
-                  className="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold"
+                  className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition min-h-[44px] ${
+                    active ? 'bg-purple-900/60 text-white border-l-4 border-purple-500 pl-2.5' : 'text-slate-300 hover:bg-slate-800/60'
+                  }`}
                 >
                   <Link
                     to={item.path}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center space-x-2 text-slate-300 hover:text-white flex-1"
+                    className="flex items-center space-x-2.5 flex-1 min-h-[40px]"
                   >
-                    <IconComponent className="w-4 h-4 text-purple-400" />
-                    <span>{item.name}</span>
+                    <IconComponent className={`w-4 h-4 ${active ? 'text-purple-300' : 'text-purple-400'}`} />
+                    <span className={active ? 'font-bold text-white' : 'text-slate-300'}>{item.name}</span>
                   </Link>
                   {item.createPath && (
                     <Link
                       to={item.createPath}
                       onClick={() => setMobileMenuOpen(false)}
-                      className="px-2 py-0.5 rounded bg-purple-700/50 hover:bg-purple-700 text-[10px] font-bold text-purple-200"
+                      className="px-2.5 py-1 rounded-lg bg-purple-700/60 hover:bg-purple-700 text-[10px] font-bold text-purple-200 transition min-h-[32px] flex items-center"
                     >
                       + Add
                     </Link>

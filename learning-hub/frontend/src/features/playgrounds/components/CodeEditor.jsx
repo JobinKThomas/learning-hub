@@ -112,7 +112,7 @@ export default function CodeEditor({
       <div className="relative flex flex-grow overflow-auto min-h-[300px]">
         {/* Line Numbers Gutter */}
         <div
-          className="select-none py-4 px-3 text-right font-mono text-xs text-slate-600 bg-slate-950/80 border-r border-slate-800/60 leading-6 tracking-tight"
+          className="select-none py-4 px-2 sm:px-3 text-right font-mono text-[11px] sm:text-xs text-slate-600 bg-slate-950/80 border-r border-slate-800/60 leading-6 tracking-tight shrink-0"
           aria-hidden="true"
         >
           {Array.from({ length: lineCount }).map((_, i) => (
@@ -132,7 +132,7 @@ export default function CodeEditor({
           autoCapitalize="off"
           autoComplete="off"
           autoCorrect="off"
-          className="flex-grow p-4 bg-transparent text-slate-100 font-mono text-xs sm:text-sm leading-6 outline-none resize-none overflow-auto border-none selection:bg-indigo-600/40 selection:text-white whitespace-pre"
+          className="flex-grow p-3 sm:p-4 bg-transparent text-slate-100 font-mono text-sm leading-6 outline-none resize-none overflow-auto border-none selection:bg-indigo-600/40 selection:text-white whitespace-pre"
         />
       </div>
 

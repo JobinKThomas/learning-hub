@@ -123,38 +123,38 @@ export default function LearningPathDetails() {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       {/* Navigation Breadcrumb */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <Link
           to="/learning-paths"
-          className="inline-flex items-center text-xs font-semibold text-slate-500 hover:text-indigo-600 transition"
+          className="inline-flex items-center text-xs font-semibold text-slate-500 hover:text-indigo-600 transition min-h-[36px]"
         >
           <ArrowLeft className="w-4 h-4 mr-1.5" />
-          Back to Learning Paths
+          <span>Back to Learning Paths</span>
         </Link>
 
         {isAdmin && (
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Link
               to={`/admin/modules/create?path=${path.id}`}
-              className="inline-flex items-center px-3 py-1.5 rounded-lg border border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100 text-xs font-semibold transition"
+              className="inline-flex items-center px-3 py-1.5 rounded-lg border border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100 text-xs font-semibold transition min-h-[36px]"
             >
               <PlusCircle className="w-3.5 h-3.5 mr-1.5" />
-              Add Module
+              <span>Add Module</span>
             </Link>
             <Link
               to={`/admin/learning-paths/${path.id}/edit`}
-              className="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 text-xs font-semibold transition"
+              className="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 text-xs font-semibold transition min-h-[36px]"
             >
               <Edit className="w-3.5 h-3.5 mr-1.5" />
-              Edit Path
+              <span>Edit Path</span>
             </Link>
           </div>
         )}
       </div>
 
       {/* Hero Header */}
-      <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-8 sm:p-10 text-white shadow-xl relative overflow-hidden">
-        <div className="relative z-10 space-y-4">
+      <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 text-white shadow-xl relative overflow-hidden">
+        <div className="relative z-10 space-y-3 sm:space-y-4">
           <div className="flex flex-wrap items-center gap-2">
             <span
               className={`text-xs font-bold px-3 py-1 rounded-full border ${levelBadge}`}
@@ -171,16 +171,16 @@ export default function LearningPathDetails() {
             )}
           </div>
 
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight leading-tight">
             {path.title}
           </h1>
 
-          <p className="text-slate-300 text-sm sm:text-base max-w-3xl leading-relaxed">
+          <p className="text-slate-300 text-xs sm:text-sm md:text-base max-w-3xl leading-relaxed">
             {path.description}
           </p>
 
           {/* Key Metrics row */}
-          <div className="flex flex-wrap items-center gap-6 pt-4 text-xs sm:text-sm text-slate-300 border-t border-white/10">
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6 pt-3 sm:pt-4 text-xs sm:text-sm text-slate-300 border-t border-white/10">
             <div className="flex items-center gap-2">
               <BookOpen className="w-4 h-4 text-indigo-400" />
               <span>

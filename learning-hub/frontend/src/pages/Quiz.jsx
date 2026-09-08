@@ -404,12 +404,12 @@ export default function Quiz() {
           )}
 
           {/* Navigation Controls */}
-          <div className="flex items-center justify-between gap-4 pt-2">
+          <div className="flex items-center justify-between gap-3 pt-2">
             <button
               type="button"
               onClick={handlePrev}
               disabled={currentIndex === 0}
-              className="inline-flex items-center px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition disabled:opacity-30 disabled:pointer-events-none gap-1.5"
+              className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition disabled:opacity-30 disabled:pointer-events-none gap-1.5 min-h-[44px]"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Previous</span>
@@ -420,7 +420,7 @@ export default function Quiz() {
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="inline-flex items-center px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-600/20 transition gap-1.5"
+                  className="inline-flex items-center justify-center px-5 sm:px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-600/20 transition gap-1.5 min-h-[44px]"
                 >
                   <span>Next Question</span>
                   <ArrowRight className="w-4 h-4" />
@@ -430,12 +430,12 @@ export default function Quiz() {
                   type="button"
                   onClick={handleSubmit}
                   disabled={submitting}
-                  className="inline-flex items-center px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-600/20 transition gap-1.5 disabled:opacity-50"
+                  className="inline-flex items-center justify-center px-5 sm:px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-600/20 transition gap-1.5 disabled:opacity-50 min-h-[44px]"
                 >
                   {submitting ? (
                     <>
                       <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>Grading & Saving...</span>
+                      <span>Grading...</span>
                     </>
                   ) : (
                     <>

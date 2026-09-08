@@ -30,19 +30,19 @@ export default function DashboardCards({ user, stats }) {
           │ Quiz Average              82%        │
           └──────────────────────────────────────┘
       */}
-      <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-slate-800">
+      <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 text-white shadow-xl relative overflow-hidden border border-slate-800">
         <div className="absolute right-0 top-0 bottom-0 opacity-10 pointer-events-none flex items-center pr-8">
           <TrendingUp className="w-80 h-80 text-indigo-400" />
         </div>
 
-        <div className="relative z-10 space-y-6">
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
+        <div className="relative z-10 space-y-5 sm:space-y-6">
+          <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4 border-b border-white/10 pb-4">
             <div className="space-y-1">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-semibold border border-indigo-400/30">
+              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-[11px] sm:text-xs font-semibold border border-indigo-400/30">
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>Personal Learning Analytics</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight">
                 Welcome back{user?.name ? `, ${user.name}` : ''}!
               </h2>
             </div>
@@ -56,7 +56,7 @@ export default function DashboardCards({ user, stats }) {
           </div>
 
           {/* Core 4-metric grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {/* 1. Overall Progress */}
             <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur space-y-3">
               <div className="flex items-center justify-between text-xs text-slate-300 font-semibold">

@@ -70,52 +70,59 @@ export default function HomePage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       {/* Hero Banner */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-indigo-900 via-indigo-800 to-blue-900 rounded-3xl p-8 sm:p-12 text-white shadow-xl">
+      <div className="relative overflow-hidden bg-gradient-to-r from-indigo-900 via-indigo-800 to-blue-900 rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-12 text-white shadow-xl">
         <div className="relative z-10 max-w-3xl space-y-4">
           <div className="inline-flex items-center space-x-2 bg-indigo-500/30 backdrop-blur-sm border border-indigo-400/30 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider text-indigo-200">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>Phase 0 — Project Foundation</span>
+            <span>Full-Stack Interactive Platform</span>
           </div>
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">
             Learning Hub Platform
           </h1>
-          <p className="text-indigo-100 text-base sm:text-lg leading-relaxed">
-            Full-stack foundation successfully configured with Express, MongoDB, Mongoose,
-            Authentication infrastructure, Swagger, React, Vite, Tailwind CSS, and Redux Toolkit.
+          <p className="text-indigo-100 text-sm sm:text-base md:text-lg leading-relaxed">
+            Follow structured curricula from JavaScript basics to advanced full-stack architecture,
+            with real-time interactive code sandboxes, evaluated quizzes, notes, and interview prep.
           </p>
-          <div className="pt-2 flex flex-wrap gap-3">
-            <a
-              href="http://localhost:5000/api-docs"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center px-4 py-2 rounded-xl bg-white text-indigo-900 font-semibold text-sm hover:bg-indigo-50 transition shadow-sm"
+          <div className="pt-2 flex flex-wrap gap-2.5 sm:gap-3">
+            <Link
+              to="/learning-paths"
+              className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-white text-indigo-900 font-semibold text-xs sm:text-sm hover:bg-indigo-50 transition shadow-sm min-h-[44px]"
             >
-              <Code2 className="w-4 h-4 mr-2" />
-              Interactive Swagger API Docs
-            </a>
+              <BookOpen className="w-4 h-4 mr-2 text-indigo-600" />
+              <span>Explore Learning Paths</span>
+            </Link>
             {isAuthenticated ? (
               <Link
                 to="/dashboard"
-                className="inline-flex items-center px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-sm shadow-sm transition"
+                className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-xs sm:text-sm shadow-sm transition min-h-[44px]"
               >
-                Go to Dashboard
+                <span>Go to Dashboard</span>
                 <ArrowRight className="w-4 h-4 ml-1.5" />
               </Link>
             ) : (
               <Link
                 to="/register"
-                className="inline-flex items-center px-4 py-2 rounded-xl bg-indigo-600/80 hover:bg-indigo-600 text-white font-semibold text-sm border border-indigo-400/40 transition"
+                className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-indigo-600/80 hover:bg-indigo-600 text-white font-semibold text-xs sm:text-sm border border-indigo-400/40 transition min-h-[44px]"
               >
-                Create Account
+                <span>Create Free Account</span>
                 <ArrowRight className="w-4 h-4 ml-1.5" />
               </Link>
             )}
+            <a
+              href="http://localhost:5000/api-docs"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center px-3.5 py-2.5 rounded-xl bg-indigo-950/60 hover:bg-indigo-950/80 text-indigo-200 border border-indigo-500/30 text-xs font-semibold transition min-h-[44px]"
+            >
+              <Code2 className="w-4 h-4 mr-1.5" />
+              <span>Swagger API Docs</span>
+            </a>
           </div>
         </div>
       </div>
 
       {/* Completion Criteria Status Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
         {/* Backend Running */}
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
           <div
