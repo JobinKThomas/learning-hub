@@ -55,6 +55,24 @@ import EditInterviewQuestion from './pages/admin/EditInterviewQuestion';
 export default function App() {
   const dispatch = useDispatch();
   const { accessToken, user } = useSelector((state) => state.auth);
+  const theme = useSelector((state) => state.theme?.theme || 'light');
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const body = document.body;
+    if (theme === 'dark') {
+      root.classList.add('dark');
+      if (body) body.classList.add('dark');
+      root.style.colorScheme = 'dark';
+    } else {
+      root.classList.remove('dark');
+      if (body) body.classList.remove('dark');
+      root.style.colorScheme = 'light';
+    }
+    try {
+      localStorage.setItem('theme', theme);
+    } catch (e) {}
+  }, [theme]);
 
   useEffect(() => {
     // If token exists in storage but user isn't loaded, verify session
@@ -64,7 +82,7 @@ export default function App() {
   }, [accessToken, user, dispatch]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200">
       <Navbar />
       <main className="flex-grow">
         <ErrorBoundary>
@@ -397,7 +415,7 @@ export default function App() {
         </Routes>
       </ErrorBoundary>
     </main>
-    <footer className="bg-white border-t border-slate-200 px-4 py-6 text-center text-xs text-slate-500">
+    <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-4 py-6 text-center text-xs text-slate-500 dark:text-slate-400 transition-colors duration-200">
       <p>© 2026 Learning Hub — Full-Stack Interactive Platform (Mobile, Tablet & Desktop)</p>
     </footer>
   </div>

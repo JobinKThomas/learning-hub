@@ -43,22 +43,22 @@ export default class ErrorBoundary extends React.Component {
 
       return (
         <div className="min-h-[70vh] flex items-center justify-center px-4 py-12">
-          <div className="max-w-lg w-full bg-white p-8 sm:p-10 rounded-3xl border border-red-200 shadow-xl shadow-red-50 text-center space-y-6">
-            <div className="w-16 h-16 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center mx-auto shadow-inner">
+          <div className="max-w-lg w-full bg-white dark:bg-slate-900 p-8 sm:p-10 rounded-3xl border border-red-200 dark:border-red-900/60 shadow-xl shadow-red-50 dark:shadow-none text-center space-y-6">
+            <div className="w-16 h-16 rounded-2xl bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto shadow-inner">
               <AlertTriangle className="w-8 h-8" />
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+              <h2 className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
                 Application Error
               </h2>
-              <p className="text-sm text-slate-600 leading-relaxed max-w-sm mx-auto">
+              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed max-w-sm mx-auto">
                 Something unexpected happened while rendering this page. You can reload the view or return to your dashboard.
               </p>
             </div>
 
             {/* Error Message Snippet */}
-            <div className="p-3.5 rounded-xl bg-slate-900 text-red-300 font-mono text-xs text-left overflow-x-auto shadow-inner">
+            <div className="p-3.5 rounded-xl bg-slate-900 dark:bg-slate-950 border border-slate-800 text-red-300 font-mono text-xs text-left overflow-x-auto shadow-inner">
               <code>{errorMessage}</code>
             </div>
 
@@ -66,7 +66,7 @@ export default class ErrorBoundary extends React.Component {
             <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
               <button
                 onClick={this.handleReload}
-                className="inline-flex items-center px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-md shadow-indigo-200 transition"
+                className="inline-flex items-center px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-md shadow-indigo-200 dark:shadow-none transition"
               >
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Reload Page
@@ -74,9 +74,9 @@ export default class ErrorBoundary extends React.Component {
 
               <button
                 onClick={this.handleReset}
-                className="inline-flex items-center px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold transition"
+                className="inline-flex items-center px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-semibold transition"
               >
-                <Home className="w-4 h-4 mr-2 text-slate-500" />
+                <Home className="w-4 h-4 mr-2 text-slate-500 dark:text-slate-400" />
                 Return to Dashboard
               </button>
             </div>

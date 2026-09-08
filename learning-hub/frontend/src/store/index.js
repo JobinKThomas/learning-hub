@@ -12,9 +12,11 @@ import quizAttemptReducer from '../features/quizAttempts/quizAttemptSlice';
 import interviewQuestionReducer from '../features/interviewQuestions/interviewQuestionSlice';
 import progressReducer from '../features/progress/progressSlice';
 import dashboardReducer from '../features/dashboard/dashboardSlice';
+import themeReducer from './slices/themeSlice';
 
 export const store = configureStore({
   reducer: {
+    theme: themeReducer,
     auth: authReducer,
     learningPaths: learningPathReducer,
     modules: moduleReducer,

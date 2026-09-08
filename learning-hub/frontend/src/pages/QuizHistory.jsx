@@ -54,8 +54,8 @@ export default function QuizHistory() {
   if (loading && !quiz) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16 text-center space-y-3">
-        <RefreshCw className="w-8 h-8 text-indigo-600 animate-spin mx-auto" />
-        <p className="text-xs text-slate-500">Loading quiz attempt history...</p>
+        <RefreshCw className="w-8 h-8 text-indigo-600 dark:text-indigo-400 animate-spin mx-auto" />
+        <p className="text-xs text-slate-500 dark:text-slate-400">Loading quiz attempt history...</p>
       </div>
     );
   }
@@ -64,11 +64,11 @@ export default function QuizHistory() {
     return (
       <div className="max-w-3xl mx-auto px-4 py-16 text-center space-y-4">
         <AlertCircle className="w-10 h-10 text-rose-500 mx-auto" />
-        <h2 className="text-xl font-bold text-slate-900">Unable to load history</h2>
-        <p className="text-xs text-slate-500">{error}</p>
+        <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Unable to load history</h2>
+        <p className="text-xs text-slate-500 dark:text-slate-400">{error}</p>
         <Link
           to="/learning-paths"
-          className="inline-flex items-center px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-semibold"
+          className="inline-flex items-center px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition"
         >
           <ArrowLeft className="w-4 h-4 mr-1.5" />
           Back to Curriculum
@@ -85,10 +85,10 @@ export default function QuizHistory() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* 5-Tier Breadcrumbs */}
-      <nav className="flex flex-wrap items-center gap-1.5 text-xs font-semibold text-slate-500">
+      <nav className="flex flex-wrap items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400">
         {pathDoc && (
           <>
-            <Link to={`/learning-paths/${pathDoc.slug}`} className="hover:text-indigo-600 transition">
+            <Link to={`/learning-paths/${pathDoc.slug}`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition">
               {pathDoc.title}
             </Link>
             <span>/</span>
@@ -96,7 +96,7 @@ export default function QuizHistory() {
         )}
         {moduleDoc && (
           <>
-            <Link to={`/modules/${moduleDoc.slug}`} className="hover:text-indigo-600 transition">
+            <Link to={`/modules/${moduleDoc.slug}`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition">
               {moduleDoc.title}
             </Link>
             <span>/</span>
@@ -104,7 +104,7 @@ export default function QuizHistory() {
         )}
         {section && (
           <>
-            <Link to={`/sections/${section.slug}`} className="hover:text-indigo-600 transition">
+            <Link to={`/sections/${section.slug}`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition">
               {section.title}
             </Link>
             <span>/</span>
@@ -112,7 +112,7 @@ export default function QuizHistory() {
         )}
         {topic && (
           <>
-            <Link to={`/topics/${topic.slug}`} className="hover:text-indigo-600 transition">
+            <Link to={`/topics/${topic.slug}`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition">
               {topic.title}
             </Link>
             <span>/</span>
@@ -120,12 +120,12 @@ export default function QuizHistory() {
         )}
         <Link
           to={`/quizzes/${quiz?.slug || id}`}
-          className="text-indigo-600 font-bold hover:text-indigo-800 transition"
+          className="text-indigo-600 dark:text-indigo-400 font-bold hover:text-indigo-800 dark:hover:text-indigo-300 transition"
         >
           {quiz?.title || 'Quiz'}
         </Link>
         <span>/</span>
-        <span className="text-slate-400">History</span>
+        <span className="text-slate-400 dark:text-slate-500">History</span>
       </nav>
 
       {/* Header Banner */}
@@ -165,42 +165,42 @@ export default function QuizHistory() {
       {/* Performance Summary Cards */}
       {stats && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-sm text-center">
-            <div className="text-[11px] uppercase font-bold text-slate-400 tracking-wider">
+          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm text-center">
+            <div className="text-[11px] uppercase font-bold text-slate-400 dark:text-slate-500 tracking-wider">
               Total Attempts
             </div>
-            <div className="text-2xl font-extrabold text-slate-900 mt-1">
+            <div className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 mt-1">
               {stats.totalAttempts}
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-sm text-center">
-            <div className="text-[11px] uppercase font-bold text-slate-400 tracking-wider">
+          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm text-center">
+            <div className="text-[11px] uppercase font-bold text-slate-400 dark:text-slate-500 tracking-wider">
               Highest Score
             </div>
-            <div className="text-2xl font-extrabold text-indigo-600 mt-1">
+            <div className="text-2xl font-extrabold text-indigo-600 dark:text-indigo-400 mt-1">
               {stats.bestScore} pts
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-sm text-center">
-            <div className="text-[11px] uppercase font-bold text-slate-400 tracking-wider">
+          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm text-center">
+            <div className="text-[11px] uppercase font-bold text-slate-400 dark:text-slate-500 tracking-wider">
               Best Percentage
             </div>
-            <div className="text-2xl font-extrabold text-slate-900 mt-1">
+            <div className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 mt-1">
               {stats.bestPercentage}%
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-sm text-center">
-            <div className="text-[11px] uppercase font-bold text-slate-400 tracking-wider">
+          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm text-center">
+            <div className="text-[11px] uppercase font-bold text-slate-400 dark:text-slate-500 tracking-wider">
               Passing Status
             </div>
             <div className="text-base font-extrabold mt-1.5">
               {stats.hasPassed ? (
-                <span className="text-emerald-600">Passed ✅</span>
+                <span className="text-emerald-600 dark:text-emerald-400">Passed ✅</span>
               ) : (
-                <span className="text-amber-600">In Progress</span>
+                <span className="text-amber-600 dark:text-amber-400">In Progress</span>
               )}
             </div>
           </div>
@@ -210,8 +210,8 @@ export default function QuizHistory() {
       {/* History Table */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-            <Award className="w-4 h-4 text-indigo-600" />
+          <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <Award className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
             <span>Attempt Records ({attempts?.length || 0})</span>
           </h2>
         </div>

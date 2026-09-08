@@ -28,7 +28,7 @@ export default function MarkdownRenderer({ content }) {
         parts.push(
           <code
             key={key++}
-            className="px-1.5 py-0.5 rounded bg-slate-100 text-indigo-700 font-mono text-xs border border-slate-200"
+            className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-indigo-700 dark:text-indigo-400 font-mono text-xs border border-slate-200 dark:border-slate-700"
           >
             {codeMatch[1]}
           </code>
@@ -41,7 +41,7 @@ export default function MarkdownRenderer({ content }) {
       const boldMatch = remaining.match(/^\*\*([^*]+)\*\*/);
       if (boldMatch) {
         parts.push(
-          <strong key={key++} className="font-bold text-slate-900">
+          <strong key={key++} className="font-bold text-slate-900 dark:text-slate-100">
             {boldMatch[1]}
           </strong>
         );
@@ -53,7 +53,7 @@ export default function MarkdownRenderer({ content }) {
       const italicMatch = remaining.match(/^\*([^*]+)\*/);
       if (italicMatch) {
         parts.push(
-          <em key={key++} className="italic text-slate-800">
+          <em key={key++} className="italic text-slate-800 dark:text-slate-200">
             {italicMatch[1]}
           </em>
         );
@@ -138,7 +138,7 @@ export default function MarkdownRenderer({ content }) {
 
     // Horizontal Rules (---)
     if (line.trim() === '---' || line.trim() === '***') {
-      elements.push(<hr key={`hr-${i}`} className="my-8 border-slate-200" />);
+      elements.push(<hr key={`hr-${i}`} className="my-8 border-slate-200 dark:border-slate-800" />);
       i++;
       continue;
     }
@@ -148,7 +148,7 @@ export default function MarkdownRenderer({ content }) {
       elements.push(
         <h1
           key={`h1-${i}`}
-          className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mt-8 mb-4 border-b border-slate-200 pb-2"
+          className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight mt-8 mb-4 border-b border-slate-200 dark:border-slate-800 pb-2"
         >
           {renderInline(line.slice(2))}
         </h1>
@@ -160,7 +160,7 @@ export default function MarkdownRenderer({ content }) {
       elements.push(
         <h2
           key={`h2-${i}`}
-          className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mt-6 mb-3"
+          className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight mt-6 mb-3"
         >
           {renderInline(line.slice(3))}
         </h2>
@@ -172,7 +172,7 @@ export default function MarkdownRenderer({ content }) {
       elements.push(
         <h3
           key={`h3-${i}`}
-          className="text-lg font-bold text-slate-900 mt-5 mb-2"
+          className="text-lg font-bold text-slate-900 dark:text-slate-100 mt-5 mb-2"
         >
           {renderInline(line.slice(4))}
         </h3>
@@ -191,7 +191,7 @@ export default function MarkdownRenderer({ content }) {
       elements.push(
         <blockquote
           key={`quote-${i}`}
-          className="my-4 p-4 rounded-xl border-l-4 border-indigo-500 bg-indigo-50/60 text-slate-700 text-xs sm:text-sm leading-relaxed"
+          className="my-4 p-4 rounded-xl border-l-4 border-indigo-500 bg-indigo-50/60 dark:bg-indigo-950/40 text-slate-700 dark:text-slate-300 text-xs sm:text-sm leading-relaxed"
         >
           {quoteLines.map((ql, qIdx) => (
             <p key={qIdx} className={qIdx > 0 ? 'mt-2' : ''}>
@@ -224,9 +224,9 @@ export default function MarkdownRenderer({ content }) {
         );
 
         elements.push(
-          <div key={`table-${i}`} className="my-6 overflow-x-auto rounded-xl border border-slate-200">
-            <table className="min-w-full divide-y divide-slate-200 text-left text-xs sm:text-sm">
-              <thead className="bg-slate-50 font-semibold text-slate-700">
+          <div key={`table-${i}`} className="my-6 overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+            <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800 text-left text-xs sm:text-sm">
+              <thead className="bg-slate-50 dark:bg-slate-900 font-semibold text-slate-700 dark:text-slate-200">
                 <tr>
                   {headerCells.map((hc, hIdx) => (
                     <th key={hIdx} className="px-4 py-3">
@@ -235,11 +235,11 @@ export default function MarkdownRenderer({ content }) {
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 bg-white">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 bg-white dark:bg-slate-950">
                 {bodyRows.map((row, rIdx) => (
-                  <tr key={rIdx} className="hover:bg-slate-50/70 transition">
+                  <tr key={rIdx} className="hover:bg-slate-50/70 dark:hover:bg-slate-900/60 transition">
                     {row.map((cell, cIdx) => (
-                      <td key={cIdx} className="px-4 py-3 text-slate-600">
+                      <td key={cIdx} className="px-4 py-3 text-slate-600 dark:text-slate-300">
                         {renderInline(cell)}
                       </td>
                     ))}
@@ -261,7 +261,7 @@ export default function MarkdownRenderer({ content }) {
         i++;
       }
       elements.push(
-        <ul key={`list-${i}`} className="my-3 space-y-1.5 list-disc pl-5 text-xs sm:text-sm text-slate-700">
+        <ul key={`list-${i}`} className="my-3 space-y-1.5 list-disc pl-5 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
           {listItems.map((item, lIdx) => (
             <li key={lIdx} className="leading-relaxed">
               {renderInline(item)}
@@ -280,7 +280,7 @@ export default function MarkdownRenderer({ content }) {
         i++;
       }
       elements.push(
-        <ol key={`olist-${i}`} className="my-3 space-y-1.5 list-decimal pl-5 text-xs sm:text-sm text-slate-700">
+        <ol key={`olist-${i}`} className="my-3 space-y-1.5 list-decimal pl-5 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
           {listItems.map((item, lIdx) => (
             <li key={lIdx} className="leading-relaxed">
               {renderInline(item)}
@@ -299,12 +299,12 @@ export default function MarkdownRenderer({ content }) {
 
     // Standard Paragraph
     elements.push(
-      <p key={`p-${i}`} className="my-3 text-xs sm:text-sm text-slate-700 leading-relaxed font-sans">
+      <p key={`p-${i}`} className="my-3 text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-sans">
         {renderInline(line)}
       </p>
     );
     i++;
   }
 
-  return <div className="space-y-1 text-slate-800">{elements}</div>;
+  return <div className="space-y-1 text-slate-800 dark:text-slate-200">{elements}</div>;
 }

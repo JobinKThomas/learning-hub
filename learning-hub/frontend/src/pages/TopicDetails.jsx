@@ -310,8 +310,8 @@ export default function TopicDetails() {
           {codeExamples.length > 0 && (
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <Terminal className="w-4 h-4 text-indigo-600" />
-                <h2 className="text-base font-bold text-slate-900">
+                <Terminal className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
                   Interactive Code Examples
                 </h2>
               </div>
@@ -319,14 +319,14 @@ export default function TopicDetails() {
               {codeExamples.map((ex, exIdx) => (
                 <div
                   key={exIdx}
-                  className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden"
+                  className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden"
                 >
-                  <div className="px-5 py-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                  <div className="px-5 py-3 bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <span className="w-2.5 h-2.5 rounded-full bg-red-400" />
                       <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
                       <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
-                      <span className="text-xs font-bold text-slate-700 pl-2">
+                      <span className="text-xs font-bold text-slate-700 dark:text-slate-200 pl-2">
                         {ex.title || `Example ${exIdx + 1}`}
                       </span>
                     </div>
@@ -334,12 +334,12 @@ export default function TopicDetails() {
                     <button
                       type="button"
                       onClick={() => handleCopyCode(ex.code, exIdx)}
-                      className="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-semibold text-slate-600 hover:text-indigo-600 hover:bg-slate-200/70 transition gap-1"
+                      className="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-semibold text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-200/70 dark:hover:bg-slate-800 transition gap-1"
                     >
                       {copiedCodeIdx === exIdx ? (
                         <>
-                          <Check className="w-3.5 h-3.5 text-emerald-600" />
-                          <span className="text-emerald-600">Copied!</span>
+                          <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                          <span className="text-emerald-600 dark:text-emerald-400">Copied!</span>
                         </>
                       ) : (
                         <>
@@ -350,13 +350,13 @@ export default function TopicDetails() {
                     </button>
                   </div>
 
-                  <pre className="p-5 bg-slate-950 text-emerald-400 text-xs font-mono overflow-x-auto leading-relaxed">
+                  <pre className="p-5 bg-slate-950 text-emerald-400 text-xs font-mono overflow-x-auto leading-relaxed border-t-0 border-b border-slate-800">
                     <code>{ex.code}</code>
                   </pre>
 
                   {ex.explanation && (
-                    <div className="p-4 bg-slate-50/80 border-t border-slate-100 text-xs text-slate-600 flex items-start gap-2.5">
-                      <Sparkles className="w-4 h-4 text-indigo-500 shrink-0 mt-0.5" />
+                    <div className="p-4 bg-slate-50/80 dark:bg-slate-950/60 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 flex items-start gap-2.5">
+                      <Sparkles className="w-4 h-4 text-indigo-500 dark:text-indigo-400 shrink-0 mt-0.5" />
                       <span className="leading-relaxed">{ex.explanation}</span>
                     </div>
                   )}
@@ -369,8 +369,8 @@ export default function TopicDetails() {
           <div className="space-y-4 pt-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Terminal className="w-4 h-4 text-indigo-600" />
-                <h2 className="text-base font-bold text-slate-900">
+                <Terminal className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
                   Interactive Playgrounds & Challenges ({playgrounds?.length || 0})
                 </h2>
               </div>
@@ -378,7 +378,7 @@ export default function TopicDetails() {
               {isAdmin && (
                 <Link
                   to={`/admin/playgrounds/create?topic=${topic.slug}`}
-                  className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-xs font-semibold transition gap-1 border border-indigo-200"
+                  className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-xs font-semibold transition gap-1 border border-indigo-200 dark:border-indigo-800"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Playground</span>
@@ -417,15 +417,15 @@ export default function TopicDetails() {
 
           {/* Key Points / Concept Checklist */}
           {keyPoints.length > 0 && (
-            <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <div className="flex items-center gap-2">
-                  <Target className="w-4 h-4 text-indigo-600" />
-                  <h2 className="text-base font-bold text-slate-900">
+                  <Target className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                  <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
                     Key Mechanics Checklist
                   </h2>
                 </div>
-                <span className="text-xs font-semibold text-slate-500">
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
                   {currentTopicProgress?.completedKeyPoints?.length ?? completedCount} / {totalPoints} understood
                 </span>
               </div>
@@ -440,18 +440,18 @@ export default function TopicDetails() {
                       onClick={() => toggleKeyPoint(idx)}
                       className={`w-full p-3.5 rounded-xl border text-left flex items-start gap-3 transition-all ${
                         isChecked
-                          ? 'bg-emerald-50/70 border-emerald-200 text-slate-900'
-                          : 'bg-slate-50/50 hover:bg-slate-100/70 border-slate-200 text-slate-800'
+                          ? 'bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800/60 text-slate-900 dark:text-slate-100'
+                          : 'bg-slate-50/50 dark:bg-slate-950/40 hover:bg-slate-100/70 dark:hover:bg-slate-800/60 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200'
                       }`}
                     >
                       <div className="mt-0.5 shrink-0">
                         {isChecked ? (
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                         ) : (
-                          <Circle className="w-4 h-4 text-slate-400 hover:text-indigo-600" />
+                          <Circle className="w-4 h-4 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400" />
                         )}
                       </div>
-                      <span className={`text-xs ${isChecked ? 'line-through text-slate-500 font-medium' : 'font-semibold text-slate-800'}`}>
+                      <span className={`text-xs ${isChecked ? 'line-through text-slate-500 dark:text-slate-500 font-medium' : 'font-semibold text-slate-800 dark:text-slate-200'}`}>
                         {point}
                       </span>
                     </button>
@@ -463,21 +463,21 @@ export default function TopicDetails() {
 
           {/* Lesson Guide / Content */}
           {topic.content ? (
-            <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-4">
-              <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
-                <FileText className="w-4 h-4 text-indigo-600" />
-                <h2 className="text-base font-bold text-slate-900">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
+              <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                <FileText className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
                   Detailed Explanation & Best Practices
                 </h2>
               </div>
-              <div className="prose prose-slate max-w-none text-xs sm:text-sm text-slate-700 leading-relaxed whitespace-pre-wrap font-sans">
+              <div className="prose prose-slate dark:prose-invert max-w-none text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap font-sans">
                 {topic.content}
               </div>
             </div>
           ) : (
-            <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-3 text-center py-10">
-              <BookOpen className="w-8 h-8 text-slate-300 mx-auto" />
-              <p className="text-xs text-slate-500">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-3 text-center py-10">
+              <BookOpen className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto" />
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Detailed notes for this topic will be available soon.
               </p>
             </div>
@@ -487,8 +487,8 @@ export default function TopicDetails() {
           <div className="space-y-4 pt-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-indigo-600" />
-                <h2 className="text-base font-bold text-slate-900">
+                <BookOpen className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
                   Study Notes & In-Depth Guides ({notes?.length || 0})
                 </h2>
               </div>
@@ -496,7 +496,7 @@ export default function TopicDetails() {
               {isAdmin && (
                 <Link
                   to={`/admin/notes/create?topic=${topic.slug}`}
-                  className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-xs font-semibold transition gap-1 border border-indigo-200"
+                  className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-xs font-semibold transition gap-1 border border-indigo-200 dark:border-indigo-800"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Note</span>
@@ -544,11 +544,11 @@ export default function TopicDetails() {
           </div>
 
           {/* Resources Section: Topic -> Resources (📚 Documentation, 🎥 Video, 🔗 Article, 💻 GitHub) */}
-          <div className="space-y-4 pt-4 border-t border-slate-200">
+          <div className="space-y-4 pt-4 border-t border-slate-200 dark:border-slate-800">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Globe className="w-4 h-4 text-indigo-600" />
-                <h2 className="text-base font-bold text-slate-900">
+                <Globe className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
                   Curated Learning Resources ({resources?.length || 0})
                 </h2>
               </div>
@@ -556,7 +556,7 @@ export default function TopicDetails() {
               {isAdmin && (
                 <Link
                   to={`/admin/resources/create?topic=${topic.slug}`}
-                  className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-xs font-semibold transition gap-1 border border-indigo-200"
+                  className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-xs font-semibold transition gap-1 border border-indigo-200 dark:border-indigo-800"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Resource</span>
@@ -590,8 +590,8 @@ export default function TopicDetails() {
                       onClick={() => setResourceTypeFilter(tab.key)}
                       className={`text-xs font-semibold px-3 py-1.5 rounded-xl transition ${
                         isActive
-                          ? 'bg-slate-900 text-white shadow-sm'
-                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          ? 'bg-slate-900 dark:bg-slate-800 text-white shadow-sm'
+                          : 'bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
                       }`}
                     >
                       <span>{tab.label}</span>
@@ -599,7 +599,7 @@ export default function TopicDetails() {
                         className={`ml-1.5 text-[10px] px-1.5 py-0.2 rounded-full ${
                           isActive
                             ? 'bg-white/20 text-white'
-                            : 'bg-slate-200/80 text-slate-700'
+                            : 'bg-slate-200/80 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
                         }`}
                       >
                         {countForType}
@@ -662,11 +662,11 @@ export default function TopicDetails() {
           </div>
 
           {/* Quizzes Section: Topic -> Quiz -> Question 1 -> Question 2 -> Question 3 -> Submit -> Result */}
-          <div className="space-y-4 pt-4 border-t border-slate-200">
+          <div className="space-y-4 pt-4 border-t border-slate-200 dark:border-slate-800">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <HelpCircle className="w-4 h-4 text-indigo-600" />
-                <h2 className="text-base font-bold text-slate-900">
+                <HelpCircle className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
                   Knowledge Check Quizzes ({quizzes?.length || 0})
                 </h2>
               </div>
@@ -674,7 +674,7 @@ export default function TopicDetails() {
               {isAdmin && (
                 <Link
                   to={`/admin/quizzes/create?topic=${topic.slug}`}
-                  className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-xs font-semibold transition gap-1 border border-indigo-200"
+                  className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-xs font-semibold transition gap-1 border border-indigo-200 dark:border-indigo-800"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Quiz</span>
@@ -712,11 +712,11 @@ export default function TopicDetails() {
           </div>
 
           {/* Interview Questions Section: Topic -> Interview Questions -> Question -> Reveal Answer */}
-          <div className="space-y-4 pt-4 border-t border-slate-200">
+          <div className="space-y-4 pt-4 border-t border-slate-200 dark:border-slate-800">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Flame className="w-4 h-4 text-rose-600" />
-                <h2 className="text-base font-bold text-slate-900">
+                <Flame className="w-4 h-4 text-rose-600 dark:text-rose-400" />
+                <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
                   Technical Interview Questions ({interviewQuestions?.length || 0})
                 </h2>
               </div>
@@ -724,7 +724,7 @@ export default function TopicDetails() {
               {isAdmin && (
                 <Link
                   to={`/admin/interview-questions/create?topic=${topic.slug}`}
-                  className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-xs font-semibold transition gap-1 border border-indigo-200"
+                  className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-xs font-semibold transition gap-1 border border-indigo-200 dark:border-indigo-800"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Question</span>
@@ -764,12 +764,12 @@ export default function TopicDetails() {
 
         {/* Right Column: Mastery & Quick Navigation */}
         <div className="space-y-6">
-          <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-md space-y-6 sticky top-24">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-md space-y-6 sticky top-24">
             <div>
-              <span className="text-[10px] font-semibold uppercase text-slate-400 tracking-wider">
+              <span className="text-[10px] font-semibold uppercase text-slate-400 dark:text-slate-500 tracking-wider">
                 Topic Mastery
               </span>
-              <h3 className="text-lg font-bold text-slate-900 mt-1">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mt-1">
                 {topic.title} Overview
               </h3>
             </div>
@@ -794,13 +794,13 @@ export default function TopicDetails() {
             </div>
 
             {/* Status card */}
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 text-xs space-y-1">
-              <span className="font-semibold text-slate-800">
+            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-100 dark:border-slate-800 text-xs space-y-1">
+              <span className="font-semibold text-slate-800 dark:text-slate-200">
                 {progressPercent === 100
                   ? '🎉 Topic Fully Mastered!'
                   : `${totalPoints - completedCount} key points remaining`}
               </span>
-              <p className="text-[11px] text-slate-500">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
                 {progressPercent === 100
                   ? 'All exercises, key concepts, or topics have been completed.'
                   : 'Check off each key point, complete notes, and pass quizzes to finish.'}
@@ -811,7 +811,7 @@ export default function TopicDetails() {
             {playgrounds && playgrounds.length > 0 && (
               <Link
                 to={`/playgrounds/${playgrounds[0].slug}`}
-                className="w-full inline-flex items-center justify-center px-4 py-3 rounded-xl bg-slate-900 hover:bg-indigo-600 text-white text-xs font-bold shadow-lg shadow-slate-900/20 transition gap-2"
+                className="w-full inline-flex items-center justify-center px-4 py-3 rounded-xl bg-slate-900 dark:bg-slate-800 hover:bg-indigo-600 dark:hover:bg-indigo-600 text-white text-xs font-bold shadow-lg shadow-slate-900/20 transition gap-2"
               >
                 <Play className="w-3.5 h-3.5 fill-current text-emerald-400" />
                 <span>Launch Interactive Playground</span>
@@ -822,7 +822,7 @@ export default function TopicDetails() {
             {quizzes && quizzes.length > 0 && (
               <Link
                 to={`/quizzes/${quizzes[0].slug || quizzes[0].id}`}
-                className="w-full inline-flex items-center justify-center px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-xs font-bold shadow-lg shadow-indigo-200 transition gap-2"
+                className="w-full inline-flex items-center justify-center px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-xs font-bold shadow-lg shadow-indigo-200 dark:shadow-none transition gap-2"
               >
                 <Award className="w-4 h-4 text-amber-300" />
                 <span>Take Knowledge Quiz ({quizzes[0].questions?.length || 0} Questions)</span>
@@ -833,7 +833,7 @@ export default function TopicDetails() {
             {interviewQuestions && interviewQuestions.length > 0 && (
               <Link
                 to={`/interview-questions?topic=${topic.slug}`}
-                className="w-full inline-flex items-center justify-center px-4 py-3 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-700 hover:to-amber-700 text-white text-xs font-bold shadow-lg shadow-rose-200 transition gap-2"
+                className="w-full inline-flex items-center justify-center px-4 py-3 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-700 hover:to-amber-700 text-white text-xs font-bold shadow-lg shadow-rose-200 dark:shadow-none transition gap-2"
               >
                 <Flame className="w-4 h-4 text-amber-200" />
                 <span>Prep Interview Questions ({interviewQuestions.length})</span>
@@ -844,7 +844,7 @@ export default function TopicDetails() {
             {parentSection && (
               <Link
                 to={`/sections/${parentSection.slug}`}
-                className="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-100 transition"
+                className="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-100 dark:shadow-none transition"
               >
                 <span>Back to {parentSection.title} Section</span>
                 <ArrowRight className="w-4 h-4 ml-1.5" />
@@ -854,16 +854,16 @@ export default function TopicDetails() {
             {/* Share action */}
             <button
               onClick={handleShare}
-              className="w-full py-2 px-3 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition flex items-center justify-center gap-2"
+              className="w-full py-2 px-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition flex items-center justify-center gap-2"
             >
               {copiedShare ? (
                 <>
-                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                   <span>Link Copied!</span>
                 </>
               ) : (
                 <>
-                  <Share2 className="w-3.5 h-3.5 text-slate-500" />
+                  <Share2 className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                   <span>Share Topic</span>
                 </>
               )}

@@ -112,7 +112,7 @@ export default function QuizResultView({
           <button
             type="button"
             onClick={onRetake}
-            className="inline-flex items-center px-5 py-2.5 rounded-xl bg-white text-slate-900 hover:bg-slate-100 font-bold text-xs shadow-md transition gap-1.5"
+            className="inline-flex items-center px-5 py-2.5 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-700 font-bold text-xs shadow-md transition gap-1.5"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Retake Quiz</span>
@@ -154,9 +154,9 @@ export default function QuizResultView({
       {/* Itemized Questions Breakdown & Explanations */}
       {results && results.length > 0 && (
         <div className="space-y-4">
-          <div className="flex items-center space-x-2 border-b border-slate-200 pb-3">
-            <HelpCircle className="w-4 h-4 text-indigo-600" />
-            <h3 className="text-base font-bold text-slate-900">
+          <div className="flex items-center space-x-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+            <HelpCircle className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+            <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
               Detailed Question Review & Explanations
             </h3>
           </div>
@@ -165,31 +165,33 @@ export default function QuizResultView({
             {results.map((res, idx) => (
               <div
                 key={idx}
-                className={`bg-white rounded-2xl p-5 sm:p-6 border shadow-sm space-y-4 ${
-                  res.isCorrect ? 'border-emerald-200/80' : 'border-rose-200/80'
+                className={`bg-white dark:bg-slate-900 rounded-2xl p-5 sm:p-6 border shadow-sm space-y-4 ${
+                  res.isCorrect
+                    ? 'border-emerald-200/80 dark:border-emerald-800/80'
+                    : 'border-rose-200/80 dark:border-rose-800/80'
                 }`}
               >
                 {/* Header */}
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-400 font-mono">
+                  <span className="text-xs font-bold text-slate-400 dark:text-slate-500 font-mono">
                     Question {res.questionIndex || idx + 1}
                   </span>
 
                   <span
                     className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                       res.isCorrect
-                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                        : 'bg-rose-50 text-rose-700 border border-rose-200'
+                        ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
+                        : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800'
                     }`}
                   >
                     {res.isCorrect ? (
                       <>
-                        <CheckCircle2 className="w-3 h-3 mr-1 text-emerald-600" />
+                        <CheckCircle2 className="w-3 h-3 mr-1 text-emerald-600 dark:text-emerald-400" />
                         Correct
                       </>
                     ) : (
                       <>
-                        <XCircle className="w-3 h-3 mr-1 text-rose-600" />
+                        <XCircle className="w-3 h-3 mr-1 text-rose-600 dark:text-rose-400" />
                         Incorrect
                       </>
                     )}
@@ -198,11 +200,11 @@ export default function QuizResultView({
 
                 {/* Question */}
                 <div className="space-y-2">
-                  <h4 className="text-sm font-bold text-slate-900 leading-snug">
+                  <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100 leading-snug">
                     {res.question}
                   </h4>
                   {res.codeSnippet && (
-                    <pre className="p-3 bg-slate-950 text-emerald-400 font-mono text-xs rounded-xl overflow-x-auto leading-relaxed">
+                    <pre className="p-3 bg-slate-950 text-emerald-400 font-mono text-xs rounded-xl overflow-x-auto leading-relaxed border border-slate-800">
                       <code>{res.codeSnippet}</code>
                     </pre>
                   )}
@@ -213,8 +215,8 @@ export default function QuizResultView({
                   <div
                     className={`p-3 rounded-xl border ${
                       res.isCorrect
-                        ? 'bg-emerald-50/50 border-emerald-200 text-emerald-900'
-                        : 'bg-rose-50/50 border-rose-200 text-rose-900'
+                        ? 'bg-emerald-50/50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200'
+                        : 'bg-rose-50/50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800 text-rose-900 dark:text-rose-200'
                     }`}
                   >
                     <span className="block text-[10px] font-bold uppercase tracking-wider opacity-70 mb-0.5">
@@ -226,7 +228,7 @@ export default function QuizResultView({
                   </div>
 
                   {!res.isCorrect && (
-                    <div className="p-3 rounded-xl border bg-emerald-50/50 border-emerald-200 text-emerald-900">
+                    <div className="p-3 rounded-xl border bg-emerald-50/50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200">
                       <span className="block text-[10px] font-bold uppercase tracking-wider opacity-70 mb-0.5">
                         Correct Answer:
                       </span>
@@ -239,9 +241,9 @@ export default function QuizResultView({
 
                 {/* Explanation */}
                 {res.explanation && (
-                  <div className="p-3.5 bg-slate-50 border border-slate-100 rounded-xl text-xs text-slate-600 space-y-1">
-                    <div className="flex items-center space-x-1.5 font-bold text-slate-800 text-[11px]">
-                      <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+                  <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 rounded-xl text-xs text-slate-600 dark:text-slate-300 space-y-1">
+                    <div className="flex items-center space-x-1.5 font-bold text-slate-800 dark:text-slate-200 text-[11px]">
+                      <Sparkles className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
                       <span>Explanation:</span>
                     </div>
                     <p className="leading-relaxed pl-5">{res.explanation}</p>

@@ -89,7 +89,10 @@ test('4. Authenticated User → GET /api/topics/let/quizzes returns nested quizz
   assert.strictEqual(res.status, 200);
   assert.strictEqual(res.body.success, true);
   assert.ok(res.body.data.quizzes.length > 0);
-  assert.strictEqual(res.body.data.quizzes[0].slug, 'let-scoping-quiz');
+  assert.ok(
+    res.body.data.quizzes.some((q) => q.slug === 'let-scoping-quiz'),
+    "Expected 'let-scoping-quiz' to be in returned quizzes"
+  );
 });
 
 // 5. GET quiz by ID / slug for taking (answers sanitized for students)

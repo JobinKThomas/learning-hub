@@ -46,12 +46,12 @@ export default function Pagination({
     : 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30';
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-4 px-2 border-t border-slate-100">
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-4 px-2 border-t border-slate-100 dark:border-slate-800">
       {/* Range text */}
-      <div className="text-xs text-slate-500 font-medium">
-        Showing <span className="font-bold text-slate-900">{startItem}</span> to{' '}
-        <span className="font-bold text-slate-900">{endItem}</span> of{' '}
-        <span className="font-bold text-slate-900">{totalItems}</span> {itemName}
+      <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+        Showing <span className="font-bold text-slate-900 dark:text-slate-100">{startItem}</span> to{' '}
+        <span className="font-bold text-slate-900 dark:text-slate-100">{endItem}</span> of{' '}
+        <span className="font-bold text-slate-900 dark:text-slate-100">{totalItems}</span> {itemName}
       </div>
 
       {/* Pagination Controls */}
@@ -61,7 +61,7 @@ export default function Pagination({
           type="button"
           onClick={() => onPageChange(currentPage - 1)}
           disabled={!hasPrevPage && currentPage <= 1}
-          className="inline-flex items-center justify-center px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 disabled:opacity-40 disabled:pointer-events-none transition gap-1 min-h-[36px]"
+          className="inline-flex items-center justify-center px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white disabled:opacity-40 disabled:pointer-events-none transition gap-1 min-h-[36px]"
           aria-label="Previous page"
         >
           <ChevronLeft className="w-4 h-4" />
@@ -75,7 +75,7 @@ export default function Pagination({
               return (
                 <span
                   key={`ellipsis-${index}`}
-                  className="px-1.5 py-1 text-xs text-slate-400 select-none"
+                  className="px-1.5 py-1 text-xs text-slate-400 dark:text-slate-500 select-none"
                 >
                   ...
                 </span>
@@ -91,7 +91,7 @@ export default function Pagination({
                 className={`min-w-[34px] h-[36px] px-2 rounded-xl text-xs font-bold transition flex items-center justify-center ${
                   isCurrent
                     ? activeBtnClass
-                    : 'text-slate-600 hover:bg-slate-100 border border-transparent hover:border-slate-200'
+                    : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white border border-transparent hover:border-slate-200 dark:hover:border-slate-700'
                 }`}
               >
                 {page}
@@ -105,7 +105,7 @@ export default function Pagination({
           type="button"
           onClick={() => onPageChange(currentPage + 1)}
           disabled={!hasNextPage && currentPage >= totalPages}
-          className="inline-flex items-center justify-center px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 disabled:opacity-40 disabled:pointer-events-none transition gap-1 min-h-[36px]"
+          className="inline-flex items-center justify-center px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white disabled:opacity-40 disabled:pointer-events-none transition gap-1 min-h-[36px]"
           aria-label="Next page"
         >
           <span className="hidden sm:inline">Next</span>

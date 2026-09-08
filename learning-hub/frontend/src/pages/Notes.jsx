@@ -120,7 +120,7 @@ export default function Notes() {
       </div>
 
       {/* Filter and Search Controls */}
-      <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
         <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
           {/* Search Form */}
           <form onSubmit={handleSearchSubmit} className="relative w-full md:w-96">
@@ -130,7 +130,7 @@ export default function Notes() {
               placeholder="Search notes by title or content..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition"
+              className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs sm:text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition"
             />
           </form>
 
@@ -140,7 +140,7 @@ export default function Notes() {
             <select
               value={selectedTopic}
               onChange={handleTopicChange}
-              className="w-full md:w-64 px-3 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition text-slate-700 font-medium"
+              className="w-full md:w-64 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 text-xs sm:text-sm bg-white dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition text-slate-700 dark:text-slate-200 font-medium"
             >
               <option value="">All Topics (Universal)</option>
               {topics &&
@@ -155,8 +155,8 @@ export default function Notes() {
 
         {/* Tags Row */}
         {allTags.length > 0 && (
-          <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-100">
-            <span className="text-[11px] font-semibold text-slate-400 mr-1 flex items-center gap-1">
+          <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+            <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 mr-1 flex items-center gap-1">
               <Tag className="w-3 h-3" />
               <span>Popular Tags:</span>
             </span>
@@ -168,7 +168,7 @@ export default function Notes() {
                 className={`text-[11px] font-semibold px-2.5 py-1 rounded-lg transition-all ${
                   selectedTag === tag
                     ? 'bg-indigo-600 text-white'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-slate-700'
                 }`}
               >
                 #{tag}

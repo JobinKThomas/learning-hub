@@ -117,19 +117,19 @@ export default function ErrorState({
       <div
         className={`p-4 rounded-2xl border ${
           isNetwork
-            ? 'bg-amber-50 border-amber-200 text-amber-900'
+            ? 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800/60 text-amber-900 dark:text-amber-200'
             : is403
-            ? 'bg-red-50 border-red-200 text-red-900'
-            : 'bg-red-50 border-red-200 text-red-900'
+            ? 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800/60 text-red-900 dark:text-red-200'
+            : 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800/60 text-red-900 dark:text-red-200'
         } flex items-start justify-between gap-3 ${className}`}
       >
         <div className="flex items-start gap-3">
           <div className="shrink-0 mt-0.5">{renderIcon()}</div>
           <div className="space-y-1">
             <h4 className="text-sm font-bold">{displayTitle}</h4>
-            <p className="text-xs text-slate-600">{displayMessage}</p>
+            <p className="text-xs text-slate-600 dark:text-slate-300">{displayMessage}</p>
             {validationErrors.length > 0 && (
-              <ul className="list-disc list-inside text-xs text-red-700 mt-2 space-y-1">
+              <ul className="list-disc list-inside text-xs text-red-700 dark:text-red-300 mt-2 space-y-1">
                 {validationErrors.map((err, idx) => (
                   <li key={idx}>{err}</li>
                 ))}
@@ -142,7 +142,7 @@ export default function ErrorState({
           <button
             onClick={handleRetry}
             disabled={retrying}
-            className="inline-flex items-center px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-xs font-semibold text-slate-700 transition shadow-2xs shrink-0"
+            className="inline-flex items-center px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 transition shadow-2xs shrink-0"
           >
             <RefreshCw
               className={`w-3.5 h-3.5 mr-1.5 ${retrying ? 'animate-spin' : ''}`}
@@ -158,14 +158,14 @@ export default function ErrorState({
   if (variant === 'inline') {
     return (
       <div
-        className={`py-6 px-4 text-center space-y-3 rounded-2xl bg-slate-50/80 border border-slate-200 ${className}`}
+        className={`py-6 px-4 text-center space-y-3 rounded-2xl bg-slate-50/80 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 ${className}`}
       >
-        <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-red-100 text-red-600 mx-auto">
+        <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 mx-auto">
           {renderIcon()}
         </div>
         <div className="space-y-1">
-          <h4 className="text-sm font-bold text-slate-900">{displayTitle}</h4>
-          <p className="text-xs text-slate-600 max-w-sm mx-auto">{displayMessage}</p>
+          <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100">{displayTitle}</h4>
+          <p className="text-xs text-slate-600 dark:text-slate-400 max-w-sm mx-auto">{displayMessage}</p>
         </div>
         {onRetry && (
           <div>
@@ -191,7 +191,7 @@ export default function ErrorState({
       className={`${
         variant === 'full'
           ? 'min-h-[60vh] flex items-center justify-center px-4 py-12'
-          : 'bg-white rounded-3xl p-8 sm:p-10 border border-slate-200 shadow-sm text-center'
+          : 'bg-white dark:bg-slate-900 rounded-3xl p-8 sm:p-10 border border-slate-200 dark:border-slate-800 shadow-sm text-center'
       } ${className}`}
     >
       <div className="max-w-md w-full mx-auto text-center space-y-6">
@@ -199,12 +199,12 @@ export default function ErrorState({
         <div
           className={`w-16 h-16 rounded-2xl mx-auto flex items-center justify-center shadow-inner ${
             isNetwork
-              ? 'bg-amber-100 text-amber-600'
+              ? 'bg-amber-100 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400'
               : is403
-              ? 'bg-red-100 text-red-600'
+              ? 'bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400'
               : is404
-              ? 'bg-slate-100 text-slate-600'
-              : 'bg-red-100 text-red-600'
+              ? 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+              : 'bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400'
           }`}
         >
           {renderIcon()}
@@ -212,17 +212,17 @@ export default function ErrorState({
 
         {/* Text Area */}
         <div className="space-y-2">
-          <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
             {displayTitle}
           </h3>
-          <p className="text-sm text-slate-600 leading-relaxed max-w-sm mx-auto">
+          <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed max-w-sm mx-auto">
             {displayMessage}
           </p>
 
           {/* Validation Errors List if 400 */}
           {validationErrors.length > 0 && (
-            <div className="mt-4 p-3 rounded-xl bg-red-50/70 border border-red-200 text-left text-xs text-red-800 space-y-1">
-              <span className="font-bold block text-red-900 mb-1">
+            <div className="mt-4 p-3 rounded-xl bg-red-50/70 dark:bg-red-950/30 border border-red-200 dark:border-red-800/60 text-left text-xs text-red-800 dark:text-red-300 space-y-1">
+              <span className="font-bold block text-red-900 dark:text-red-200 mb-1">
                 Please resolve the following issues:
               </span>
               <ul className="list-disc list-inside space-y-0.5">
@@ -240,7 +240,7 @@ export default function ErrorState({
             <button
               onClick={handleRetry}
               disabled={retrying}
-              className="inline-flex items-center px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-md shadow-indigo-200 transition disabled:opacity-50"
+              className="inline-flex items-center px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-md shadow-indigo-200 dark:shadow-none transition disabled:opacity-50"
             >
               <RefreshCw
                 className={`w-4 h-4 mr-2 ${retrying ? 'animate-spin' : ''}`}
@@ -252,17 +252,17 @@ export default function ErrorState({
           {actionLink ? (
             <Link
               to={actionLink}
-              className="inline-flex items-center px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold transition"
+              className="inline-flex items-center px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-semibold transition"
             >
-              <Home className="w-4 h-4 mr-2 text-slate-500" />
+              <Home className="w-4 h-4 mr-2 text-slate-500 dark:text-slate-400" />
               {actionText || 'Return to Dashboard'}
             </Link>
           ) : onAction ? (
             <button
               onClick={onAction}
-              className="inline-flex items-center px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold transition"
+              className="inline-flex items-center px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-semibold transition"
             >
-              <ArrowLeft className="w-4 h-4 mr-2 text-slate-500" />
+              <ArrowLeft className="w-4 h-4 mr-2 text-slate-500 dark:text-slate-400" />
               {actionText || 'Go Back'}
             </button>
           ) : null}

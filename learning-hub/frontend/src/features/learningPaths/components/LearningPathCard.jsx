@@ -83,7 +83,7 @@ export default function LearningPathCard({ path, progress }) {
   const progressVal = progress ?? path.progress;
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/80 hover:border-indigo-300 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between overflow-hidden group">
+    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between overflow-hidden group">
       {/* Card Header & Content */}
       <div className="p-5 sm:p-6">
         <div className="flex items-start justify-between gap-3 mb-4">
@@ -96,48 +96,48 @@ export default function LearningPathCard({ path, progress }) {
             >
               {path.level}
             </span>
-            <span className="text-[10px] sm:text-[11px] font-medium px-2 sm:px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+            <span className="text-[10px] sm:text-[11px] font-medium px-2 sm:px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
               {path.category}
             </span>
           </div>
         </div>
 
-        <h3 className="text-lg sm:text-xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-1 mb-2">
+        <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1 mb-2">
           {path.title}
         </h3>
 
-        <p className="text-xs sm:text-sm text-slate-600 line-clamp-3 mb-4 sm:mb-5 leading-relaxed">
+        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-3 mb-4 sm:mb-5 leading-relaxed">
           {path.description}
         </p>
 
         {/* Path Metrics */}
-        <div className="grid grid-cols-3 gap-1 sm:gap-2 py-2.5 sm:py-3 px-2 sm:px-3 rounded-xl bg-slate-50 border border-slate-100 text-[11px] sm:text-xs text-slate-600">
+        <div className="grid grid-cols-3 gap-1 sm:gap-2 py-2.5 sm:py-3 px-2 sm:px-3 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-100 dark:border-slate-800/80 text-[11px] sm:text-xs text-slate-600 dark:text-slate-400">
           <div className="flex flex-col items-center text-center">
-            <div className="flex items-center text-slate-500 font-medium mb-0.5 text-[10px] sm:text-xs">
+            <div className="flex items-center text-slate-500 dark:text-slate-400 font-medium mb-0.5 text-[10px] sm:text-xs">
               <BookMarked className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1 text-slate-400 shrink-0" />
               <span>Modules</span>
             </div>
-            <span className="font-bold text-slate-900 text-xs sm:text-sm">
+            <span className="font-bold text-slate-900 dark:text-slate-100 text-xs sm:text-sm">
               {path.modulesCount || (path.modules ? path.modules.length : 0)}
             </span>
           </div>
 
-          <div className="flex flex-col items-center text-center border-x border-slate-200">
-            <div className="flex items-center text-slate-500 font-medium mb-0.5 text-[10px] sm:text-xs">
+          <div className="flex flex-col items-center text-center border-x border-slate-200 dark:border-slate-800">
+            <div className="flex items-center text-slate-500 dark:text-slate-400 font-medium mb-0.5 text-[10px] sm:text-xs">
               <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1 text-slate-400 shrink-0" />
               <span>Topics</span>
             </div>
-            <span className="font-bold text-slate-900 text-xs sm:text-sm">
+            <span className="font-bold text-slate-900 dark:text-slate-100 text-xs sm:text-sm">
               {path.totalTopics || 0}
             </span>
           </div>
 
           <div className="flex flex-col items-center text-center">
-            <div className="flex items-center text-slate-500 font-medium mb-0.5 text-[10px] sm:text-xs">
+            <div className="flex items-center text-slate-500 dark:text-slate-400 font-medium mb-0.5 text-[10px] sm:text-xs">
               <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1 text-slate-400 shrink-0" />
               <span>Duration</span>
             </div>
-            <span className="font-bold text-slate-900 text-xs sm:text-sm">
+            <span className="font-bold text-slate-900 dark:text-slate-100 text-xs sm:text-sm">
               {path.estimatedHours}h
             </span>
           </div>
@@ -148,11 +148,11 @@ export default function LearningPathCard({ path, progress }) {
       <div className="p-5 sm:p-6 pt-0">
         {typeof progressVal === 'number' && (
           <div className="mb-3 space-y-1">
-            <div className="flex justify-between text-[11px] font-semibold text-slate-500">
+            <div className="flex justify-between text-[11px] font-semibold text-slate-500 dark:text-slate-400">
               <span>Path Progress</span>
-              <span className="text-indigo-600 font-bold">{progressVal}%</span>
+              <span className="text-indigo-600 dark:text-indigo-400 font-bold">{progressVal}%</span>
             </div>
-            <div className="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden">
+            <div className="w-full h-1.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
               <div
                 className="h-full bg-indigo-600 rounded-full transition-all duration-300"
                 style={{ width: `${progressVal}%` }}
@@ -162,7 +162,7 @@ export default function LearningPathCard({ path, progress }) {
         )}
         <Link
           to={`/learning-paths/${path.slug}`}
-          className="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-indigo-600 text-white font-semibold text-xs sm:text-sm transition-all duration-200 shadow-sm group-hover:shadow group-hover:shadow-indigo-200 min-h-[44px]"
+          className="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-slate-900 dark:bg-slate-800 hover:bg-indigo-600 dark:hover:bg-indigo-600 text-white font-semibold text-xs sm:text-sm transition-all duration-200 shadow-sm group-hover:shadow group-hover:shadow-indigo-200 dark:group-hover:shadow-none min-h-[44px]"
         >
           <span>Explore Curriculum</span>
           <ArrowRight className="w-4 h-4 ml-2 transition-transform duration-200 group-hover:translate-x-1" />

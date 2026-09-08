@@ -84,11 +84,11 @@ export default function Playground() {
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6">
-        <div className="h-6 bg-slate-200 rounded w-64 animate-pulse" />
-        <div className="h-20 bg-slate-200 rounded-2xl animate-pulse" />
+        <div className="h-6 bg-slate-200 dark:bg-slate-800 rounded w-64 animate-pulse" />
+        <div className="h-20 bg-slate-200 dark:bg-slate-800 rounded-2xl animate-pulse" />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="h-[600px] bg-slate-200 rounded-2xl animate-pulse" />
-          <div className="h-[600px] bg-slate-200 rounded-2xl animate-pulse" />
+          <div className="h-[600px] bg-slate-200 dark:bg-slate-800 rounded-2xl animate-pulse" />
+          <div className="h-[600px] bg-slate-200 dark:bg-slate-800 rounded-2xl animate-pulse" />
         </div>
       </div>
     );
@@ -97,11 +97,11 @@ export default function Playground() {
   if (error || !playground) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-16 text-center space-y-6">
-        <div className="w-16 h-16 rounded-full bg-red-100 text-red-600 mx-auto flex items-center justify-center">
+        <div className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 mx-auto flex items-center justify-center">
           <AlertCircle className="w-8 h-8" />
         </div>
-        <h2 className="text-2xl font-bold text-slate-900">Playground Not Found</h2>
-        <p className="text-sm text-slate-600 max-w-md mx-auto">
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Playground Not Found</h2>
+        <p className="text-sm text-slate-600 dark:text-slate-400 max-w-md mx-auto">
           {error || `The playground '/playgrounds/${slug}' could not be located.`}
         </p>
         <div>
@@ -124,9 +124,9 @@ export default function Playground() {
   const pathDoc = moduleDoc?.learningPath;
 
   const difficultyColors = {
-    BEGINNER: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-    INTERMEDIATE: 'bg-amber-50 text-amber-700 border-amber-200',
-    ADVANCED: 'bg-rose-50 text-rose-700 border-rose-200',
+    BEGINNER: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
+    INTERMEDIATE: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800',
+    ADVANCED: 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800',
   };
   const diffBadge = difficultyColors[playground.difficulty] || difficultyColors.BEGINNER;
 
@@ -134,10 +134,10 @@ export default function Playground() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* 5-Tier Breadcrumb Navigation */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <nav className="flex flex-wrap items-center gap-1.5 text-xs font-semibold text-slate-500">
+        <nav className="flex flex-wrap items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400">
           {pathDoc && (
             <>
-              <Link to={`/learning-paths/${pathDoc.slug}`} className="hover:text-indigo-600 transition">
+              <Link to={`/learning-paths/${pathDoc.slug}`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition">
                 {pathDoc.title}
               </Link>
               <span>/</span>
@@ -145,7 +145,7 @@ export default function Playground() {
           )}
           {moduleDoc && (
             <>
-              <Link to={`/modules/${moduleDoc.slug}`} className="hover:text-indigo-600 transition">
+              <Link to={`/modules/${moduleDoc.slug}`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition">
                 {moduleDoc.title}
               </Link>
               <span>/</span>
@@ -153,7 +153,7 @@ export default function Playground() {
           )}
           {section && (
             <>
-              <Link to={`/sections/${section.slug}`} className="hover:text-indigo-600 transition">
+              <Link to={`/sections/${section.slug}`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition">
                 {section.title}
               </Link>
               <span>/</span>
@@ -162,13 +162,13 @@ export default function Playground() {
           {topic ? (
             <Link
               to={`/topics/${topic.slug}`}
-              className="inline-flex items-center text-indigo-600 font-bold hover:text-indigo-800 transition"
+              className="inline-flex items-center text-indigo-600 dark:text-indigo-400 font-bold hover:text-indigo-800 dark:hover:text-indigo-300 transition"
             >
               <ArrowLeft className="w-3.5 h-3.5 mr-1" />
               {topic.title}
             </Link>
           ) : (
-            <Link to="/learning-paths" className="hover:text-indigo-600 transition">
+            <Link to="/learning-paths" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition">
               Curriculum
             </Link>
           )}
@@ -178,7 +178,7 @@ export default function Playground() {
           {isAdmin && (
             <Link
               to={`/admin/playgrounds/${playground.id}/edit`}
-              className="inline-flex items-center px-3 py-1.5 rounded-lg border border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100 text-xs font-semibold transition"
+              className="inline-flex items-center px-3 py-1.5 rounded-lg border border-purple-200 dark:border-purple-800/60 bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900/40 text-xs font-semibold transition"
             >
               <Edit className="w-3.5 h-3.5 mr-1.5" />
               Edit Playground (Admin)
@@ -188,7 +188,7 @@ export default function Playground() {
           {topic && (
             <Link
               to={`/topics/${topic.slug}`}
-              className="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition gap-1"
+              className="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold transition gap-1 shadow-xs"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back to {topic.title}</span>
@@ -198,29 +198,29 @@ export default function Playground() {
       </div>
 
       {/* Playground Header Banner */}
-      <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-5">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-5">
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-2">
             <span className={`text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${diffBadge}`}>
               {playground.difficulty || 'BEGINNER'}
             </span>
-            <span className="text-xs font-mono font-semibold uppercase px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200 flex items-center gap-1.5">
-              <Terminal className="w-3 h-3 text-indigo-600" />
+            <span className="text-xs font-mono font-semibold uppercase px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 flex items-center gap-1.5">
+              <Terminal className="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
               {playground.language || 'javascript'}
             </span>
             {topic && (
-              <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100">
+              <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-900/60">
                 Topic: {topic.title}
               </span>
             )}
           </div>
 
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
             {playground.title}
           </h1>
 
           {playground.description && (
-            <p className="text-xs sm:text-sm text-slate-600 max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
               {playground.description}
             </p>
           )}
@@ -254,16 +254,16 @@ export default function Playground() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left Column: Instructions, Expected Output, Hints */}
         <div className="lg:col-span-5 space-y-4">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col">
             {/* Tabs */}
-            <div className="flex border-b border-slate-100 bg-slate-50/70 text-xs font-semibold">
+            <div className="flex border-b border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/80 text-xs font-semibold">
               <button
                 type="button"
                 onClick={() => setActiveTab('instructions')}
                 className={`flex-1 py-3 px-4 text-center border-b-2 transition ${
                   activeTab === 'instructions'
-                    ? 'border-indigo-600 text-indigo-600 bg-white'
-                    : 'border-transparent text-slate-500 hover:text-slate-700'
+                    ? 'border-indigo-600 dark:border-indigo-500 text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-900'
+                    : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
                 }`}
               >
                 Instructions
@@ -274,8 +274,8 @@ export default function Playground() {
                   onClick={() => setActiveTab('hints')}
                   className={`flex-1 py-3 px-4 text-center border-b-2 transition flex items-center justify-center gap-1.5 ${
                     activeTab === 'hints'
-                      ? 'border-indigo-600 text-indigo-600 bg-white'
-                      : 'border-transparent text-slate-500 hover:text-slate-700'
+                      ? 'border-indigo-600 dark:border-indigo-500 text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-900'
+                      : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
                   }`}
                 >
                   <HelpCircle className="w-3.5 h-3.5" />
@@ -285,25 +285,25 @@ export default function Playground() {
             </div>
 
             {/* Tab Body */}
-            <div className="p-5 overflow-auto max-h-[520px] text-xs sm:text-sm text-slate-700 leading-relaxed space-y-4">
+            <div className="p-5 overflow-auto max-h-[520px] text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed space-y-4">
               {activeTab === 'instructions' ? (
                 <>
                   {playground.instructions ? (
                     <MarkdownRenderer content={playground.instructions} />
                   ) : (
-                    <p className="text-slate-500 italic">
+                    <p className="text-slate-500 dark:text-slate-400 italic">
                       No additional instructions provided for this sandbox. Experiment with the starter code!
                     </p>
                   )}
 
                   {/* Expected Output block if provided */}
                   {playground.expectedOutput && (
-                    <div className="pt-4 border-t border-slate-100 space-y-2">
-                      <div className="flex items-center space-x-1.5 text-xs font-bold text-slate-900">
-                        <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+                    <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2">
+                      <div className="flex items-center space-x-1.5 text-xs font-bold text-slate-900 dark:text-slate-100">
+                        <Sparkles className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
                         <span>Target Output:</span>
                       </div>
-                      <pre className="p-3 bg-slate-900 text-emerald-400 font-mono text-xs rounded-xl overflow-x-auto">
+                      <pre className="p-3 bg-slate-900 text-emerald-400 font-mono text-xs rounded-xl overflow-x-auto border border-slate-800">
                         <code>{playground.expectedOutput}</code>
                       </pre>
                     </div>
@@ -311,16 +311,16 @@ export default function Playground() {
                 </>
               ) : (
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-indigo-700 font-bold text-xs pb-1 border-b border-slate-100">
+                  <div className="flex items-center gap-2 text-indigo-700 dark:text-indigo-300 font-bold text-xs pb-1 border-b border-slate-100 dark:border-slate-800">
                     <Sparkles className="w-4 h-4" />
                     <span>Helpful Conceptual Hints</span>
                   </div>
                   {playground.hints.map((hint, idx) => (
                     <div
                       key={idx}
-                      className="p-3 rounded-xl bg-indigo-50/60 border border-indigo-100 text-xs text-indigo-950 flex items-start gap-2.5"
+                      className="p-3 rounded-xl bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/60 text-xs text-indigo-950 dark:text-indigo-200 flex items-start gap-2.5"
                     >
-                      <span className="w-5 h-5 rounded-full bg-indigo-200 text-indigo-700 font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">
+                      <span className="w-5 h-5 rounded-full bg-indigo-200 dark:bg-indigo-800 text-indigo-700 dark:text-indigo-200 font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">
                         {idx + 1}
                       </span>
                       <span>{hint}</span>

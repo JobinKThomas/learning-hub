@@ -39,7 +39,7 @@ const CONTENT_DOMAINS = [
     createPath: '/admin/learning-paths/create',
     icon: Layers,
     color: 'from-purple-600 to-indigo-600',
-    badgeColor: 'bg-purple-100 text-purple-700 border-purple-200',
+    badgeColor: 'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800',
   },
   {
     id: 'modules',
@@ -51,7 +51,7 @@ const CONTENT_DOMAINS = [
     createPath: '/admin/modules/create',
     icon: BookOpen,
     color: 'from-blue-600 to-indigo-600',
-    badgeColor: 'bg-blue-100 text-blue-700 border-blue-200',
+    badgeColor: 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800',
   },
   {
     id: 'sections',
@@ -63,7 +63,7 @@ const CONTENT_DOMAINS = [
     createPath: '/admin/sections/create',
     icon: Layers,
     color: 'from-cyan-600 to-blue-600',
-    badgeColor: 'bg-cyan-100 text-cyan-700 border-cyan-200',
+    badgeColor: 'bg-cyan-100 text-cyan-700 border-cyan-200 dark:bg-cyan-950/60 dark:text-cyan-300 dark:border-cyan-800',
   },
   {
     id: 'topics',
@@ -75,7 +75,7 @@ const CONTENT_DOMAINS = [
     createPath: '/admin/topics/create',
     icon: Code2,
     color: 'from-teal-600 to-emerald-600',
-    badgeColor: 'bg-teal-100 text-teal-700 border-teal-200',
+    badgeColor: 'bg-teal-100 text-teal-700 border-teal-200 dark:bg-teal-950/60 dark:text-teal-300 dark:border-teal-800',
   },
   {
     id: 'notes',
@@ -87,7 +87,7 @@ const CONTENT_DOMAINS = [
     createPath: '/admin/notes/create',
     icon: FileText,
     color: 'from-emerald-600 to-green-600',
-    badgeColor: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+    badgeColor: 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800',
   },
   {
     id: 'resources',
@@ -99,7 +99,7 @@ const CONTENT_DOMAINS = [
     createPath: '/admin/resources/create',
     icon: Link2,
     color: 'from-amber-600 to-orange-600',
-    badgeColor: 'bg-amber-100 text-amber-700 border-amber-200',
+    badgeColor: 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800',
   },
   {
     id: 'playgrounds',
@@ -111,7 +111,7 @@ const CONTENT_DOMAINS = [
     createPath: '/admin/playgrounds/create',
     icon: Terminal,
     color: 'from-orange-600 to-rose-600',
-    badgeColor: 'bg-orange-100 text-orange-700 border-orange-200',
+    badgeColor: 'bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-950/60 dark:text-orange-300 dark:border-orange-800',
   },
   {
     id: 'quizzes',
@@ -123,7 +123,7 @@ const CONTENT_DOMAINS = [
     createPath: '/admin/quizzes/create',
     icon: HelpCircle,
     color: 'from-rose-600 to-pink-600',
-    badgeColor: 'bg-rose-100 text-rose-700 border-rose-200',
+    badgeColor: 'bg-rose-100 text-rose-700 border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800',
   },
   {
     id: 'interviewQuestions',
@@ -135,7 +135,7 @@ const CONTENT_DOMAINS = [
     createPath: '/admin/interview-questions/create',
     icon: Flame,
     color: 'from-pink-600 to-purple-600',
-    badgeColor: 'bg-pink-100 text-pink-700 border-pink-200',
+    badgeColor: 'bg-pink-100 text-pink-700 border-pink-200 dark:bg-pink-950/60 dark:text-pink-300 dark:border-pink-800',
   },
 ];
 
@@ -243,57 +243,57 @@ export default function AdminDashboard() {
 
       {/* Top 4 Executive Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center space-x-4">
+          <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
             <Users className="w-6 h-6" />
           </div>
           <div>
-            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+            <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               Total Accounts
             </div>
-            <div className="text-2xl font-extrabold text-slate-900 mt-0.5">
+            <div className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 mt-0.5">
               {loading ? '...' : overview?.metrics?.totalUsers ?? usersList.length}
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center space-x-4">
+          <div className="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
             <Shield className="w-6 h-6" />
           </div>
           <div>
-            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+            <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               Administrators
             </div>
-            <div className="text-2xl font-extrabold text-purple-900 mt-0.5">
+            <div className="text-2xl font-extrabold text-purple-900 dark:text-purple-300 mt-0.5">
               {loading ? '...' : overview?.metrics?.totalAdmins ?? usersList.filter((u) => u.role === 'ADMIN').length}
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center space-x-4">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
             <Layers className="w-6 h-6" />
           </div>
           <div>
-            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+            <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               Total Content Units
             </div>
-            <div className="text-2xl font-extrabold text-emerald-900 mt-0.5">
+            <div className="text-2xl font-extrabold text-emerald-900 dark:text-emerald-300 mt-0.5">
               {loading ? '...' : totalContent}
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center space-x-4">
+          <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
             <Activity className="w-6 h-6" />
           </div>
           <div>
-            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+            <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               System & Database
             </div>
-            <div className="text-sm font-extrabold text-slate-900 mt-1 flex items-center">
+            <div className="text-sm font-extrabold text-slate-900 dark:text-slate-100 mt-1 flex items-center">
               <CheckCircle2 className="w-4 h-4 text-emerald-500 mr-1.5" />
               <span>{overview?.system?.databaseStatus || 'Connected'}</span>
             </div>
@@ -302,13 +302,13 @@ export default function AdminDashboard() {
       </div>
 
       {/* Quick Create Strip */}
-      <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2 text-slate-900 font-bold text-sm">
-            <Sparkles className="w-4 h-4 text-purple-600" />
+          <div className="flex items-center space-x-2 text-slate-900 dark:text-slate-100 font-bold text-sm">
+            <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />
             <span>Fast Content Creation</span>
           </div>
-          <span className="text-xs text-slate-500">1-Click Admin Jump</span>
+          <span className="text-xs text-slate-500 dark:text-slate-400">1-Click Admin Jump</span>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {CONTENT_DOMAINS.map((domain) => {
@@ -317,9 +317,9 @@ export default function AdminDashboard() {
               <Link
                 key={domain.createPath}
                 to={domain.createPath}
-                className="inline-flex items-center px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-purple-50 text-slate-700 hover:text-purple-700 border border-slate-200 hover:border-purple-300 text-xs font-semibold transition gap-1.5 shadow-2xs"
+                className="inline-flex items-center px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-purple-50 dark:hover:bg-purple-950/40 text-slate-700 dark:text-slate-300 hover:text-purple-700 dark:hover:text-purple-300 border border-slate-200 dark:border-slate-700 hover:border-purple-300 dark:hover:border-purple-600 text-xs font-semibold transition gap-1.5 shadow-2xs"
               >
-                <Plus className="w-3.5 h-3.5 text-purple-600" />
+                <Plus className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
                 <span>New {domain.unit.replace(/s$/, '')}</span>
               </Link>
             );
@@ -331,11 +331,11 @@ export default function AdminDashboard() {
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
-            <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2">
-              <Layers className="w-5 h-5 text-purple-600" />
+            <h2 className="text-lg font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+              <Layers className="w-5 h-5 text-purple-600 dark:text-purple-400" />
               <span>9 Content Management Domains</span>
             </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               Full administrative CRUD operations and inventory across the curriculum hierarchy
             </p>
           </div>
@@ -349,7 +349,7 @@ export default function AdminDashboard() {
             return (
               <div
                 key={domain.id}
-                className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm hover:shadow-md hover:border-purple-200 transition flex flex-col justify-between space-y-4 group"
+                className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-purple-200 dark:hover:border-purple-700 transition flex flex-col justify-between space-y-4 group"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -366,27 +366,27 @@ export default function AdminDashboard() {
                   </div>
 
                   <div>
-                    <h3 className="text-base font-bold text-slate-900 group-hover:text-purple-700 transition">
+                    <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 group-hover:text-purple-700 dark:group-hover:text-purple-400 transition">
                       {domain.title}
                     </h3>
-                    <p className="text-xs text-slate-500 mt-1 leading-relaxed line-clamp-2">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed line-clamp-2">
                       {domain.description}
                     </p>
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
                   <Link
                     to={domain.listPath}
-                    className="inline-flex items-center px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold transition gap-1.5"
+                    className="inline-flex items-center px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold transition gap-1.5"
                   >
                     <span>Manage All</span>
-                    <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
+                    <ArrowRight className="w-3.5 h-3.5 text-slate-400 dark:text-slate-400" />
                   </Link>
 
                   <Link
                     to={domain.createPath}
-                    className="inline-flex items-center px-3 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-bold transition gap-1"
+                    className="inline-flex items-center px-3 py-2 rounded-xl bg-purple-50 dark:bg-purple-950/60 hover:bg-purple-100 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 text-xs font-bold transition gap-1"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Create</span>
@@ -401,48 +401,48 @@ export default function AdminDashboard() {
       {/* Lower Section: User Management & API Guard */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* User Management Table */}
-        <div className="lg:col-span-2 bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-          <div className="px-6 py-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col">
+          <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h2 className="text-base font-bold text-slate-900 flex items-center">
-                <Users className="w-4 h-4 text-purple-600 mr-2" />
+              <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center">
+                <Users className="w-4 h-4 text-purple-600 dark:text-purple-400 mr-2" />
                 User Management Directory
               </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 Registered platform accounts and their authorization privileges
               </p>
             </div>
             <div className="relative w-full sm:w-64">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
               <input
                 type="text"
                 placeholder="Search users..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-xs text-slate-700 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
             </div>
           </div>
 
           <div className="overflow-x-auto flex-1">
-            <table className="w-full text-left text-sm text-slate-700">
-              <thead className="bg-slate-50 text-[11px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100">
+            <table className="w-full text-left text-sm text-slate-700 dark:text-slate-300">
+              <thead className="bg-slate-50 dark:bg-slate-800/60 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
                 <tr>
                   <th className="px-6 py-3.5">User</th>
                   <th className="px-6 py-3.5">Role</th>
                   <th className="px-6 py-3.5">Registered</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-xs">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
                 {loading ? (
                   <tr>
-                    <td colSpan="3" className="px-6 py-8 text-center text-slate-400">
+                    <td colSpan="3" className="px-6 py-8 text-center text-slate-400 dark:text-slate-500">
                       Loading user accounts...
                     </td>
                   </tr>
                 ) : filteredUsers.length === 0 ? (
                   <tr>
-                    <td colSpan="3" className="px-6 py-8 text-center text-slate-400">
+                    <td colSpan="3" className="px-6 py-8 text-center text-slate-400 dark:text-slate-500">
                       No matching users found.
                     </td>
                   </tr>
@@ -450,21 +450,21 @@ export default function AdminDashboard() {
                   filteredUsers.slice(0, 10).map((u) => {
                     const isAdm = u.role === 'ADMIN';
                     return (
-                      <tr key={u._id} className="hover:bg-slate-50/75 transition">
+                      <tr key={u._id} className="hover:bg-slate-50/75 dark:hover:bg-slate-800/40 transition">
                         <td className="px-6 py-3.5">
                           <div className="flex items-center space-x-3">
                             <div
                               className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs ${
                                 isAdm
-                                  ? 'bg-purple-100 text-purple-700'
-                                  : 'bg-indigo-50 text-indigo-600'
+                                  ? 'bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300'
+                                  : 'bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400'
                               }`}
                             >
                               {u.name?.charAt(0).toUpperCase()}
                             </div>
                             <div>
-                              <div className="font-semibold text-slate-900">{u.name}</div>
-                              <div className="text-[11px] text-slate-500 font-mono">{u.email}</div>
+                              <div className="font-semibold text-slate-900 dark:text-slate-100">{u.name}</div>
+                              <div className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">{u.email}</div>
                             </div>
                           </div>
                         </td>
@@ -472,8 +472,8 @@ export default function AdminDashboard() {
                           <span
                             className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${
                               isAdm
-                                ? 'bg-purple-100 text-purple-700 border border-purple-200'
-                                : 'bg-indigo-50 text-indigo-700 border border-indigo-200'
+                                ? 'bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800'
+                                : 'bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800'
                             }`}
                           >
                             {isAdm ? (
@@ -484,7 +484,7 @@ export default function AdminDashboard() {
                             {u.role}
                           </span>
                         </td>
-                        <td className="px-6 py-3.5 text-slate-500">
+                        <td className="px-6 py-3.5 text-slate-500 dark:text-slate-400">
                           {new Date(u.createdAt).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'short',
@@ -499,26 +499,26 @@ export default function AdminDashboard() {
             </table>
           </div>
 
-          <div className="px-6 py-3 bg-slate-50 border-t border-slate-100 text-xs text-slate-500 flex justify-between items-center">
+          <div className="px-6 py-3 bg-slate-50 dark:bg-slate-800/60 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400 flex justify-between items-center">
             <span>Showing {Math.min(filteredUsers.length, 10)} of {filteredUsers.length} users</span>
-            <span className="text-[11px] text-slate-400">Manage via admin API endpoints</span>
+            <span className="text-[11px] text-slate-400 dark:text-slate-500">Manage via admin API endpoints</span>
           </div>
         </div>
 
         {/* Admin API Guard Inspector */}
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm space-y-6">
-          <div className="pb-4 border-b border-slate-100">
-            <h2 className="text-base font-bold text-slate-900 flex items-center">
-              <Code2 className="w-4 h-4 text-purple-600 mr-2" />
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-6">
+          <div className="pb-4 border-b border-slate-100 dark:border-slate-800">
+            <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center">
+              <Code2 className="w-4 h-4 text-purple-600 dark:text-purple-400 mr-2" />
               API Security Guard
             </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               Live validation of requireAuth & requireAdmin
             </p>
           </div>
 
           <div className="space-y-4">
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
               As an authenticated <strong>ADMIN</strong>, you can request <code>/api/admin/overview</code> to receive system metrics and counts for all 9 content domains.
             </p>
 
@@ -532,20 +532,20 @@ export default function AdminDashboard() {
             </button>
 
             {apiResponse && (
-              <div className="space-y-2 pt-2 border-t border-slate-100">
+              <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
                 <div className="flex justify-between items-center text-xs">
-                  <span className="font-semibold text-slate-700">Status:</span>
+                  <span className="font-semibold text-slate-700 dark:text-slate-300">Status:</span>
                   <span
                     className={`font-bold font-mono px-2 py-0.5 rounded text-[11px] ${
                       apiResponse.status === 200
-                        ? 'bg-emerald-100 text-emerald-700'
-                        : 'bg-red-100 text-red-700'
+                        ? 'bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300'
+                        : 'bg-red-100 dark:bg-red-950/80 text-red-700 dark:text-red-300'
                     }`}
                   >
                     HTTP {apiResponse.status}
                   </span>
                 </div>
-                <pre className="bg-slate-900 text-emerald-400 p-3 rounded-2xl text-[11px] font-mono overflow-x-auto shadow-inner max-h-52">
+                <pre className="bg-slate-900 dark:bg-slate-950 text-emerald-400 border border-slate-800 p-3 rounded-2xl text-[11px] font-mono overflow-x-auto shadow-inner max-h-52">
                   {JSON.stringify(apiResponse.data || apiResponse, null, 2)}
                 </pre>
               </div>

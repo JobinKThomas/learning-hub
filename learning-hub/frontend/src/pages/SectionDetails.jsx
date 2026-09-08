@@ -218,25 +218,25 @@ export default function SectionDetails() {
         {/* Left Column: Topics Breakdown & Detailed Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Topics Roadmap (Phase 6 - Click topic to view TopicDetails) */}
-          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-4 gap-2">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4 gap-2">
               <div>
-                <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <Code2 className="w-4 h-4 text-indigo-600" />
+                <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                  <Code2 className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                   Topics & In-Depth Lessons
                 </h2>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   Click on any topic (e.g. <strong>let</strong>) to explore syntax, execution behavior, and code examples.
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-slate-500">
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
                   {topics.length > 0 ? `${topics.length} Topics` : `${items.length} Concepts`}
                 </span>
                 {isAdmin && (
                   <Link
                     to={`/admin/topics/create?section=${section.slug}`}
-                    className="inline-flex items-center px-2.5 py-1 rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 text-[11px] font-semibold transition"
+                    className="inline-flex items-center px-2.5 py-1 rounded-lg bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900/50 border border-purple-200 dark:border-purple-800 text-[11px] font-semibold transition"
                   >
                     <PlusCircle className="w-3.5 h-3.5 mr-1" />
                     + Add Topic
@@ -258,20 +258,20 @@ export default function SectionDetails() {
                   return (
                     <div
                       key={top.id}
-                      className="p-4 rounded-xl border border-slate-200/80 bg-slate-50/50 hover:bg-white hover:border-indigo-200 hover:shadow-sm transition-all group"
+                      className="p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 hover:bg-white dark:hover:bg-slate-800/60 hover:border-indigo-200 dark:hover:border-indigo-800 hover:shadow-sm transition-all group"
                     >
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div className="space-y-1 flex-grow">
                           <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-100 text-indigo-700 font-mono">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-mono">
                               {top.title}
                             </span>
-                            <span className="text-[11px] font-medium text-slate-500 flex items-center gap-1">
+                            <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1">
                               <Clock className="w-3 h-3 text-amber-500" />
                               {top.duration}
                             </span>
                             {top.codeExamplesCount > 0 && (
-                              <span className="text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
+                              <span className="text-[10px] px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                                 {top.codeExamplesCount} code {top.codeExamplesCount === 1 ? 'example' : 'examples'}
                               </span>
                             )}
@@ -283,12 +283,12 @@ export default function SectionDetails() {
                               />
                             )}
                           </div>
-                        <h3 className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition">
+                        <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition">
                           <Link to={`/topics/${top.slug}`}>
                             {top.title} — {top.summary || top.description}
                           </Link>
                         </h3>
-                        <p className="text-xs text-slate-600 line-clamp-1">
+                        <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-1">
                           {top.description}
                         </p>
                       </div>
@@ -296,7 +296,7 @@ export default function SectionDetails() {
                       <div className="shrink-0 self-start sm:self-center">
                         <Link
                           to={`/topics/${top.slug}`}
-                          className="inline-flex items-center px-3.5 py-1.5 rounded-xl bg-indigo-50 text-indigo-700 hover:bg-indigo-600 hover:text-white font-semibold text-xs transition gap-1"
+                          className="inline-flex items-center px-3.5 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-600 dark:hover:bg-indigo-600 hover:text-white font-semibold text-xs transition gap-1"
                         >
                           <span>Explore {top.title}</span>
                           <ArrowRight className="w-3.5 h-3.5" />
@@ -312,19 +312,19 @@ export default function SectionDetails() {
                 {items.map((item, iIdx) => (
                   <div
                     key={iIdx}
-                    className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-indigo-200 transition-all flex items-center justify-between group"
+                    className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 hover:bg-white dark:hover:bg-slate-800/60 hover:border-indigo-200 dark:hover:border-indigo-800 transition-all flex items-center justify-between group"
                   >
                     <div>
-                      <span className="font-mono text-sm font-bold text-slate-900">
+                      <span className="font-mono text-sm font-bold text-slate-900 dark:text-slate-100">
                         {item}
                       </span>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
                         Topic lesson in {section.title}
                       </p>
                     </div>
                     <Link
                       to={`/topics/${item.toLowerCase().replace(/[\s\W-]+/g, '-')}`}
-                      className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-600 hover:text-white text-xs font-semibold transition gap-1"
+                      className="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-600 dark:hover:bg-indigo-600 hover:text-white text-xs font-semibold transition gap-1"
                     >
                       <span>View {item} Details</span>
                       <ArrowRight className="w-3.5 h-3.5" />
@@ -333,27 +333,27 @@ export default function SectionDetails() {
                 ))}
               </div>
             ) : (
-              <div className="p-6 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center space-y-2">
+              <div className="p-6 rounded-xl bg-slate-50 dark:bg-slate-950/40 border border-dashed border-slate-200 dark:border-slate-800 text-center space-y-2">
                 <Code2 className="w-6 h-6 text-slate-400 mx-auto" />
-                <p className="text-xs text-slate-600">No topics added to this section yet.</p>
+                <p className="text-xs text-slate-600 dark:text-slate-400">No topics added to this section yet.</p>
               </div>
             )}
           </div>
 
           {/* Sub-lessons Interactive Checklist */}
           {items.length > 0 && (
-            <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-5">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-5">
+              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
                 <div>
-                  <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                    <GraduationCap className="w-4 h-4 text-indigo-600" />
+                  <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                    <GraduationCap className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                     Concepts Mastery Checklist
                   </h2>
-                  <p className="text-xs text-slate-500 mt-0.5">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                     Click each concept to check it off as you master each topic.
                   </p>
                 </div>
-                <span className="text-xs font-semibold text-slate-500">
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
                   {completedCount} / {totalItems} mastered
                 </span>
               </div>
@@ -368,27 +368,27 @@ export default function SectionDetails() {
                       onClick={() => toggleItem(item)}
                       className={`p-4 rounded-xl border text-left flex items-center justify-between transition-all ${
                         isCompleted
-                          ? 'bg-emerald-50/70 border-emerald-200 text-slate-900'
-                          : 'bg-slate-50 hover:bg-slate-100/80 border-slate-200 text-slate-800'
+                          ? 'bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800/60 text-slate-900 dark:text-slate-100'
+                          : 'bg-slate-50 dark:bg-slate-950/40 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200'
                       }`}
                     >
                       <div className="flex items-center gap-3">
                         <div className="shrink-0">
                           {isCompleted ? (
-                            <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                            <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                           ) : (
-                            <Circle className="w-5 h-5 text-slate-400 hover:text-indigo-600" />
+                            <Circle className="w-5 h-5 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400" />
                           )}
                         </div>
-                        <span className={`font-mono text-sm font-bold ${isCompleted ? 'line-through text-slate-500' : 'text-slate-900'}`}>
+                        <span className={`font-mono text-sm font-bold ${isCompleted ? 'line-through text-slate-500 dark:text-slate-500' : 'text-slate-900 dark:text-slate-100'}`}>
                           {item}
                         </span>
                       </div>
                       <span
                         className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
                           isCompleted
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : 'bg-slate-200 text-slate-600'
+                            ? 'bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300'
+                            : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                         }`}
                       >
                         {isCompleted ? 'Mastered' : 'To Learn'}
@@ -402,21 +402,21 @@ export default function SectionDetails() {
 
           {/* Section Deep-Dive Content / Guide */}
           {section.content ? (
-            <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-4">
-              <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
-                <FileText className="w-4 h-4 text-indigo-600" />
-                <h2 className="text-base font-bold text-slate-900">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
+              <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                <FileText className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
                   Lesson Notes & Code Reference
                 </h2>
               </div>
-              <div className="prose prose-slate max-w-none text-xs sm:text-sm text-slate-700 leading-relaxed whitespace-pre-wrap font-sans">
+              <div className="prose prose-slate dark:prose-invert max-w-none text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap font-sans">
                 {section.content}
               </div>
             </div>
           ) : (
-            <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-3 text-center py-10">
-              <BookOpen className="w-8 h-8 text-slate-300 mx-auto" />
-              <p className="text-xs text-slate-500">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-3 text-center py-10">
+              <BookOpen className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto" />
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Detailed study notes for this section will be available soon.
               </p>
             </div>
@@ -425,12 +425,12 @@ export default function SectionDetails() {
 
         {/* Right Column: Progress & Quick Navigation */}
         <div className="space-y-6">
-          <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-md space-y-6 sticky top-24">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-md space-y-6 sticky top-24">
             <div>
-              <span className="text-[10px] font-semibold uppercase text-slate-400 tracking-wider">
+              <span className="text-[10px] font-semibold uppercase text-slate-400 dark:text-slate-500 tracking-wider">
                 Lesson Progress
               </span>
-              <h3 className="text-lg font-bold text-slate-900 mt-1">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mt-1">
                 Section Mastery
               </h3>
             </div>
@@ -444,13 +444,13 @@ export default function SectionDetails() {
             />
 
             {/* Completion status feedback */}
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 text-xs space-y-1">
-              <span className="font-semibold text-slate-800">
+            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-100 dark:border-slate-800 text-xs space-y-1">
+              <span className="font-semibold text-slate-800 dark:text-slate-200">
                 {progressPercent === 100
                   ? '🎉 Section Mastered!'
                   : `${totalItems - completedCount} concepts remaining`}
               </span>
-              <p className="text-[11px] text-slate-500">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
                 {progressPercent === 100
                   ? 'All sub-lessons in this section have been marked as mastered.'
                   : 'Check off each concept card as you write code and test it.'}
@@ -461,7 +461,7 @@ export default function SectionDetails() {
             {parentModule && (
               <Link
                 to={`/modules/${parentModule.slug}`}
-                className="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-100 transition"
+                className="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-100 dark:shadow-none transition"
               >
                 <span>Back to {parentModule.title}</span>
                 <ArrowRight className="w-4 h-4 ml-1.5" />
@@ -471,16 +471,16 @@ export default function SectionDetails() {
             {/* Share action */}
             <button
               onClick={handleShare}
-              className="w-full py-2 px-3 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition flex items-center justify-center gap-2"
+              className="w-full py-2 px-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition flex items-center justify-center gap-2"
             >
               {copied ? (
                 <>
-                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                   <span>Link Copied!</span>
                 </>
               ) : (
                 <>
-                  <Share2 className="w-3.5 h-3.5 text-slate-500" />
+                  <Share2 className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                   <span>Share Section</span>
                 </>
               )}
