@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { authRepository } from '../repositories/authRepository.js';
 import { ApiError } from '../utils/apiError.js';
 import {
@@ -141,6 +142,112 @@ export class AuthService {
       throw new ApiError('The user belonging to this token no longer exists', 404);
     }
     return user;
+  }
+
+  /**
+   * Update profile information (e.g. name)
+   */
+  async updateProfile(userId, { name }) {
+    if (!name || !name.trim()) {
+      throw new ApiError('Name is required', 400);
+    }
+
+    const updatedUser = await this.repository.updateName(userId, name.trim());
+    if (!updatedUser) {
+      throw new ApiError('User not found', 404);
+    }
+
+    return updatedUser;
+  }
+
+  /**
+   * Update user password with current password verification
+   */
+  async updatePassword(userId, { currentPassword, newPassword }) {
+    const user = await this.repository.findById(userId, { includePassword: true });
+    if (!user) {
+      throw new ApiError('User not found', 404);
+    }
+
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
+      throw new ApiError('Current password is incorrect', 400);
+    }
+
+    user.password = newPassword;
+    user.refreshTokens = [];
+    await user.save();
+
+    const payload = { id: user._id.toString(), role: user.role };
+    const accessToken = generateAccessToken(payload);
+    const refreshToken = generateRefreshToken(payload);
+
+    await this.repository.addRefreshToken(user._id, refreshToken);
+
+    return {
+      message: 'Password updated successfully',
+      accessToken,
+      refreshToken,
+    };
+  }
+
+  /**
+   * Generate password reset token
+   */
+  async forgotPassword(email) {
+    const user = await this.repository.findByEmail(email);
+    if (!user) {
+      return {
+        message: 'If an account with that email exists, a password reset link has been sent.',
+      };
+    }
+
+    const resetToken = user.getResetPasswordToken();
+    await user.save({ validateBeforeSave: false });
+
+    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password/${resetToken}`;
+
+    return {
+      message: 'Password reset link generated successfully',
+      resetToken,
+      resetUrl,
+    };
+  }
+
+  /**
+   * Reset user password using token
+   */
+  async resetPassword(token, newPassword) {
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    const user = await this.repository.findByResetToken(hashedToken);
+    if (!user) {
+      throw new ApiError('Password reset token is invalid or has expired', 400);
+    }
+
+    user.password = newPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    user.refreshTokens = [];
+    await user.save();
+
+    const payload = { id: user._id.toString(), role: user.role };
+    const accessToken = generateAccessToken(payload);
+    const refreshToken = generateRefreshToken(payload);
+
+    await this.repository.addRefreshToken(user._id, refreshToken);
+
+    return {
+      message: 'Password reset successfully',
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+      accessToken,
+      refreshToken,
+    };
   }
 }
 

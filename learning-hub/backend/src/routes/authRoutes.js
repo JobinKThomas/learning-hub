@@ -5,11 +5,19 @@ import {
   refresh,
   logout,
   getMe,
+  updateProfile,
+  updatePassword,
+  forgotPassword,
+  resetPassword,
 } from '../controllers/authController.js';
 import {
   validateRegister,
   validateLogin,
   validateRefresh,
+  validateUpdateProfile,
+  validateUpdatePassword,
+  validateForgotPassword,
+  validateResetPassword,
 } from '../middlewares/validationMiddleware.js';
 import { authenticate } from '../middlewares/authMiddleware.js';
 
@@ -159,5 +167,127 @@ router.post('/logout', logout);
  *         description: Missing or invalid token
  */
 router.get('/me', authenticate, getMe);
+
+/**
+ * @openapi
+ * /auth/profile:
+ *   put:
+ *     summary: Update authenticated user profile name
+ *     tags:
+ *       - Auth
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Jane Doe
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Unauthorized
+ */
+router.put('/profile', authenticate, validateUpdateProfile, updateProfile);
+
+/**
+ * @openapi
+ * /auth/update-password:
+ *   put:
+ *     summary: Change current password
+ *     tags:
+ *       - Auth
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - currentPassword
+ *               - newPassword
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *               newPassword:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password updated successfully
+ *       400:
+ *         description: Current password incorrect or validation error
+ *       401:
+ *         description: Unauthorized
+ */
+router.put('/update-password', authenticate, validateUpdatePassword, updatePassword);
+
+/**
+ * @openapi
+ * /auth/forgot-password:
+ *   post:
+ *     summary: Request password reset link
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password reset link generated
+ *       400:
+ *         description: Invalid email format
+ */
+router.post('/forgot-password', validateForgotPassword, forgotPassword);
+
+/**
+ * @openapi
+ * /auth/reset-password/{token}:
+ *   post:
+ *     summary: Reset password with token
+ *     tags:
+ *       - Auth
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - password
+ *             properties:
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password reset successfully
+ *       400:
+ *         description: Invalid or expired token / password validation error
+ */
+router.post('/reset-password/:token', validateResetPassword, resetPassword);
 
 export default router;
