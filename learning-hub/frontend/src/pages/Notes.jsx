@@ -94,7 +94,7 @@ export default function Notes() {
         <div className="space-y-2">
           <div className="flex items-center space-x-2">
             <span className="text-xs font-bold px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
-              Phase 7 Content Tier
+              Study Guides
             </span>
             <span className="text-xs font-semibold text-slate-400">
               {count} Study Notes

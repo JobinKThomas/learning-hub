@@ -121,8 +121,13 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* 1. DashboardCards: Welcome & Core 4-Metric Grid (Phase 14) */}
-      <DashboardCards user={dashboardData?.user || user} stats={stats} />
+      {/* 1. DashboardCards: Welcome & Core 4-Metric Grid */}
+      <DashboardCards
+        user={dashboardData?.user || user}
+        stats={stats}
+        continueLearning={continueLearning}
+        activePathTitle={learningPaths?.[0]?.title}
+      />
 
       {/* 2. Main Grid: Continue Learning + Track Overview (Phase 14) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">

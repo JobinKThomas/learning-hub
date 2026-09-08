@@ -10,13 +10,14 @@ import {
   TrendingUp,
 } from 'lucide-react';
 
-export default function DashboardCards({ user, stats }) {
+export default function DashboardCards({ user, stats, continueLearning, activePathTitle }) {
   const overallProgress = stats?.overallProgress ?? 0;
   const learningPathsCount = stats?.learningPathsCount ?? 0;
   const completedTopicsCount = stats?.completedTopicsCount ?? 0;
   const quizAverage = stats?.quizAverage ?? 0;
   const totalNotes = stats?.totalNotesCompleted ?? 0;
   const totalPlaygrounds = stats?.totalPlaygroundsCompleted ?? 0;
+  const targetTrack = continueLearning?.learningPath?.title || activePathTitle;
 
   return (
     <div className="space-y-6">
@@ -47,12 +48,14 @@ export default function DashboardCards({ user, stats }) {
               </h2>
             </div>
 
-            <div className="flex items-center gap-3">
-              <div className="text-right hidden sm:block">
-                <div className="text-xs text-slate-400">Target Curriculum</div>
-                <div className="text-sm font-bold text-white">Full Stack Engineer</div>
+            {targetTrack && (
+              <div className="flex items-center gap-3">
+                <div className="text-right hidden sm:block">
+                  <div className="text-xs text-slate-400">Target Curriculum</div>
+                  <div className="text-sm font-bold text-white">{targetTrack}</div>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Core 4-metric grid */}

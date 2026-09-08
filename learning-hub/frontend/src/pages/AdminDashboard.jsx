@@ -213,7 +213,7 @@ export default function AdminDashboard() {
                 Admin Master Control Center
               </h1>
               <span className="bg-purple-500/20 text-purple-300 border border-purple-400/30 text-xs px-2.5 py-0.5 rounded-full font-bold tracking-wider uppercase hidden sm:inline-block">
-                PHASE 15
+                System Admin
               </span>
             </div>
             <p className="text-slate-300 text-xs sm:text-sm mt-1 max-w-2xl">
@@ -265,9 +265,9 @@ export default function AdminDashboard() {
             <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               Administrators
             </div>
-            <div className="text-2xl font-extrabold text-purple-900 dark:text-purple-300 mt-0.5">
-              {loading ? '...' : overview?.metrics?.totalAdmins ?? usersList.filter((u) => u.role === 'ADMIN').length}
-            </div>
+              <div className="text-2xl font-extrabold text-purple-900 dark:text-purple-300 mt-0.5">
+                {loading ? '...' : overview?.metrics?.totalAdmins ?? usersList.filter((u) => u.role?.toUpperCase() === 'ADMIN').length}
+              </div>
           </div>
         </div>
 

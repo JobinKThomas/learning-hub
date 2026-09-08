@@ -38,21 +38,14 @@ export default function CreateTopic() {
     section: preselectedSection || '',
     summary: '',
     description: '',
-    duration: '15 mins',
+    duration: '',
     order: 1,
-    keyPointsInput: 'Block-scoped, Temporal Dead Zone, No re-declaration in same scope',
+    keyPointsInput: '',
     content: '',
     published: true,
   });
 
-  const [codeExamples, setCodeExamples] = useState([
-    {
-      title: 'Basic Usage',
-      language: 'javascript',
-      code: '// Example code snippet\nlet x = 10;\nconsole.log(x);',
-      explanation: 'Explanation of this code snippet.',
-    },
-  ]);
+  const [codeExamples, setCodeExamples] = useState([]);
 
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
   const [formError, setFormError] = useState(null);
@@ -371,16 +364,28 @@ export default function CreateTopic() {
               </button>
             </div>
 
-            {codeExamples.map((ex, idx) => (
-              <div
-                key={idx}
-                className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3 relative"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-700">
-                    Example #{idx + 1}
-                  </span>
-                  {codeExamples.length > 1 && (
+            {codeExamples.length === 0 ? (
+              <div className="text-center py-6 border-2 border-dashed border-slate-200 rounded-xl">
+                <p className="text-xs text-slate-500">No code examples added yet.</p>
+                <button
+                  type="button"
+                  onClick={addExample}
+                  className="mt-2 inline-flex items-center px-3 py-1.5 rounded-lg bg-purple-50 text-purple-700 border border-purple-200 text-xs font-semibold hover:bg-purple-100 transition"
+                >
+                  <PlusCircle className="w-3.5 h-3.5 mr-1" />
+                  Add Code Example
+                </button>
+              </div>
+            ) : (
+              codeExamples.map((ex, idx) => (
+                <div
+                  key={idx}
+                  className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3 relative"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-700">
+                      Example #{idx + 1}
+                    </span>
                     <button
                       type="button"
                       onClick={() => removeExample(idx)}
@@ -388,8 +393,7 @@ export default function CreateTopic() {
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
-                  )}
-                </div>
+                  </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <input
@@ -424,7 +428,7 @@ export default function CreateTopic() {
                   className="w-full px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
               </div>
-            ))}
+            )))}
           </div>
 
           {/* Lesson Notes / Guide */}

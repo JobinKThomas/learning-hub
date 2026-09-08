@@ -93,7 +93,7 @@ export default function InterviewQuestions() {
           <div className="flex items-center space-x-2">
             <span className="text-xs font-bold px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-400/30 flex items-center gap-1.5">
               <Flame className="w-3.5 h-3.5 text-rose-400" />
-              Phase 12 Interview Prep
+              Interview Prep
             </span>
             <span className="text-xs font-semibold text-slate-400">
               {count} Questions Available

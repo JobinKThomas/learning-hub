@@ -226,7 +226,7 @@ export default function SectionDetails() {
                   Topics & In-Depth Lessons
                 </h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                  Click on any topic (e.g. <strong>let</strong>) to explore syntax, execution behavior, and code examples.
+                  Click on any topic to explore syntax, execution behavior, and code examples.
                 </p>
               </div>
               <div className="flex items-center gap-2">

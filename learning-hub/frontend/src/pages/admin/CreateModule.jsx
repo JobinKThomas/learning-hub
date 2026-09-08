@@ -35,10 +35,10 @@ export default function CreateModule() {
     slug: '',
     learningPath: preselectedPath || '',
     description: '',
-    duration: '3 hours',
+    duration: '',
     order: 1,
-    topicsInput: 'Introduction & Setup, Core Concepts, Hands-on Exercises',
-    objectivesInput: 'Understand key architecture, Apply practical patterns',
+    topicsInput: '',
+    objectivesInput: '',
     published: true,
   });
 
