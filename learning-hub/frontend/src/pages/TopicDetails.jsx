@@ -22,6 +22,7 @@ import { useAuth } from '../hooks/useAuth';
 import ErrorState from '../components/ErrorState';
 import EmptyState from '../components/EmptyState';
 import LoadingState from '../components/LoadingState';
+import TopicContentReader from '../components/TopicContentReader';
 import { normalizeList } from '../utils/normalize';
 import {
   ArrowLeft,
@@ -462,26 +463,7 @@ export default function TopicDetails() {
           )}
 
           {/* Lesson Guide / Content */}
-          {topic.content ? (
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
-              <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
-                <FileText className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
-                  Detailed Explanation & Best Practices
-                </h2>
-              </div>
-              <div className="prose prose-slate dark:prose-invert max-w-none text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap font-sans">
-                {topic.content}
-              </div>
-            </div>
-          ) : (
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-3 text-center py-10">
-              <BookOpen className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto" />
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Detailed notes for this topic will be available soon.
-              </p>
-            </div>
-          )}
+          <TopicContentReader content={topic.content} />
 
           {/* Notes Section: Topic -> Notes -> Select Note -> Read Note */}
           <div className="space-y-4 pt-2">

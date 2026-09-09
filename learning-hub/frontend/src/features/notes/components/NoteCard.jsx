@@ -1,18 +1,19 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Clock, BookOpen, Tag, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Clock, BookOpen, Tag, ArrowRight, CheckCircle2, Layers } from 'lucide-react';
 
 export default function NoteCard({ note, showTopic = true, isCompleted = false }) {
   if (!note) return null;
 
   const topic = note.topic;
+  const moduleInfo = topic?.section?.module;
 
   return (
     <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 shadow-sm hover:shadow-md transition-all duration-200 p-6 flex flex-col justify-between group">
       <div className="space-y-3">
         {/* Header Badges */}
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-800">
               Note {note.order || 1}
             </span>
@@ -22,9 +23,15 @@ export default function NoteCard({ note, showTopic = true, isCompleted = false }
                 Done
               </span>
             )}
+            {moduleInfo && (
+              <span className="text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 border border-slate-200/50 dark:border-slate-700/50 flex items-center gap-1">
+                <Layers className="w-3 h-3 text-slate-400" />
+                <span>{moduleInfo.title}</span>
+              </span>
+            )}
             {showTopic && topic && (
               <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                Topic: {topic.title || topic.slug}
+                {topic.title || topic.slug}
               </span>
             )}
           </div>

@@ -4,18 +4,36 @@
 export const formatLearningPath = (path) => {
   if (!path) return null;
 
-  const doc = path.toObject ? path.toObject() : path;
+  const doc = path.toObject ? path.toObject() : { ...path };
 
-  const modules = (doc.modules || []).map((m, index) => ({
+  const rawModules = Array.isArray(path.modules)
+    ? path.modules
+    : Array.isArray(doc.modules)
+    ? doc.modules
+    : [];
+
+  const modules = rawModules.map((m, index) => ({
+    id: m._id?.toString() || m.id,
     _id: m._id,
     title: m.title,
+    slug: m.slug,
     description: m.description || '',
     duration: m.duration || '1 hour',
-    topics: m.topics || [],
+    topics: Array.isArray(m.topics) ? m.topics : [],
+    topicDetails: Array.isArray(m.topicDetails) ? m.topicDetails : [],
+    topicsCount: m.topicsCount ?? (m.topics ? m.topics.length : 0),
+    sections: Array.isArray(m.sections) ? m.sections : [],
     order: m.order ?? index + 1,
   }));
 
-  const totalTopics = modules.reduce((acc, m) => acc + (m.topics ? m.topics.length : 0), 0);
+  const modulesCount = path.modulesCount ?? doc.modulesCount ?? modules.length;
+  const totalTopics =
+    path.totalTopics ??
+    doc.totalTopics ??
+    modules.reduce(
+      (acc, m) => acc + (m.topicsCount ?? (m.topics ? m.topics.length : 0)),
+      0
+    );
 
   return {
     id: doc._id?.toString() || doc.id,
@@ -28,7 +46,7 @@ export const formatLearningPath = (path) => {
     icon: doc.icon || 'Code',
     color: doc.color || 'indigo',
     published: doc.published ?? true,
-    modulesCount: modules.length,
+    modulesCount,
     totalTopics,
     modules,
     createdBy: doc.createdBy

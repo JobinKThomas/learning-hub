@@ -7,6 +7,7 @@ import { fetchModuleProgress } from '../features/progress/progressSlice';
 import ProgressBar from '../features/progress/components/ProgressBar';
 import TopicProgressBadge from '../features/progress/components/TopicProgressBadge';
 import { useAuth } from '../hooks/useAuth';
+import TopicContentReader from '../components/TopicContentReader';
 import {
   ArrowLeft,
   Clock,
@@ -401,26 +402,11 @@ export default function SectionDetails() {
           )}
 
           {/* Section Deep-Dive Content / Guide */}
-          {section.content ? (
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
-              <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
-                <FileText className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
-                  Lesson Notes & Code Reference
-                </h2>
-              </div>
-              <div className="prose prose-slate dark:prose-invert max-w-none text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap font-sans">
-                {section.content}
-              </div>
-            </div>
-          ) : (
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-3 text-center py-10">
-              <BookOpen className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto" />
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Detailed study notes for this section will be available soon.
-              </p>
-            </div>
-          )}
+          <TopicContentReader
+            content={section.content}
+            title="Lesson Notes & Code Reference"
+            emptyText="Detailed study notes for this section will be available soon."
+          />
         </div>
 
         {/* Right Column: Progress & Quick Navigation */}
