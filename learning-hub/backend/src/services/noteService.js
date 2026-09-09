@@ -1,6 +1,9 @@
 import mongoose from 'mongoose';
 import { noteRepository } from '../repositories/noteRepository.js';
 import { topicRepository } from '../repositories/topicRepository.js';
+import { sectionRepository } from '../repositories/sectionRepository.js';
+import { moduleRepository } from '../repositories/moduleRepository.js';
+import { learningPathRepository } from '../repositories/learningPathRepository.js';
 import { notePresenter } from '../presenters/notePresenter.js';
 import { ApiError } from '../utils/apiError.js';
 import { slugify } from '../models/Note.js';
@@ -9,10 +12,16 @@ export class NoteService {
   constructor(
     repository = noteRepository,
     topicRepo = topicRepository,
+    sectionRepo = sectionRepository,
+    moduleRepo = moduleRepository,
+    learningPathRepo = learningPathRepository,
     presenter = notePresenter
   ) {
     this.repository = repository;
     this.topicRepo = topicRepo;
+    this.sectionRepo = sectionRepo;
+    this.moduleRepo = moduleRepo;
+    this.learningPathRepo = learningPathRepo;
     this.presenter = presenter;
   }
 
@@ -31,9 +40,37 @@ export class NoteService {
   }
 
   /**
-   * Retrieve all notes with optional filtering (by topic, search query, tag, or publication)
+   * Helper to resolve parent module by MongoDB ID or slug
    */
-  async getAllNotes({ topicId, search, tag, includeUnpublished = false } = {}) {
+  async resolveModule(identifier) {
+    if (!identifier) return null;
+
+    if (mongoose.Types.ObjectId.isValid(identifier)) {
+      const moduleById = await this.moduleRepo.findById(identifier);
+      if (moduleById) return moduleById;
+    }
+
+    return await this.moduleRepo.findBySlug(identifier);
+  }
+
+  /**
+   * Helper to resolve parent learning path by MongoDB ID or slug
+   */
+  async resolveLearningPath(identifier) {
+    if (!identifier) return null;
+
+    if (mongoose.Types.ObjectId.isValid(identifier)) {
+      const pathById = await this.learningPathRepo.findById(identifier);
+      if (pathById) return pathById;
+    }
+
+    return await this.learningPathRepo.findBySlug(identifier);
+  }
+
+  /**
+   * Retrieve all notes with optional filtering (by topic, module, learningPath, search query, tag, or publication)
+   */
+  async getAllNotes({ topicId, moduleId, learningPathId, search, tag, includeUnpublished = false } = {}) {
     const filter = {};
 
     if (!includeUnpublished) {
@@ -47,6 +84,55 @@ export class NoteService {
       } else {
         return [];
       }
+    } else if (moduleId) {
+      const resolvedModule = await this.resolveModule(moduleId);
+      if (!resolvedModule) {
+        return [];
+      }
+
+      // Find all sections in this module
+      const sections = await this.sectionRepo.findByModuleId(resolvedModule._id);
+      if (!sections || sections.length === 0) {
+        return [];
+      }
+
+      const sectionIds = sections.map((s) => s._id);
+      // Find all topics in these sections
+      const topics = await this.topicRepo.findAll({ section: { $in: sectionIds } });
+      if (!topics || topics.length === 0) {
+        return [];
+      }
+
+      const topicIds = topics.map((t) => t._id);
+      filter.topic = { $in: topicIds };
+    } else if (learningPathId) {
+      const resolvedPath = await this.resolveLearningPath(learningPathId);
+      if (!resolvedPath) {
+        return [];
+      }
+
+      // Find all modules in this learning path
+      const modules = await this.moduleRepo.findByLearningPathId(resolvedPath._id);
+      if (!modules || modules.length === 0) {
+        return [];
+      }
+
+      const moduleIds = modules.map((m) => m._id);
+      // Find all sections in these modules
+      const sections = await this.sectionRepo.findAll({ module: { $in: moduleIds } });
+      if (!sections || sections.length === 0) {
+        return [];
+      }
+
+      const sectionIds = sections.map((s) => s._id);
+      // Find all topics in these sections
+      const topics = await this.topicRepo.findAll({ section: { $in: sectionIds } });
+      if (!topics || topics.length === 0) {
+        return [];
+      }
+
+      const topicIds = topics.map((t) => t._id);
+      filter.topic = { $in: topicIds };
     }
 
     if (tag) {

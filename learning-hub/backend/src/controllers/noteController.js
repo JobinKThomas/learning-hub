@@ -15,10 +15,14 @@ export class NoteController {
     try {
       const isAdmin = (req.user?.role || '').toUpperCase() === 'ADMIN';
       const topicId = req.query.topic || req.query.topicId;
+      const moduleId = req.query.module || req.query.moduleId;
+      const learningPathId = req.query.learningPath || req.query.learningPathId || req.query.path;
       const { search, tag } = req.query;
 
       const notes = await this.service.getAllNotes({
         topicId,
+        moduleId,
+        learningPathId,
         search,
         tag,
         includeUnpublished: isAdmin,

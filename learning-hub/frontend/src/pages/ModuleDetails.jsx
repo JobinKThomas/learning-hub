@@ -10,6 +10,7 @@ import { useAuth } from '../hooks/useAuth';
 import ErrorState from '../components/ErrorState';
 import EmptyState from '../components/EmptyState';
 import LoadingState from '../components/LoadingState';
+import TopicContentReader from '../components/TopicContentReader';
 import { normalizeList } from '../utils/normalize';
 import {
   ArrowLeft,
@@ -27,6 +28,9 @@ import {
   Target,
   ArrowRight,
   PlusCircle,
+  ChevronDown,
+  ChevronUp,
+  Search,
 } from 'lucide-react';
 
 export default function ModuleDetails() {
@@ -46,6 +50,10 @@ export default function ModuleDetails() {
 
   const [completedTopics, setCompletedTopics] = useState({});
   const [copied, setCopied] = useState(false);
+  const [showAllObjectives, setShowAllObjectives] = useState(false);
+  const [showAllTopics, setShowAllTopics] = useState(false);
+  const [curriculumFilter, setCurriculumFilter] = useState('ALL');
+  const [curriculumSearch, setCurriculumSearch] = useState('');
 
   useEffect(() => {
     if (slug) {
@@ -101,6 +109,24 @@ export default function ModuleDetails() {
   const completedCount = currentModuleProgress?.completedTopics ?? Object.values(completedTopics).filter(Boolean).length;
   const progressPercent = currentModuleProgress?.percentage ?? (totalTopics > 0 ? Math.round((completedCount / totalTopics) * 100) : 0);
   const parentPath = module.learningPath;
+
+  const filteredTopics = topics
+    .map((topic, originalIndex) => ({ topic, originalIndex }))
+    .filter(({ topic, originalIndex }) => {
+      const isCompleted = !!completedTopics[originalIndex];
+      if (curriculumFilter === 'TODO' && isCompleted) return false;
+      if (curriculumFilter === 'COMPLETED' && !isCompleted) return false;
+      if (curriculumSearch.trim()) {
+        return topic.toLowerCase().includes(curriculumSearch.trim().toLowerCase());
+      }
+      return true;
+    });
+
+  const displayedTopics = showAllTopics ? filteredTopics : filteredTopics.slice(0, 8);
+  const hasMoreTopics = !showAllTopics && filteredTopics.length > 8;
+
+  const displayedObjectives = showAllObjectives ? objectives : objectives.slice(0, 6);
+  const hasMoreObjectives = !showAllObjectives && objectives.length > 6;
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
@@ -188,22 +214,83 @@ export default function ModuleDetails() {
         <div className="lg:col-span-2 space-y-6">
           {/* Learning Objectives */}
           {objectives.length > 0 && (
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
-              <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                <Target className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                Key Learning Objectives
-              </h2>
-              <ul className="space-y-2.5">
-                {objectives.map((obj, oIdx) => (
-                  <li key={oIdx} className="flex items-start gap-3 text-xs text-slate-700 dark:text-slate-300">
-                    <div className="w-4 h-4 rounded-full bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 mt-0.5">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-3.5">
+              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-100 dark:border-indigo-900/60 flex items-center justify-center">
+                    <Target className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                  </div>
+                  <h2 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100">
+                    Key Learning Objectives
+                  </h2>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">
+                    {objectives.length} Objectives
+                  </span>
+                  {objectives.length > 6 && (
+                    <button
+                      type="button"
+                      onClick={() => setShowAllObjectives((prev) => !prev)}
+                      className="text-xs font-semibold text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 inline-flex items-center gap-1 transition"
+                    >
+                      <span>{showAllObjectives ? 'Collapse' : 'Expand'}</span>
+                      {showAllObjectives ? (
+                        <ChevronUp className="w-3.5 h-3.5" />
+                      ) : (
+                        <ChevronDown className="w-3.5 h-3.5" />
+                      )}
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* 2-column responsive grid of compact objective cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {displayedObjectives.map((obj, oIdx) => (
+                  <div
+                    key={oIdx}
+                    className="flex items-start gap-2.5 p-2.5 rounded-xl bg-slate-50/60 dark:bg-slate-950/40 border border-slate-200/60 dark:border-slate-800/60 text-xs text-slate-700 dark:text-slate-300 hover:border-indigo-200 dark:hover:border-indigo-800/70 transition-all shadow-2xs"
+                  >
+                    <div className="w-4 h-4 rounded-full bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 mt-0.5">
                       <Sparkles className="w-2.5 h-2.5" />
                     </div>
-                    <span className="leading-relaxed">{obj}</span>
-                  </li>
+                    <span className="leading-snug font-medium line-clamp-2">{obj}</span>
+                  </div>
                 ))}
-              </ul>
+              </div>
+
+              {/* Show more / Show less expander button */}
+              {hasMoreObjectives && (
+                <button
+                  type="button"
+                  onClick={() => setShowAllObjectives(true)}
+                  className="w-full py-2 px-3 rounded-xl border border-dashed border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition flex items-center justify-center gap-1.5 bg-slate-50/30 dark:bg-slate-950/20"
+                >
+                  <ChevronDown className="w-3.5 h-3.5" />
+                  <span>Show all {objectives.length} objectives (+{objectives.length - 6} more)</span>
+                </button>
+              )}
+              {showAllObjectives && objectives.length > 6 && (
+                <button
+                  type="button"
+                  onClick={() => setShowAllObjectives(false)}
+                  className="w-full py-2 px-3 rounded-xl border border-dashed border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition flex items-center justify-center gap-1.5 bg-slate-50/30 dark:bg-slate-950/20"
+                >
+                  <ChevronUp className="w-3.5 h-3.5" />
+                  <span>Show less</span>
+                </button>
+              )}
             </div>
+          )}
+
+          {/* Module Deep-Dive Content / Guide if present */}
+          {module.content && (
+            <TopicContentReader
+              content={module.content}
+              title="Module Study Guide & Overview"
+            />
           )}
 
           {/* Curriculum Sections & Sub-lessons (Phase 5) */}
@@ -327,64 +414,170 @@ export default function ModuleDetails() {
           </div>
 
           {/* Topics / Lessons Checklist */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-5">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
-              <div>
-                <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                  <GraduationCap className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                  Module Curriculum & Lessons
-                </h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                  Check off lessons as you complete exercises and master the concepts.
-                </p>
-              </div>
-              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                {completedCount} / {totalTopics} completed
-              </span>
-            </div>
+          {topics.length > 0 && (
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
+              {/* Header with Title and Progress */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4 gap-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-100 dark:border-indigo-900/60 flex items-center justify-center shrink-0">
+                    <GraduationCap className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100">
+                      Module Curriculum & Lessons
+                    </h2>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      Check off lessons as you complete exercises and master the concepts.
+                    </p>
+                  </div>
+                </div>
 
-            <div className="space-y-3">
-              {topics.map((topic, idx) => {
-                const isCompleted = !!completedTopics[idx];
-                return (
+                {/* Progress Mini Bar & Count */}
+                <div className="flex items-center gap-3 self-end sm:self-center bg-slate-50 dark:bg-slate-950/60 px-3 py-1.5 rounded-xl border border-slate-200/60 dark:border-slate-800/60">
+                  <div className="w-20 sm:w-28 h-2 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-indigo-500 to-emerald-500 rounded-full transition-all duration-300"
+                      style={{
+                        width: `${totalTopics > 0 ? Math.round((completedCount / totalTopics) * 100) : 0}%`,
+                      }}
+                    />
+                  </div>
+                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300 whitespace-nowrap">
+                    {completedCount} / {totalTopics}
+                  </span>
+                </div>
+              </div>
+
+              {/* Filter Tabs & Search Bar */}
+              <div className="flex flex-wrap items-center justify-between gap-2.5 pt-1">
+                {/* Status Filter Tabs */}
+                <div className="flex items-center bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl">
                   <button
-                    key={idx}
                     type="button"
-                    onClick={() => toggleTopic(idx)}
-                    className={`w-full p-4 rounded-xl border text-left flex items-start gap-4 transition-all ${
-                      isCompleted
-                        ? 'bg-emerald-50/60 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800/60 text-slate-900 dark:text-slate-100'
-                        : 'bg-slate-50/50 dark:bg-slate-950/40 hover:bg-slate-100/70 dark:hover:bg-slate-800/60 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200'
+                    onClick={() => setCurriculumFilter('ALL')}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
+                      curriculumFilter === 'ALL'
+                        ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-2xs'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                     }`}
                   >
-                    <div className="mt-0.5 shrink-0">
-                      {isCompleted ? (
-                        <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                      ) : (
-                        <Circle className="w-5 h-5 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400" />
-                      )}
-                    </div>
-                    <div className="flex-grow">
-                      <div className="flex items-center justify-between">
-                        <span className={`text-xs font-bold ${isCompleted ? 'line-through text-slate-500 dark:text-slate-500' : 'text-slate-900 dark:text-slate-100'}`}>
-                          Lesson {idx + 1}: {topic}
-                        </span>
-                        <span
-                          className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                            isCompleted
-                              ? 'bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300'
-                              : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
-                          }`}
-                        >
-                          {isCompleted ? 'Completed' : 'To Do'}
-                        </span>
-                      </div>
-                    </div>
+                    All ({topics.length})
                   </button>
-                );
-              })}
+                  <button
+                    type="button"
+                    onClick={() => setCurriculumFilter('TODO')}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
+                      curriculumFilter === 'TODO'
+                        ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-2xs'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                    }`}
+                  >
+                    To Do ({Math.max(0, topics.length - completedCount)})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCurriculumFilter('COMPLETED')}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
+                      curriculumFilter === 'COMPLETED'
+                        ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-2xs'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                    }`}
+                  >
+                    Completed ({completedCount})
+                  </button>
+                </div>
+
+                {/* Quick Search if more than 6 topics */}
+                {topics.length > 6 && (
+                  <div className="relative flex-grow sm:flex-grow-0 sm:w-48">
+                    <input
+                      type="text"
+                      value={curriculumSearch}
+                      onChange={(e) => setCurriculumSearch(e.target.value)}
+                      placeholder="Filter lessons..."
+                      className="w-full pl-8 pr-3 py-1 rounded-xl text-xs bg-slate-50 dark:bg-slate-950/60 border border-slate-200/80 dark:border-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    />
+                    <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                  </div>
+                )}
+              </div>
+
+              {/* 2-Column Responsive Grid of Compact Lesson Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {displayedTopics.map(({ topic, originalIndex }) => {
+                  const isCompleted = !!completedTopics[originalIndex];
+                  return (
+                    <button
+                      key={originalIndex}
+                      type="button"
+                      onClick={() => toggleTopic(originalIndex)}
+                      className={`p-3 rounded-xl border text-left flex items-center justify-between gap-3 transition-all ${
+                        isCompleted
+                          ? 'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200/80 dark:border-emerald-800/50 text-slate-900 dark:text-slate-100'
+                          : 'bg-slate-50/40 dark:bg-slate-950/40 hover:bg-slate-100/70 dark:hover:bg-slate-800/60 border-slate-200/80 dark:border-slate-800/80 text-slate-800 dark:text-slate-200'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0 flex-grow">
+                        <div className="shrink-0">
+                          {isCompleted ? (
+                            <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                          ) : (
+                            <Circle className="w-4 h-4 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400" />
+                          )}
+                        </div>
+                        <div className="truncate">
+                          <span className="text-[10px] font-mono font-bold text-slate-400 dark:text-slate-500 mr-1.5">
+                            L{originalIndex + 1}
+                          </span>
+                          <span
+                            className={`text-xs font-semibold ${
+                              isCompleted
+                                ? 'line-through text-slate-400 dark:text-slate-500'
+                                : 'text-slate-900 dark:text-slate-100'
+                            }`}
+                          >
+                            {topic}
+                          </span>
+                        </div>
+                      </div>
+
+                      <span
+                        className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${
+                          isCompleted
+                            ? 'bg-emerald-100/80 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-200/50 dark:border-emerald-800/50'
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200/50 dark:border-slate-700/50'
+                        }`}
+                      >
+                        {isCompleted ? 'Done' : 'To Do'}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Show more button if truncated */}
+              {hasMoreTopics && (
+                <button
+                  type="button"
+                  onClick={() => setShowAllTopics(true)}
+                  className="w-full py-2 px-3 rounded-xl border border-dashed border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition flex items-center justify-center gap-1.5 bg-slate-50/40 dark:bg-slate-950/30"
+                >
+                  <ChevronDown className="w-3.5 h-3.5" />
+                  <span>Show all {filteredTopics.length} lessons (+{filteredTopics.length - 8} more)</span>
+                </button>
+              )}
+              {showAllTopics && filteredTopics.length > 8 && (
+                <button
+                  type="button"
+                  onClick={() => setShowAllTopics(false)}
+                  className="w-full py-2 px-3 rounded-xl border border-dashed border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition flex items-center justify-center gap-1.5 bg-slate-50/40 dark:bg-slate-950/30"
+                >
+                  <ChevronUp className="w-3.5 h-3.5" />
+                  <span>Show less</span>
+                </button>
+              )}
             </div>
-          </div>
+          )}
         </div>
 
         {/* Right Column: Progress & Actions Card */}
