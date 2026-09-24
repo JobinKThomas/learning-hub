@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   BookOpen,
   Clock,
@@ -10,9 +10,14 @@ import {
   AlertTriangle,
   Info,
   ChevronRight,
+  ChevronLeft,
+  ArrowLeft,
+  ArrowRight,
   Compass,
   CheckCircle2,
   FileText,
+  Layers,
+  Eye,
 } from 'lucide-react';
 
 /**
@@ -239,9 +244,17 @@ export default function TopicContentReader({
   content,
   title = 'Detailed Explanation & Best Practices',
   emptyText = 'Detailed notes for this lesson will be available soon.',
+  initialViewMode = 'step',
 }) {
   const [fontSize, setFontSize] = useState('normal'); // 'compact', 'normal', 'spacious'
   const [copiedAll, setCopiedAll] = useState(false);
+  const [activeStep, setActiveStep] = useState(0);
+  const [viewMode, setViewMode] = useState(initialViewMode); // 'step' | 'all'
+
+  // Reset step to 0 whenever content changes
+  useEffect(() => {
+    setActiveStep(0);
+  }, [content]);
 
   // Calculate reading stats (reading time & word count)
   const { readingTimeMinutes, wordCount } = useMemo(() => {
@@ -728,166 +741,275 @@ export default function TopicContentReader({
         </div>
       </div>
 
-      {/* Quick-Jump Section Navigator (if multiple sections exist) */}
-      {tableOfContents.length > 1 && (
-        <div className="px-4 sm:px-6 py-3 bg-slate-50/70 dark:bg-slate-950/40 border-b border-slate-100 dark:border-slate-800/80">
-          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-2 font-semibold">
-            <Compass className="w-3.5 h-3.5 text-indigo-500" />
-            <span>Guide Outline:</span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {tableOfContents.map((item, idx) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => scrollToSection(item.id)}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 text-xs font-medium text-slate-700 dark:text-slate-300 hover:border-indigo-300 dark:hover:border-indigo-700 hover:text-indigo-600 dark:hover:text-indigo-400 transition shadow-2xs"
-              >
-                <span className="w-4 h-4 rounded-full bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 text-[10px] font-mono font-bold flex items-center justify-center">
-                  {idx + 1}
-                </span>
-                <span className="truncate max-w-[180px] sm:max-w-[240px]">{item.title}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Main Content Sections */}
-      <div className="p-5 sm:p-8 space-y-8">
-        {parsedSections.map((section, sIdx) => (
-          <article
-            key={section.id}
-            id={section.id}
-            className={`space-y-4 scroll-mt-6 ${
-              sIdx > 0
-                ? 'pt-8 border-t border-slate-200/70 dark:border-slate-800/80'
-                : ''
-            }`}
-          >
-            {/* Section Heading with Accent Pill */}
-            {section.title && (
-              <div className="flex items-start gap-3 mb-4">
-                {section.number && (
-                  <span className="px-2.5 py-1 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-mono font-bold text-xs tracking-wider shadow-xs shrink-0 mt-0.5">
-                    {String(section.number).padStart(2, '0')}
-                  </span>
-                )}
-                <div>
-                  <h3 className={`${activeFont.heading} text-slate-900 dark:text-slate-100 tracking-tight`}>
-                    {section.title}
-                  </h3>
-                </div>
+        {/* Quick-Jump Section Navigator & View Mode Toggle (if multiple sections exist) */}
+        {tableOfContents.length > 1 && (
+          <div className="px-4 sm:px-6 py-3 bg-slate-50/70 dark:bg-slate-950/40 border-b border-slate-100 dark:border-slate-800/80 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 font-semibold mr-1">
+                <Compass className="w-3.5 h-3.5 text-indigo-500" />
+                <span>Sections:</span>
               </div>
-            )}
-
-            {/* Section Elements */}
-            <div className="space-y-4">
-              {section.elements.map((el) => {
-                switch (el.type) {
-                  case 'code':
-                    return (
-                      <CodeBlock
-                        key={el.id}
-                        code={el.code}
-                        language={el.language}
-                        title={el.title}
-                      />
-                    );
-
-                  case 'callout':
-                    return (
-                      <CalloutBox
-                        key={el.id}
-                        type={el.calloutType}
-                        title={el.title}
-                        content={renderInline(el.content)}
-                      />
-                    );
-
-                  case 'subheading':
-                    return (
-                      <div key={el.id} className="pt-2 pb-1">
-                        <h4 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
-                          <ChevronRight className="w-3.5 h-3.5" />
-                          {el.text}
-                        </h4>
-                      </div>
-                    );
-
-                  case 'bullet-list':
-                    return (
-                      <div
-                        key={el.id}
-                        className="my-3 space-y-2 pl-1 sm:pl-2"
-                      >
-                        {el.items.map((item, lIdx) => (
-                          <div
-                            key={lIdx}
-                            className="flex items-start gap-3 text-slate-700 dark:text-slate-300"
-                          >
-                            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 dark:bg-indigo-400 shrink-0 mt-2" />
-                            <div className={`${activeFont.list} leading-relaxed`}>
-                              {renderInline(item)}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    );
-
-                  case 'table':
-                    return (
-                      <div
-                        key={el.id}
-                        className="my-5 overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs"
-                      >
-                        <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800 text-left text-xs sm:text-sm">
-                          <thead className="bg-slate-50 dark:bg-slate-900 font-semibold text-slate-700 dark:text-slate-200">
-                            <tr>
-                              {el.headers.map((hc, hIdx) => (
-                                <th key={hIdx} className="px-4 py-3">
-                                  {renderInline(hc)}
-                                </th>
-                              ))}
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-slate-100 dark:divide-slate-800 bg-white dark:bg-slate-950">
-                            {el.rows.map((row, rIdx) => (
-                              <tr
-                                key={rIdx}
-                                className="hover:bg-slate-50/70 dark:hover:bg-slate-900/60 transition"
-                              >
-                                {row.map((cell, cIdx) => (
-                                  <td
-                                    key={cIdx}
-                                    className="px-4 py-3 text-slate-600 dark:text-slate-300"
-                                  >
-                                    {renderInline(cell)}
-                                  </td>
-                                ))}
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    );
-
-                  case 'paragraph':
-                  default:
-                    return (
-                      <p
-                        key={el.id}
-                        className={`${activeFont.body} text-slate-700 dark:text-slate-300`}
-                      >
-                        {renderInline(el.text)}
-                      </p>
-                    );
-                }
+              {tableOfContents.map((item, idx) => {
+                const isActive = viewMode === 'step' && activeStep === idx;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => {
+                      setActiveStep(idx);
+                      if (viewMode === 'all') {
+                        scrollToSection(item.id);
+                      }
+                    }}
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-xs font-medium transition shadow-2xs ${
+                      isActive
+                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm shadow-indigo-600/20'
+                        : 'bg-white dark:bg-slate-900 border-slate-200/90 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-indigo-300 dark:hover:border-indigo-700 hover:text-indigo-600 dark:hover:text-indigo-400'
+                    }`}
+                  >
+                    <span className={`w-4 h-4 rounded-full text-[10px] font-mono font-bold flex items-center justify-center ${
+                      isActive
+                        ? 'bg-white/20 text-white'
+                        : 'bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400'
+                    }`}>
+                      {idx + 1}
+                    </span>
+                    <span className="truncate max-w-[140px] sm:max-w-[200px]">{item.title}</span>
+                  </button>
+                );
               })}
             </div>
-          </article>
-        ))}
-      </div>
+
+            <button
+              type="button"
+              onClick={() => setViewMode(viewMode === 'step' ? 'all' : 'step')}
+              className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 px-2.5 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
+            >
+              <Layers className="w-3 h-3" />
+              <span>{viewMode === 'step' ? 'View All Sections' : 'Step-by-Step Mode'}</span>
+            </button>
+          </div>
+        )}
+
+        {/* Step Progress Line (in step mode) */}
+        {viewMode === 'step' && tableOfContents.length > 1 && (
+          <div className="w-full bg-slate-100 dark:bg-slate-800 h-1">
+            <div
+              className="bg-indigo-600 h-1 transition-all duration-300"
+              style={{ width: `${((Math.min(activeStep, parsedSections.length - 1) + 1) / parsedSections.length) * 100}%` }}
+            />
+          </div>
+        )}
+
+        {/* Section Rendering Function */}
+        {(() => {
+          const renderSectionArticle = (section, sIdx) => (
+            <article
+              key={section.id}
+              id={section.id}
+              className={`space-y-4 scroll-mt-6 ${
+                viewMode === 'all' && sIdx > 0
+                  ? 'pt-8 border-t border-slate-200/70 dark:border-slate-800/80'
+                  : ''
+              }`}
+            >
+              {/* Section Heading with Accent Pill */}
+              {section.title && (
+                <div className="flex items-start gap-3 mb-4">
+                  {section.number && (
+                    <span className="px-2.5 py-1 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-mono font-bold text-xs tracking-wider shadow-xs shrink-0 mt-0.5">
+                      {String(section.number).padStart(2, '0')}
+                    </span>
+                  )}
+                  <div>
+                    <h3 className={`${activeFont.heading} text-slate-900 dark:text-slate-100 tracking-tight`}>
+                      {section.title}
+                    </h3>
+                  </div>
+                </div>
+              )}
+
+              {/* Section Elements */}
+              <div className="space-y-4">
+                {section.elements.map((el) => {
+                  switch (el.type) {
+                    case 'code':
+                      return (
+                        <CodeBlock
+                          key={el.id}
+                          code={el.code}
+                          language={el.language}
+                          title={el.title}
+                        />
+                      );
+
+                    case 'callout':
+                      return (
+                        <CalloutBox
+                          key={el.id}
+                          type={el.calloutType}
+                          title={el.title}
+                          content={renderInline(el.content)}
+                        />
+                      );
+
+                    case 'subheading':
+                      return (
+                        <div key={el.id} className="pt-2 pb-1">
+                          <h4 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                            <ChevronRight className="w-3.5 h-3.5" />
+                            {el.text}
+                          </h4>
+                        </div>
+                      );
+
+                    case 'bullet-list':
+                      return (
+                        <div
+                          key={el.id}
+                          className="my-3 space-y-2 pl-1 sm:pl-2"
+                        >
+                          {el.items.map((item, lIdx) => (
+                            <div
+                              key={lIdx}
+                              className="flex items-start gap-3 text-slate-700 dark:text-slate-300"
+                            >
+                              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 dark:bg-indigo-400 shrink-0 mt-2" />
+                              <div className={`${activeFont.list} leading-relaxed`}>
+                                {renderInline(item)}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      );
+
+                    case 'table':
+                      return (
+                        <div
+                          key={el.id}
+                          className="my-5 overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs"
+                        >
+                          <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800 text-left text-xs sm:text-sm">
+                            <thead className="bg-slate-50 dark:bg-slate-900 font-semibold text-slate-700 dark:text-slate-200">
+                              <tr>
+                                {el.headers.map((hc, hIdx) => (
+                                  <th key={hIdx} className="px-4 py-3">
+                                    {renderInline(hc)}
+                                  </th>
+                                ))}
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100 dark:divide-slate-800 bg-white dark:bg-slate-950">
+                              {el.rows.map((row, rIdx) => (
+                                <tr
+                                  key={rIdx}
+                                  className="hover:bg-slate-50/70 dark:hover:bg-slate-900/60 transition"
+                                >
+                                  {row.map((cell, cIdx) => (
+                                    <td
+                                      key={cIdx}
+                                      className="px-4 py-3 text-slate-600 dark:text-slate-300"
+                                    >
+                                      {renderInline(cell)}
+                                    </td>
+                                  ))}
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      );
+
+                    case 'paragraph':
+                    default:
+                      return (
+                        <p
+                          key={el.id}
+                          className={`${activeFont.body} text-slate-700 dark:text-slate-300`}
+                        >
+                          {renderInline(el.text)}
+                        </p>
+                      );
+                  }
+                })}
+              </div>
+            </article>
+          );
+
+          if (viewMode === 'step' && parsedSections.length > 1) {
+            const currentStepIdx = Math.min(activeStep, parsedSections.length - 1);
+            const currentSection = parsedSections[currentStepIdx];
+            const totalSteps = parsedSections.length;
+
+            return (
+              <div>
+                {/* Single Section Content */}
+                <div className="p-5 sm:p-8 space-y-6 min-h-[220px]">
+                  {renderSectionArticle(currentSection, currentStepIdx)}
+                </div>
+
+                {/* Step Navigation Bar: Previous & Next Section Buttons */}
+                <div className="px-5 sm:px-8 py-4 bg-slate-50/80 dark:bg-slate-950/60 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveStep((prev) => Math.max(0, prev - 1));
+                    }}
+                    disabled={currentStepIdx === 0}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-850 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold transition disabled:opacity-30 disabled:pointer-events-none shadow-xs"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                    <span>Previous Section</span>
+                  </button>
+
+                  {/* Step dots */}
+                  <div className="flex items-center gap-1.5">
+                    {parsedSections.map((_, pIdx) => (
+                      <button
+                        key={pIdx}
+                        type="button"
+                        onClick={() => setActiveStep(pIdx)}
+                        className={`h-1.5 rounded-full transition-all ${
+                          currentStepIdx === pIdx
+                            ? 'bg-indigo-600 w-5'
+                            : pIdx < currentStepIdx
+                            ? 'bg-indigo-400/60 w-2'
+                            : 'bg-slate-300 dark:bg-slate-700 w-2'
+                        }`}
+                        title={`Go to Section ${pIdx + 1}`}
+                      />
+                    ))}
+                  </div>
+
+                  {currentStepIdx < totalSteps - 1 ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActiveStep((prev) => Math.min(totalSteps - 1, prev + 1));
+                      }}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm shadow-indigo-600/20 transition"
+                    >
+                      <span>Next Section</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  ) : (
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 text-emerald-700 dark:text-emerald-300 text-xs font-bold">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                      <span>Completed Guide</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          }
+
+          // Default / All Sections View
+          return (
+            <div className="p-5 sm:p-8 space-y-8">
+              {parsedSections.map((section, sIdx) => renderSectionArticle(section, sIdx))}
+            </div>
+          );
+        })()}
     </div>
   );
 }
