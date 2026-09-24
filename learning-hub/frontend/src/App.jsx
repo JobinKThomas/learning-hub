@@ -11,6 +11,7 @@ import Forbidden from './pages/Forbidden';
 import HomePage from './pages/HomePage';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import AdminRegister from './pages/AdminRegister';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
@@ -91,7 +92,10 @@ export default function App() {
           <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/admin/login" element={<Navigate to="/login" replace />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/admin/register" element={<AdminRegister />} />
+          <Route path="/register/admin" element={<Navigate to="/admin/register" replace />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route
@@ -198,6 +202,7 @@ export default function App() {
               </AdminRoute>
             }
           />
+          <Route path="/admin/dashboard" element={<Navigate to="/admin" replace />} />
           <Route
             path="/admin/learning-paths"
             element={

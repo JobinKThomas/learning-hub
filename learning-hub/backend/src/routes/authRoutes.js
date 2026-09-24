@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
   register,
+  registerAdmin,
   login,
   refresh,
   logout,
@@ -12,6 +13,7 @@ import {
 } from '../controllers/authController.js';
 import {
   validateRegister,
+  validateAdminRegister,
   validateLogin,
   validateRefresh,
   validateUpdateProfile,
@@ -65,6 +67,51 @@ const router = Router();
  *         description: Email already in use
  */
 router.post('/register', validateRegister, register);
+
+/**
+ * @openapi
+ * /auth/admin/register:
+ *   post:
+ *     summary: Register a new platform administrator
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - password
+ *               - adminKey
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Admin User
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: admin@example.com
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: secureAdminPass123
+ *               adminKey:
+ *                 type: string
+ *                 example: admin123
+ *     responses:
+ *       201:
+ *         description: Administrator registered successfully
+ *       400:
+ *         description: Validation error
+ *       403:
+ *         description: Invalid admin registration key
+ *       409:
+ *         description: Email already in use
+ */
+router.post('/admin/register', validateAdminRegister, registerAdmin);
 
 /**
  * @openapi

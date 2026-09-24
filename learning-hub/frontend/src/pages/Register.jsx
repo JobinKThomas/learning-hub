@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { registerUser, clearError } from '../store/slices/authSlice';
-import { UserPlus, User, Mail, Lock, GraduationCap, AlertCircle, ArrowLeft } from 'lucide-react';
+import { UserPlus, User, Mail, Lock, AlertCircle, ArrowLeft } from 'lucide-react';
 
 export default function Register() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('USER');
   const [formErrors, setFormErrors] = useState({});
 
   const dispatch = useDispatch();
@@ -50,7 +49,7 @@ export default function Register() {
     e.preventDefault();
     if (!validate()) return;
 
-    dispatch(registerUser({ name, email, password, role }));
+    dispatch(registerUser({ name, email, password, role: 'USER' }));
   };
 
   return (
@@ -161,25 +160,6 @@ export default function Register() {
             )}
           </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-              Account Role
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
-                <GraduationCap className="w-4 h-4" />
-              </div>
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-950 transition font-medium"
-              >
-                <option value="USER">USER (Standard Learner)</option>
-                <option value="ADMIN">ADMIN (Platform Administrator)</option>
-              </select>
-            </div>
-          </div>
-
           <button
             type="submit"
             disabled={loading}
@@ -193,11 +173,17 @@ export default function Register() {
           </button>
         </form>
 
-        <div className="pt-4 border-t border-slate-100 dark:border-slate-800 text-center">
+        <div className="pt-4 border-t border-slate-100 dark:border-slate-800 text-center space-y-2">
           <p className="text-sm text-slate-500 dark:text-slate-400">
             Already have an account?{' '}
             <Link to="/login" className="font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300">
               Sign in here
+            </Link>
+          </p>
+          <p className="text-xs text-slate-400 dark:text-slate-500">
+            Are you a platform administrator?{' '}
+            <Link to="/admin/register" className="font-semibold text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 underline underline-offset-2">
+              Admin Registration
             </Link>
           </p>
         </div>

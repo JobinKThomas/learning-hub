@@ -23,9 +23,45 @@ export const validateRegister = (req, res, next) => {
     errors.push({ field: 'password', message: 'Password must be at least 6 characters long' });
   }
 
-  const validRoles = ['USER', 'ADMIN', 'STUDENT', 'INSTRUCTOR', 'user', 'admin', 'student', 'instructor'];
+  if (role && (role.toUpperCase() === 'ADMIN' || role.toLowerCase() === 'instructor')) {
+    return next(new ApiError('Admin accounts cannot be registered through standard registration. Please use the Admin Registration portal.', 403));
+  }
+
+  const validRoles = ['USER', 'STUDENT', 'user', 'student'];
   if (role && !validRoles.includes(role)) {
-    errors.push({ field: 'role', message: "Role must be 'USER' or 'ADMIN'" });
+    errors.push({ field: 'role', message: "Role must be 'USER'" });
+  }
+
+  if (errors.length > 0) {
+    return next(new ApiError('Validation failed', 400, errors));
+  }
+
+  next();
+};
+
+/**
+ * Validate admin registration payload
+ */
+export const validateAdminRegister = (req, res, next) => {
+  const { name, email, password, adminKey } = req.body || {};
+  const errors = [];
+
+  if (!name || typeof name !== 'string' || name.trim().length < 2) {
+    errors.push({ field: 'name', message: 'Name must be at least 2 characters long' });
+  } else if (name.trim().length > 50) {
+    errors.push({ field: 'name', message: 'Name cannot exceed 50 characters' });
+  }
+
+  if (!email || typeof email !== 'string' || !emailRegex.test(email.trim())) {
+    errors.push({ field: 'email', message: 'Please provide a valid email address' });
+  }
+
+  if (!password || typeof password !== 'string' || password.length < 6) {
+    errors.push({ field: 'password', message: 'Password must be at least 6 characters long' });
+  }
+
+  if (!adminKey || typeof adminKey !== 'string' || !adminKey.trim()) {
+    errors.push({ field: 'adminKey', message: 'Admin registration key is required' });
   }
 
   if (errors.length > 0) {
