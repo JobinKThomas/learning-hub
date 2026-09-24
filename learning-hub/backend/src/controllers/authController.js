@@ -1,5 +1,6 @@
 import { authService } from '../services/authService.js';
 import { sendSuccess } from '../utils/apiResponse.js';
+import { ApiError } from '../utils/apiError.js';
 
 // Cookie configuration for refresh tokens
 const REFRESH_COOKIE_OPTIONS = {
@@ -22,13 +23,48 @@ export class AuthController {
   register = async (req, res, next) => {
     try {
       const { name, email, password, role } = req.body;
-      const result = await this.service.register({ name, email, password, role });
+      const assignedRole = (role && role.toUpperCase() !== 'ADMIN') ? role : 'USER';
+      const result = await this.service.register({ name, email, password, role: assignedRole });
 
       res.cookie('refreshToken', result.refreshToken, REFRESH_COOKIE_OPTIONS);
 
       return sendSuccess(
         res,
         'User registered successfully',
+        result,
+        201
+      );
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * @desc    Register a new administrator
+   * @route   POST /api/auth/admin/register
+   * @access  Public (Protected by Admin Registration Key)
+   */
+  registerAdmin = async (req, res, next) => {
+    try {
+      const { name, email, password, adminKey } = req.body;
+      const configuredKey = process.env.ADMIN_REGISTRATION_KEY || 'admin123';
+
+      if (adminKey !== configuredKey) {
+        throw new ApiError('Invalid admin registration key. Please check your credentials.', 403);
+      }
+
+      const result = await this.service.register({
+        name,
+        email,
+        password,
+        role: 'ADMIN',
+      });
+
+      res.cookie('refreshToken', result.refreshToken, REFRESH_COOKIE_OPTIONS);
+
+      return sendSuccess(
+        res,
+        'Administrator registered successfully',
         result,
         201
       );
@@ -229,6 +265,7 @@ export const authController = new AuthController();
 
 // Export named handlers for backward compatibility
 export const register = authController.register;
+export const registerAdmin = authController.registerAdmin;
 export const login = authController.login;
 export const refresh = authController.refresh;
 export const logout = authController.logout;

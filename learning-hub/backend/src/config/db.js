@@ -8,15 +8,62 @@ const readyStates = {
 };
 
 /**
+ * Safely masks database credentials from connection strings for logging
+ */
+export const maskMongoURI = (uri) => {
+  if (!uri) return 'undefined';
+  return uri.replace(/\/\/([^:]+):([^@]+)@/, '//$1:****@');
+};
+
+const hasPlaceholder = (val) => typeof val === 'string' && (val.includes('<db_password>') || val.includes('<password>'));
+
+/**
+ * Resolves the appropriate MongoDB connection string based on NODE_ENV
+ */
+export const getMongoURI = () => {
+  const env = (process.env.NODE_ENV || 'development').toLowerCase();
+
+  let targetUri;
+  if (env === 'production') {
+    targetUri = process.env.MONGODB_URI_PROD || process.env.MONGO_URI_PROD;
+  } else if (env === 'development') {
+    targetUri = process.env.MONGODB_URI_DEV || process.env.MONGO_URI_DEV;
+  } else if (env === 'test') {
+    targetUri = process.env.MONGODB_URI_TEST || process.env.MONGO_URI_TEST;
+  }
+
+  // Fallback to general URI
+  const fallbackUri = process.env.MONGODB_URI || process.env.MONGO_URI;
+
+  if (targetUri) {
+    if (hasPlaceholder(targetUri)) {
+      console.warn(
+        `[MongoDB] Warning: Target ${env.toUpperCase()} URI contains '<db_password>'. Please replace it with your actual MongoDB Atlas password in .env.`
+      );
+      if (fallbackUri && !hasPlaceholder(fallbackUri)) {
+        console.warn(`[MongoDB] Falling back to: ${maskMongoURI(fallbackUri)}`);
+        return fallbackUri;
+      }
+    }
+    return targetUri;
+  }
+
+  return fallbackUri;
+};
+
+/**
  * Connect to MongoDB database
  */
-export const connectDB = async (uri = process.env.MONGODB_URI) => {
+export const connectDB = async (uri = getMongoURI()) => {
   if (mongoose.connection.readyState === 1) {
     return mongoose.connection;
   }
 
   if (!uri) {
-    throw new Error('MONGODB_URI environment variable is not defined.');
+    const env = process.env.NODE_ENV || 'development';
+    throw new Error(
+      `MongoDB URI is not defined for environment '${env}'. Please set MONGODB_URI or MONGODB_URI_${env.toUpperCase()} in your environment.`
+    );
   }
 
   try {
@@ -24,7 +71,8 @@ export const connectDB = async (uri = process.env.MONGODB_URI) => {
       serverSelectionTimeoutMS: 5000,
     });
 
-    console.log(`[MongoDB] Connected successfully to: ${conn.connection.host}/${conn.connection.name}`);
+    const masked = maskMongoURI(uri);
+    console.log(`[MongoDB] Connected successfully to: ${conn.connection.host}/${conn.connection.name} (${masked})`);
     return conn;
   } catch (error) {
     console.error(`[MongoDB] Connection error: ${error.message}`);

@@ -14,6 +14,15 @@ export const authApi = {
   },
 
   /**
+   * Register a new platform administrator
+   * @param {Object} adminData - { name, email, password, adminKey }
+   */
+  registerAdmin: async (adminData) => {
+    const response = await api.post('/auth/admin/register', adminData);
+    return response.data;
+  },
+
+  /**
    * Authenticate user & receive tokens
    * @param {Object} credentials - { email, password }
    */

@@ -39,6 +39,28 @@ export const registerUser = createAsyncThunk(
 );
 
 /**
+ * Register Admin thunk
+ */
+export const registerAdmin = createAsyncThunk(
+  'auth/registerAdmin',
+  async (adminData, { rejectWithValue }) => {
+    try {
+      const response = await authApi.registerAdmin(adminData);
+      const { user, accessToken, refreshToken } = response.data;
+
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('token', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
+      localStorage.setItem('user', JSON.stringify(user));
+
+      return { user, accessToken, refreshToken };
+    } catch (error) {
+      return rejectWithValue(error.message || 'Admin registration failed');
+    }
+  }
+);
+
+/**
  * Login thunk
  */
 export const loginUser = createAsyncThunk(
@@ -198,6 +220,25 @@ const authSlice = createSlice({
         state.refreshToken = action.payload.refreshToken;
       })
       .addCase(registerUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Register Admin
+      .addCase(registerAdmin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(registerAdmin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.isAuthenticated = true;
+        state.user = action.payload.user;
+        state.accessToken = action.payload.accessToken;
+        state.refreshToken = action.payload.refreshToken;
+        state.role = action.payload.user.role;
+        state.error = null;
+      })
+      .addCase(registerAdmin.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })

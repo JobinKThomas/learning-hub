@@ -6,8 +6,10 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "nodemon src/server.js",
-    "test": "cross-env MONGODB_URI=mongodb://127.0.0.1:27017/learning_hub_test node --test --test-concurrency=1 tests/*.test.js",
+    "start:prod": "cross-env NODE_ENV=production node src/server.js",
+    "dev": "cross-env NODE_ENV=development nodemon src/server.js",
+    "test": "cross-env NODE_ENV=test MONGODB_URI_TEST=mongodb://127.0.0.1:27017/learning_hub_test MONGODB_URI=mongodb://127.0.0.1:27017/learning_hub_test node --test --test-concurrency=1 tests/*.test.js",
+    "db:check": "node scripts/testDbConnection.js",
     "db:clean-learning-content": "node scripts/clearLearningContent.js",
     "db:clean-unwanted": "node scripts/cleanUnwantedData.js",
     "db:start": "bash scripts/start-mongo.sh",
