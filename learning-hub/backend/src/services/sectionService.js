@@ -4,6 +4,9 @@ import { moduleRepository } from '../repositories/moduleRepository.js';
 import { sectionPresenter } from '../presenters/sectionPresenter.js';
 import { ApiError } from '../utils/apiError.js';
 import { slugify } from '../models/Section.js';
+import { Topic } from '../models/Topic.js';
+import { calculateSectionDuration } from '../utils/durationCalculator.js';
+import { syncHierarchyDurations } from './hierarchyDurationService.js';
 
 export class SectionService {
   constructor(
@@ -138,14 +141,25 @@ export class SectionService {
       candidateSlug = `${baseSlug}-${counter++}`;
     }
 
+    // Calculate duration if not provided or auto requested
+    let sectionDuration = data.duration;
+    if (!sectionDuration || (typeof sectionDuration === 'string' && sectionDuration.trim() === '') || data.autoCalculateDuration) {
+      sectionDuration = calculateSectionDuration([], data).formatted;
+    }
+
     const newSectionData = {
       ...data,
       module: resolvedModule._id,
       slug: candidateSlug,
+      duration: sectionDuration,
       createdBy: user?._id || user?.id,
     };
 
     const created = await this.repository.create(newSectionData);
+
+    // Sync parent module and learning path durations
+    await syncHierarchyDurations({ moduleId: resolvedModule._id });
+
     return this.presenter.format(created);
   }
 
@@ -183,7 +197,22 @@ export class SectionService {
       updateData.slug = slugCandidate;
     }
 
+    // If duration is cleared or auto-calculation requested
+    if (updateData.duration === '' || updateData.autoCalculateDuration) {
+      const topics = await Topic.find({ section: id });
+      const merged = { ...existing.toObject(), ...updateData };
+      updateData.duration = calculateSectionDuration(topics, merged).formatted;
+    }
+
     const updated = await this.repository.update(id, updateData);
+
+    // Sync parent module and learning path durations
+    const currentModuleId = updateData.module || existing.module;
+    await syncHierarchyDurations({ sectionId: id, moduleId: currentModuleId });
+    if (updateData.module && updateData.module.toString() !== existing.module.toString()) {
+      await syncHierarchyDurations({ moduleId: existing.module });
+    }
+
     return this.presenter.format(updated);
   }
 
@@ -201,6 +230,10 @@ export class SectionService {
     }
 
     await this.repository.delete(id);
+
+    // Sync parent module and learning path durations
+    await syncHierarchyDurations({ moduleId: existing.module });
+
     return { id, title: existing.title, slug: existing.slug };
   }
 }

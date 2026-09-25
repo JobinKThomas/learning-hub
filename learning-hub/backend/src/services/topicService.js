@@ -4,6 +4,8 @@ import { sectionRepository } from '../repositories/sectionRepository.js';
 import { topicPresenter } from '../presenters/topicPresenter.js';
 import { ApiError } from '../utils/apiError.js';
 import { slugify } from '../models/Topic.js';
+import { calculateTopicDurationFromContent } from '../utils/durationCalculator.js';
+import { syncHierarchyDurations } from './hierarchyDurationService.js';
 
 export class TopicService {
   constructor(
@@ -142,14 +144,25 @@ export class TopicService {
       candidateSlug = `${baseSlug}-${counter++}`;
     }
 
+    // Calculate duration from content if not explicitly provided or auto requested
+    let topicDuration = data.duration;
+    if (!topicDuration || (typeof topicDuration === 'string' && topicDuration.trim() === '') || data.autoCalculateDuration) {
+      topicDuration = calculateTopicDurationFromContent(data).formatted;
+    }
+
     const newTopicData = {
       ...data,
       section: resolvedSection._id,
       slug: candidateSlug,
+      duration: topicDuration,
       createdBy: user?._id || user?.id,
     };
 
     const created = await this.repository.create(newTopicData);
+
+    // Sync parent section, module, and learning path durations
+    await syncHierarchyDurations({ sectionId: resolvedSection._id });
+
     return this.presenter.format(created);
   }
 
@@ -187,7 +200,21 @@ export class TopicService {
       updateData.slug = slugCandidate;
     }
 
+    // If duration is cleared or auto-calculation explicitly requested
+    if (updateData.duration === '' || updateData.autoCalculateDuration) {
+      const merged = { ...existing.toObject(), ...updateData };
+      updateData.duration = calculateTopicDurationFromContent(merged).formatted;
+    }
+
     const updated = await this.repository.update(id, updateData);
+
+    // Sync parent section, module, and learning path durations
+    const currentSectionId = updateData.section || existing.section;
+    await syncHierarchyDurations({ sectionId: currentSectionId });
+    if (updateData.section && updateData.section.toString() !== existing.section.toString()) {
+      await syncHierarchyDurations({ sectionId: existing.section });
+    }
+
     return this.presenter.format(updated);
   }
 
@@ -205,6 +232,10 @@ export class TopicService {
     }
 
     await this.repository.delete(id);
+
+    // Sync parent section, module, and learning path durations
+    await syncHierarchyDurations({ sectionId: existing.section });
+
     return { id, title: existing.title, slug: existing.slug };
   }
 }

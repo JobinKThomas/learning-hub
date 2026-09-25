@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { createSection } from '../../features/sections/sectionSlice';
 import { fetchModules } from '../../features/modules/moduleSlice';
+import { calculateSectionDuration } from '../../utils/durationCalculator';
 import {
   ArrowLeft,
   PlusCircle,
@@ -48,6 +49,17 @@ export default function CreateSection() {
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
   const [formError, setFormError] = useState(null);
   const [activeContentTab, setActiveContentTab] = useState('write');
+
+  // Live auto-calculated duration from items & description
+  const calculatedDuration = useMemo(() => {
+    const items = formData.itemsInput
+      ? formData.itemsInput.split(',').map((i) => i.trim()).filter(Boolean)
+      : [];
+    return calculateSectionDuration([], {
+      items,
+      description: formData.description,
+    });
+  }, [formData.itemsInput, formData.description]);
 
   useEffect(() => {
     dispatch(fetchModules());
@@ -122,7 +134,7 @@ export default function CreateSection() {
       slug: slugify(formData.slug || formData.title),
       module: formData.module,
       description: formData.description.trim(),
-      duration: formData.duration.trim() || '45 mins',
+      duration: formData.duration.trim() || calculatedDuration.formatted,
       order: Number(formData.order) || 1,
       items,
       content: formData.content.trim(),
@@ -235,17 +247,40 @@ export default function CreateSection() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Duration */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Estimated Duration
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-slate-700">
+                  Estimated Duration
+                </label>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] font-medium text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200">
+                    Est: {calculatedDuration.formatted}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        duration: calculatedDuration.formatted,
+                      }))
+                    }
+                    className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 underline cursor-pointer"
+                    title="Apply estimated duration"
+                  >
+                    Apply
+                  </button>
+                </div>
+              </div>
               <input
                 type="text"
                 name="duration"
                 value={formData.duration}
                 onChange={handleChange}
-                placeholder="e.g., 45 mins"
+                placeholder={`Auto: ${calculatedDuration.formatted} (or e.g., 45 mins)`}
                 className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
+              <p className="text-[11px] text-slate-400 mt-1">
+                Leave blank to auto-calculate from child topics (or section items & description).
+              </p>
             </div>
 
             {/* Order */}

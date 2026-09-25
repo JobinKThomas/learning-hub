@@ -5,6 +5,11 @@ import { Section } from '../models/Section.js';
 import { Topic } from '../models/Topic.js';
 import { ApiError } from '../utils/apiError.js';
 import { slugify } from '../models/LearningPath.js';
+import {
+  calculateSectionDuration,
+  calculateModuleDuration,
+  calculatePathEstimatedHours,
+} from '../utils/durationCalculator.js';
 
 export class LearningPathService {
   constructor(repository = learningPathRepository, presenter = learningPathPresenter) {
@@ -190,13 +195,23 @@ export class LearningPathService {
 
       const topicsCount = Math.max(dbTopics.length, (m.topics || []).length);
 
+      // Calculate module duration if default/missing and sections exist
+      let mDuration = m.duration;
+      if (!mDuration || mDuration === '2 hours') {
+        if (modSections.length > 0) {
+          mDuration = calculateModuleDuration(modSections, m).formatted;
+        } else {
+          mDuration = m.duration || '2 hours';
+        }
+      }
+
       const formattedModule = {
         _id: m._id,
         id: m._id.toString(),
         title: m.title,
         slug: m.slug,
         description: m.description || '',
-        duration: m.duration || '2 hours',
+        duration: mDuration,
         order: m.order ?? 1,
         topicsCount,
         topics: topicTitles,
@@ -207,12 +222,24 @@ export class LearningPathService {
           duration: t.duration || '15 mins',
           order: t.order ?? 1,
         })),
-        sections: modSections.map((s) => ({
-          id: s._id.toString(),
-          title: s.title,
-          slug: s.slug,
-          topicsCount: (s.topics || []).length,
-        })),
+        sections: modSections.map((s) => {
+          const sTopics = s.topics || [];
+          let sDuration = s.duration;
+          if (!sDuration || sDuration === '45 mins') {
+            if (sTopics.length > 0) {
+              sDuration = calculateSectionDuration(sTopics, s).formatted;
+            } else {
+              sDuration = s.duration || '45 mins';
+            }
+          }
+          return {
+            id: s._id.toString(),
+            title: s.title,
+            slug: s.slug,
+            duration: sDuration,
+            topicsCount: sTopics.length,
+          };
+        }),
       };
 
       if (!modulesByPathId[pId]) modulesByPathId[pId] = [];
@@ -233,6 +260,13 @@ export class LearningPathService {
         path.modules = standaloneModules;
         path.modulesCount = standaloneModules.length;
         path.totalTopics = totalTopics;
+
+        if (!path.estimatedHours || path.estimatedHours === 20) {
+          const calculatedHours = calculatePathEstimatedHours(standaloneModules, path);
+          if (calculatedHours > 0) {
+            path.estimatedHours = calculatedHours;
+          }
+        }
       } else if (Array.isArray(path.modules) && path.modules.length > 0) {
         // Fallback to embedded modules if any
         const totalTopics = path.modules.reduce(
@@ -296,8 +330,14 @@ export class LearningPathService {
       throw new ApiError(`A learning path with slug '${targetSlug}' already exists`, 409);
     }
 
+    let estimatedHours = data.estimatedHours;
+    if ((!estimatedHours || data.autoCalculateDuration) && Array.isArray(data.modules) && data.modules.length > 0) {
+      estimatedHours = calculatePathEstimatedHours(data.modules, data);
+    }
+
     const pathData = {
       ...data,
+      ...(estimatedHours ? { estimatedHours } : {}),
       slug: targetSlug,
       createdBy: userId,
     };
@@ -315,25 +355,32 @@ export class LearningPathService {
       throw new ApiError(`Learning path not found with ID: '${id}'`, 404);
     }
 
-    if (data.slug) {
-      const newSlug = slugify(data.slug);
+    const updateData = { ...data };
+
+    if (updateData.slug) {
+      const newSlug = slugify(updateData.slug);
       if (newSlug !== existing.slug) {
         const slugOwner = await this.repository.findBySlug(newSlug);
         if (slugOwner && slugOwner._id.toString() !== id) {
           throw new ApiError(`A learning path with slug '${newSlug}' already exists`, 409);
         }
-        data.slug = newSlug;
+        updateData.slug = newSlug;
       }
-    } else if (data.title && data.title !== existing.title && !data.slug) {
-      const generatedSlug = slugify(data.title);
+    } else if (updateData.title && updateData.title !== existing.title && !updateData.slug) {
+      const generatedSlug = slugify(updateData.title);
       const slugOwner = await this.repository.findBySlug(generatedSlug);
       if (slugOwner && slugOwner._id.toString() !== id) {
         throw new ApiError(`A learning path with slug '${generatedSlug}' already exists`, 409);
       }
-      data.slug = generatedSlug;
+      updateData.slug = generatedSlug;
     }
 
-    const updated = await this.repository.update(id, data);
+    if (updateData.autoCalculateDuration) {
+      const modules = await Module.find({ learningPath: id });
+      updateData.estimatedHours = calculatePathEstimatedHours(modules, existing);
+    }
+
+    const updated = await this.repository.update(id, updateData);
     return this.presenter.format(updated);
   }
 

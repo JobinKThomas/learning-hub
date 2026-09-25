@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import {
@@ -7,6 +7,7 @@ import {
   clearCurrentModule,
 } from '../../features/modules/moduleSlice';
 import { fetchLearningPaths } from '../../features/learningPaths/learningPathSlice';
+import { calculateModuleDuration } from '../../utils/durationCalculator';
 import {
   ArrowLeft,
   Save,
@@ -76,6 +77,17 @@ export default function EditModule() {
     }
   }, [module]);
 
+  // Live auto-calculated duration from topics & description
+  const calculatedDuration = useMemo(() => {
+    const topics = formData.topicsInput
+      ? formData.topicsInput.split(',').map((t) => t.trim()).filter(Boolean)
+      : [];
+    return calculateModuleDuration([], {
+      topics,
+      description: formData.description,
+    });
+  }, [formData.topicsInput, formData.description]);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -122,7 +134,7 @@ export default function EditModule() {
       slug: slugify(formData.slug || formData.title),
       learningPath: formData.learningPath,
       description: formData.description.trim(),
-      duration: formData.duration.trim() || '2 hours',
+      duration: formData.duration.trim() || calculatedDuration.formatted,
       order: Number(formData.order) || 1,
       topics,
       learningObjectives: objectives,
@@ -242,16 +254,40 @@ export default function EditModule() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Duration */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Estimated Duration
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-slate-700">
+                  Estimated Duration
+                </label>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] font-medium text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200">
+                    Est: {calculatedDuration.formatted}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        duration: calculatedDuration.formatted,
+                      }))
+                    }
+                    className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 underline cursor-pointer"
+                    title="Apply estimated duration"
+                  >
+                    Apply
+                  </button>
+                </div>
+              </div>
               <input
                 type="text"
                 name="duration"
                 value={formData.duration}
                 onChange={handleChange}
+                placeholder={`Auto: ${calculatedDuration.formatted} (or e.g., 2 hours)`}
                 className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
+              <p className="text-[11px] text-slate-400 mt-1">
+                Leave blank to auto-calculate from child sections/topics.
+              </p>
             </div>
 
             {/* Order */}

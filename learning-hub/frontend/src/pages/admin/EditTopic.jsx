@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import {
@@ -7,6 +7,7 @@ import {
   clearCurrentTopic,
 } from '../../features/topics/topicSlice';
 import { fetchSections } from '../../features/sections/sectionSlice';
+import { calculateTopicDurationFromContent } from '../../utils/durationCalculator';
 import {
   ArrowLeft,
   Save,
@@ -55,6 +56,20 @@ export default function EditTopic() {
   const [codeExamples, setCodeExamples] = useState([]);
   const [formError, setFormError] = useState(null);
   const [activeContentTab, setActiveContentTab] = useState('write');
+
+  // Live auto-calculated duration from content
+  const calculatedDuration = useMemo(() => {
+    const keyPoints = formData.keyPointsInput
+      ? formData.keyPointsInput.split(',').map((k) => k.trim()).filter(Boolean)
+      : [];
+    return calculateTopicDurationFromContent({
+      content: formData.content,
+      description: formData.description,
+      summary: formData.summary,
+      codeExamples,
+      keyPoints,
+    });
+  }, [formData.content, formData.description, formData.summary, codeExamples, formData.keyPointsInput]);
 
   useEffect(() => {
     dispatch(fetchSections());
@@ -162,7 +177,7 @@ export default function EditTopic() {
       section: formData.section,
       summary: formData.summary.trim(),
       description: formData.description.trim(),
-      duration: formData.duration.trim() || '15 mins',
+      duration: formData.duration.trim() || calculatedDuration.formatted,
       order: Number(formData.order) || 1,
       keyPoints,
       codeExamples: validCodeExamples,
@@ -298,16 +313,40 @@ export default function EditTopic() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Duration */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Estimated Duration
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-slate-700">
+                  Estimated Duration
+                </label>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] font-medium text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200">
+                    Calculated: {calculatedDuration.formatted}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        duration: calculatedDuration.formatted,
+                      }))
+                    }
+                    className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 underline cursor-pointer"
+                    title="Apply auto-calculated duration from topic content"
+                  >
+                    Apply
+                  </button>
+                </div>
+              </div>
               <input
                 type="text"
                 name="duration"
                 value={formData.duration}
                 onChange={handleChange}
+                placeholder={`Auto: ${calculatedDuration.formatted} (or e.g., 20 mins)`}
                 className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
+              <p className="text-[11px] text-slate-400 mt-1">
+                Leave blank to auto-calculate from content (~180 wpm, code analysis, key points).
+              </p>
             </div>
 
             {/* Order */}
