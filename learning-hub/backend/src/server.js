@@ -17,11 +17,8 @@ const startServer = async () => {
       console.warn(`[Server] Warning: Database connection failed on startup (${dbError.message}). Starting server in degraded mode...`);
     }
 
-    server = app.listen(PORT, () => {
-      console.log(`[Server] Learning Hub backend running on http://localhost:${PORT}`);
-      console.log(`[Server] Environment: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`[Server] Health check available at: http://localhost:${PORT}/api/health`);
-      console.log(`[Server] Swagger Docs available at: http://localhost:${PORT}/api-docs`);
+    server = app.listen(PORT, '0.0.0.0', () => {
+      console.log(`Server running on port ${PORT}`);
     });
   } catch (error) {
     console.error(`[Server] Critical startup error: ${error.message}`);
