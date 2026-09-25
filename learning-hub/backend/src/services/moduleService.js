@@ -4,6 +4,9 @@ import { learningPathRepository } from '../repositories/learningPathRepository.j
 import { modulePresenter } from '../presenters/modulePresenter.js';
 import { ApiError } from '../utils/apiError.js';
 import { slugify } from '../models/Module.js';
+import { Section } from '../models/Section.js';
+import { calculateModuleDuration } from '../utils/durationCalculator.js';
+import { syncHierarchyDurations } from './hierarchyDurationService.js';
 
 export class ModuleService {
   constructor(
@@ -141,14 +144,25 @@ export class ModuleService {
       candidateSlug = `${baseSlug}-${counter++}`;
     }
 
+    // Calculate duration if not provided or auto requested
+    let moduleDuration = data.duration;
+    if (!moduleDuration || (typeof moduleDuration === 'string' && moduleDuration.trim() === '') || data.autoCalculateDuration) {
+      moduleDuration = calculateModuleDuration([], data).formatted;
+    }
+
     const newModuleData = {
       ...data,
       learningPath: resolvedPath._id,
       slug: candidateSlug,
+      duration: moduleDuration,
       createdBy: user?._id || user?.id,
     };
 
     const created = await this.repository.create(newModuleData);
+
+    // Sync parent learning path estimatedHours
+    await syncHierarchyDurations({ learningPathId: resolvedPath._id });
+
     return this.presenter.format(created);
   }
 
@@ -188,7 +202,22 @@ export class ModuleService {
       updateData.slug = slugCandidate;
     }
 
+    // If duration is cleared or auto-calculation requested
+    if (updateData.duration === '' || updateData.autoCalculateDuration) {
+      const sections = await Section.find({ module: id });
+      const merged = { ...existing.toObject(), ...updateData };
+      updateData.duration = calculateModuleDuration(sections, merged).formatted;
+    }
+
     const updated = await this.repository.update(id, updateData);
+
+    // Sync parent learning path estimatedHours
+    const currentPathId = updateData.learningPath || existing.learningPath;
+    await syncHierarchyDurations({ moduleId: id, learningPathId: currentPathId });
+    if (updateData.learningPath && updateData.learningPath.toString() !== existing.learningPath.toString()) {
+      await syncHierarchyDurations({ learningPathId: existing.learningPath });
+    }
+
     return this.presenter.format(updated);
   }
 
@@ -206,6 +235,10 @@ export class ModuleService {
     }
 
     await this.repository.delete(id);
+
+    // Sync parent learning path estimatedHours
+    await syncHierarchyDurations({ learningPathId: existing.learningPath });
+
     return { id, title: existing.title, slug: existing.slug };
   }
 }
