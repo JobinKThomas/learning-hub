@@ -5,33 +5,116 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 10000,
+  timeout: 15000,
 });
 
-// Request interceptor to automatically attach JWT token
+// Request interceptor: attach access token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    const accessToken =
+      localStorage.getItem('accessToken') || localStorage.getItem('token');
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// Response interceptor to format errors
+// Response interceptor: handle 401 with silent token refresh
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Avoid infinite loop on auth endpoints
+    const isAuthEndpoint =
+      originalRequest?.url?.includes('/auth/login') ||
+      originalRequest?.url?.includes('/auth/register') ||
+      originalRequest?.url?.includes('/auth/refresh');
+
+    if (error.response?.status === 401 && !originalRequest?._retry && !isAuthEndpoint) {
+      const refreshToken = localStorage.getItem('refreshToken');
+
+      if (refreshToken) {
+        if (isRefreshing) {
+          return new Promise((resolve, reject) => {
+            failedQueue.push({ resolve, reject });
+          })
+            .then((token) => {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+              return api(originalRequest);
+            })
+            .catch((err) => Promise.reject(err));
+        }
+
+        originalRequest._retry = true;
+        isRefreshing = true;
+
+        try {
+          const res = await axios.post(
+            (import.meta.env.VITE_API_BASE_URL || '/api') + '/auth/refresh',
+            { refreshToken }
+          );
+
+          const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
+            res.data.data;
+
+          localStorage.setItem('accessToken', newAccessToken);
+          localStorage.setItem('token', newAccessToken);
+          if (newRefreshToken) {
+            localStorage.setItem('refreshToken', newRefreshToken);
+          }
+
+          api.defaults.headers.common.Authorization = `Bearer ${newAccessToken}`;
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+
+          processQueue(null, newAccessToken);
+          return api(originalRequest);
+        } catch (refreshErr) {
+          processQueue(refreshErr, null);
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('user');
+          return Promise.reject(refreshErr);
+        } finally {
+          isRefreshing = false;
+        }
+      }
+    }
+
+    const isNetworkError = !error.response || error.code === 'ERR_NETWORK' || error.code === 'ECONNABORTED';
+    const status = error.response?.status || (isNetworkError ? 0 : 500);
+    const message = isNetworkError
+      ? 'Unable to connect to the server. Please check your network connection.'
+      : (error.response?.data?.message || error.message || 'An unexpected error occurred');
+
     const customError = {
-      status: error.response?.status,
-      message:
-        error.response?.data?.message ||
-        error.message ||
-        'An unexpected error occurred',
+      status,
+      message,
       errors: error.response?.data?.errors,
+      isNetworkError,
+      isNotFound: status === 404,
+      isForbidden: status === 403,
+      isUnauthorized: status === 401,
+      isValidationError: status === 400,
     };
+
     return Promise.reject(customError);
   }
 );

@@ -6,7 +6,7 @@ const options = {
     info: {
       title: 'Learning Hub API',
       version: '1.0.0',
-      description: 'API documentation for the Learning Hub platform (Phase 0 Foundation)',
+      description: 'API documentation for the Learning Hub platform (Phase 1 Authentication & Phase 0 Foundation)',
       contact: {
         name: 'Learning Hub Team',
       },
@@ -23,7 +23,7 @@ const options = {
           type: 'http',
           scheme: 'bearer',
           bearerFormat: 'JWT',
-          description: 'Enter your JWT Bearer token to authorize requests',
+          description: 'Enter your JWT Bearer access token to authorize requests',
         },
       },
       schemas: {
@@ -52,9 +52,17 @@ const options = {
             _id: { type: 'string', example: '66dc4b5f884a1e4922e96410' },
             name: { type: 'string', example: 'Jane Doe' },
             email: { type: 'string', format: 'email', example: 'jane@example.com' },
-            role: { type: 'string', enum: ['student', 'instructor', 'admin'], example: 'student' },
+            role: { type: 'string', enum: ['USER', 'ADMIN'], example: 'USER' },
             createdAt: { type: 'string', format: 'date-time' },
             updatedAt: { type: 'string', format: 'date-time' },
+          },
+        },
+        AuthTokens: {
+          type: 'object',
+          properties: {
+            user: { $ref: '#/components/schemas/User' },
+            accessToken: { type: 'string', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' },
+            refreshToken: { type: 'string', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' },
           },
         },
       },

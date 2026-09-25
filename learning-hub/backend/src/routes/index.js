@@ -1,10 +1,36 @@
 import { Router } from 'express';
 import healthRoutes from './healthRoutes.js';
 import authRoutes from './authRoutes.js';
+import adminRoutes from './adminRoutes.js';
+import learningPathRoutes from './learningPathRoutes.js';
+import moduleRoutes from './moduleRoutes.js';
+import sectionRoutes from './sectionRoutes.js';
+import topicRoutes from './topicRoutes.js';
+import noteRoutes from './noteRoutes.js';
+import resourceRoutes from './resourceRoutes.js';
+import playgroundRoutes from './playgroundRoutes.js';
+import quizRoutes from './quizRoutes.js';
+import quizAttemptRoutes from './quizAttemptRoutes.js';
+import interviewQuestionRoutes from './interviewQuestionRoutes.js';
+import progressRoutes from './progressRoutes.js';
+import dashboardRoutes from './dashboardRoutes.js';
 
 const router = Router();
 
 router.use('/health', healthRoutes);
 router.use('/auth', authRoutes);
+router.use('/admin', adminRoutes);
+router.use('/learning-paths', learningPathRoutes);
+router.use('/modules', moduleRoutes);
+router.use('/sections', sectionRoutes);
+router.use('/topics', topicRoutes);
+router.use('/notes', noteRoutes);
+router.use('/resources', resourceRoutes);
+router.use('/playgrounds', playgroundRoutes);
+router.use('/quizzes', quizRoutes);
+router.use('/quiz-attempts', quizAttemptRoutes);
+router.use('/interview-questions', interviewQuestionRoutes);
+router.use('/progress', progressRoutes);
+router.use('/dashboard', dashboardRoutes);
 
 export default router;

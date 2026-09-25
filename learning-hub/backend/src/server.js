@@ -35,6 +35,11 @@ startServer();
 const shutdown = async (signal) => {
   console.log(`\n[Server] Received ${signal}. Shutting down gracefully...`);
   if (server) {
+    setTimeout(async () => {
+      await disconnectDB();
+      process.exit(0);
+    }, 1000).unref();
+
     server.close(async () => {
       console.log('[Server] HTTP server closed.');
       await disconnectDB();

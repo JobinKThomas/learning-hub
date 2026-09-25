@@ -1,0 +1,448 @@
+import React, { useEffect, useState } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchLearningPathBySlug, clearCurrentPath } from '../features/learningPaths/learningPathSlice';
+import { fetchModulesByLearningPath } from '../features/modules/moduleSlice';
+import { fetchLearningPathProgress } from '../features/progress/progressSlice';
+import ProgressBar from '../features/progress/components/ProgressBar';
+import TopicProgressBadge from '../features/progress/components/TopicProgressBadge';
+import { useAuth } from '../hooks/useAuth';
+import ErrorState from '../components/ErrorState';
+import EmptyState from '../components/EmptyState';
+import LoadingState from '../components/LoadingState';
+import { normalizeList } from '../utils/normalize';
+import {
+  ArrowLeft,
+  Clock,
+  BookOpen,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  Sparkles,
+  Layers,
+  Edit,
+  Share2,
+  Check,
+  AlertCircle,
+  GraduationCap,
+  Award,
+  PlusCircle,
+  ArrowRight,
+} from 'lucide-react';
+
+const LEVEL_BADGES = {
+  Beginner: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+  Intermediate: 'bg-blue-100 text-blue-800 border-blue-300',
+  Advanced: 'bg-purple-100 text-purple-800 border-purple-300',
+};
+
+export default function LearningPathDetails() {
+  const { slug } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { currentPath: path, detailsLoading: loading, error } = useSelector(
+    (state) => state.learningPaths
+  );
+  const { modules: standaloneModules, error: modulesError } = useSelector((state) => state.modules);
+  const { currentPathProgress } = useSelector((state) => state.progress);
+  const { isAdmin } = useAuth();
+
+  const [expandedModules, setExpandedModules] = useState({});
+  const [enrolled, setEnrolled] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (slug) {
+      dispatch(fetchLearningPathBySlug(slug));
+      dispatch(fetchModulesByLearningPath(slug));
+      dispatch(fetchLearningPathProgress(slug));
+    }
+    return () => {
+      dispatch(clearCurrentPath());
+    };
+  }, [dispatch, slug]);
+
+  // Expand first 2 modules by default once loaded
+  useEffect(() => {
+    if (path?.modules && Array.isArray(path.modules)) {
+      const initial = {};
+      path.modules.forEach((_, idx) => {
+        initial[idx] = true; // all open by default
+      });
+      setExpandedModules(initial);
+    }
+  }, [path]);
+
+  const toggleModule = (index) => {
+    setExpandedModules((prev) => ({
+      ...prev,
+      [index]: !prev[index],
+    }));
+  };
+
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  if (loading) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <LoadingState variant="detail" count={3} />
+      </div>
+    );
+  }
+
+  if (error || !path) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 py-16">
+        <ErrorState
+          statusCode={404}
+          title="Learning Path Not Found"
+          message={
+            error ||
+            `The path '/learning-paths/${slug}' could not be located. It may have been unpublished or removed.`
+          }
+          actionText="Back to Learning Paths"
+          actionLink="/learning-paths"
+          onRetry={() => dispatch(fetchLearningPathBySlug(slug))}
+        />
+      </div>
+    );
+  }
+
+  const levelBadge = LEVEL_BADGES[path.level] || LEVEL_BADGES.Beginner;
+
+  const displayModules = normalizeList(
+    standaloneModules && standaloneModules.length > 0
+      ? standaloneModules
+      : path.modules
+  );
+
+  return (
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+      {/* Navigation Breadcrumb */}
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <Link
+          to="/learning-paths"
+          className="inline-flex items-center text-xs font-semibold text-slate-500 hover:text-indigo-600 transition min-h-[36px]"
+        >
+          <ArrowLeft className="w-4 h-4 mr-1.5" />
+          <span>Back to Learning Paths</span>
+        </Link>
+
+        {isAdmin && (
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              to={`/admin/modules/create?path=${path.id}`}
+              className="inline-flex items-center px-3 py-1.5 rounded-lg border border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100 text-xs font-semibold transition min-h-[36px]"
+            >
+              <PlusCircle className="w-3.5 h-3.5 mr-1.5" />
+              <span>Add Module</span>
+            </Link>
+            <Link
+              to={`/admin/learning-paths/${path.id}/edit`}
+              className="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 text-xs font-semibold transition min-h-[36px]"
+            >
+              <Edit className="w-3.5 h-3.5 mr-1.5" />
+              <span>Edit Path</span>
+            </Link>
+          </div>
+        )}
+      </div>
+
+      {/* Hero Header */}
+      <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 text-white shadow-xl relative overflow-hidden">
+        <div className="relative z-10 space-y-3 sm:space-y-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span
+              className={`text-xs font-bold px-3 py-1 rounded-full border ${levelBadge}`}
+            >
+              {path.level}
+            </span>
+            <span className="text-xs font-medium px-3 py-1 rounded-full bg-white/10 text-slate-200 border border-white/20">
+              {path.category}
+            </span>
+            {!path.published && (
+              <span className="text-xs font-bold px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/40">
+                Draft / Unpublished
+              </span>
+            )}
+          </div>
+
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight leading-tight">
+            {path.title}
+          </h1>
+
+          <p className="text-slate-300 text-xs sm:text-sm md:text-base max-w-3xl leading-relaxed">
+            {path.description}
+          </p>
+
+          {/* Key Metrics row */}
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6 pt-3 sm:pt-4 text-xs sm:text-sm text-slate-300 border-t border-white/10">
+            <div className="flex items-center gap-2">
+              <BookOpen className="w-4 h-4 text-indigo-400" />
+              <span>
+                <strong className="text-white font-bold">{displayModules.length}</strong>{' '}
+                Modules
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <span>
+                <strong className="text-white font-bold">{path.totalTopics || 0}</strong> Key
+                Topics
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4 text-amber-400" />
+              <span>
+                <strong className="text-white font-bold">{path.estimatedHours}</strong> Total Hours
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Layout: Curriculum + Sidebar */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        {/* Left Column: Curriculum Modules */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+              <GraduationCap className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+              Curriculum Roadmap
+            </h2>
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                {displayModules.length} sequential modules
+              </span>
+              {isAdmin && (
+                <Link
+                  to={`/admin/modules/create?path=${path.id}`}
+                  className="inline-flex items-center px-3 py-1.5 rounded-lg bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900/50 border border-purple-200 dark:border-purple-800 text-xs font-semibold transition"
+                >
+                  <PlusCircle className="w-3.5 h-3.5 mr-1" />
+                  Add Module
+                </Link>
+              )}
+            </div>
+          </div>
+
+          {modulesError ? (
+            <ErrorState
+              title="Unable to load modules."
+              message="Please try again."
+              onRetry={() => dispatch(fetchModulesByLearningPath(slug))}
+              variant="card"
+            />
+          ) : displayModules && displayModules.length > 0 ? (
+            <div className="space-y-4">
+              {displayModules.map((module, idx) => {
+                const isOpen = !!expandedModules[idx];
+                const moduleSlug = module.slug || `module-${idx + 1}`;
+                const moduleProg = currentPathProgress?.modules?.find(
+                  (m) => m.slug === moduleSlug || String(m.id) === String(module._id || module.id)
+                );
+                return (
+                  <div
+                    key={module._id || module.id || idx}
+                    className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden transition-all"
+                  >
+                    {/* Module Accordion Header */}
+                    <div className="p-5 flex items-start justify-between">
+                      <div className="flex items-start gap-4 flex-grow cursor-pointer" onClick={() => toggleModule(idx)}>
+                        <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 font-bold text-xs flex items-center justify-center flex-shrink-0 mt-0.5">
+                          {module.order ?? idx + 1}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-3">
+                            <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                              {module.title}
+                            </h3>
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                              <Clock className="w-3 h-3 mr-1 text-slate-400" />
+                              {module.duration}
+                            </span>
+                            {moduleProg && (
+                              <TopicProgressBadge
+                                isCompleted={moduleProg.percentage === 100}
+                                percentage={moduleProg.percentage}
+                                size="xs"
+                              />
+                            )}
+                          </div>
+                          {module.description && (
+                            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
+                              {module.description}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3 pl-4">
+                        <Link
+                          to={`/modules/${moduleSlug}`}
+                          className="hidden sm:inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 text-xs font-semibold transition whitespace-nowrap"
+                        >
+                          <span>Open Module</span>
+                          <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                        </Link>
+                        <button
+                          onClick={() => toggleModule(idx)}
+                          className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"
+                          title={isOpen ? 'Collapse' : 'Expand'}
+                        >
+                          {isOpen ? (
+                            <ChevronUp className="w-5 h-5" />
+                          ) : (
+                            <ChevronDown className="w-5 h-5" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Topics Checklist (Collapsible) */}
+                    {isOpen && module.topics && module.topics.length > 0 && (
+                      <div className="px-5 pb-5 pt-1 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40">
+                        <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2.5">
+                          Lessons & Practice:
+                        </div>
+                        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          {module.topics.map((topic, tIdx) => (
+                            <li
+                              key={tIdx}
+                              className="flex items-center gap-2 p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-300"
+                            >
+                              <div className="w-4 h-4 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0">
+                                <Check className="w-2.5 h-2.5" />
+                              </div>
+                              <span className="font-medium truncate">{topic}</span>
+                            </li>
+                          ))}
+                        </ul>
+
+                        <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 sm:hidden">
+                          <Link
+                            to={`/modules/${moduleSlug}`}
+                            className="w-full inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold shadow-sm"
+                          >
+                            <span>Open Module Lessons</span>
+                            <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                          </Link>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <EmptyState
+              icon={Layers}
+              title="No modules found"
+              description="No curriculum modules specified for this learning path yet."
+              actionText={isAdmin ? "Add First Module" : undefined}
+              actionLink={isAdmin ? `/admin/modules/create?path=${path.id}` : undefined}
+            />
+          )}
+        </div>
+
+        {/* Right Column: Enrollment & Actions Sidebar */}
+        <div className="space-y-6">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-md space-y-6 sticky top-24">
+            <div>
+              <div className="text-xs font-semibold uppercase text-slate-400 tracking-wider">
+                Enrollment
+              </div>
+              <h3 className="text-xl font-extrabold text-slate-900 dark:text-slate-100 mt-1">
+                Begin This Path
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                Enroll to track your milestone progress, complete hands-on exercises, and earn your certification.
+              </p>
+            </div>
+
+            {/* Action Button */}
+            <div>
+              <button
+                onClick={() => setEnrolled(!enrolled)}
+                className={`w-full py-3 px-4 rounded-xl font-bold text-sm transition-all shadow-md flex items-center justify-center gap-2 ${
+                  enrolled
+                    ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-200 dark:shadow-none'
+                    : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-200 dark:shadow-none'
+                }`}
+              >
+                {enrolled ? (
+                  <>
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Enrolled (In Progress)</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4" />
+                    <span>Enroll Now (Free)</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Track Progress Bar */}
+            <div className="border-t border-slate-100 dark:border-slate-800 pt-4 space-y-2">
+              <ProgressBar
+                percentage={currentPathProgress?.percentage ?? (enrolled ? 10 : 0)}
+                label="Track Mastery"
+                variant="auto"
+                size="md"
+              />
+              <div className="text-center text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                {currentPathProgress?.completedTopics ?? 0} of {currentPathProgress?.totalTopics ?? path.totalTopics ?? 0} topics completed
+              </div>
+            </div>
+
+            {/* Quick Specs */}
+            <div className="border-t border-slate-100 dark:border-slate-800 pt-4 space-y-3 text-xs">
+              <div className="flex justify-between text-slate-600 dark:text-slate-400">
+                <span className="text-slate-400 dark:text-slate-500">Pace:</span>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">Self-paced</span>
+              </div>
+              <div className="flex justify-between text-slate-600 dark:text-slate-400">
+                <span className="text-slate-400 dark:text-slate-500">Skill Level:</span>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">{path.level}</span>
+              </div>
+              <div className="flex justify-between text-slate-600 dark:text-slate-400">
+                <span className="text-slate-400 dark:text-slate-500">Estimated Effort:</span>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">{path.estimatedHours} hours total</span>
+              </div>
+              <div className="flex justify-between text-slate-600 dark:text-slate-400">
+                <span className="text-slate-400 dark:text-slate-500">Certification:</span>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">Included upon completion</span>
+              </div>
+            </div>
+
+            {/* Share / Copy link */}
+            <div className="border-t border-slate-100 dark:border-slate-800 pt-4">
+              <button
+                onClick={handleShare}
+                className="w-full py-2 px-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition flex items-center justify-center gap-2"
+              >
+                {copied ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                    <span>Link Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <Share2 className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
+                    <span>Share Curriculum</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,24 +1,432 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCurrentUser } from './store/slices/authSlice';
 import Navbar from './components/Navbar';
+import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './components/AdminRoute';
+import ErrorBoundary from './components/ErrorBoundary';
+import NotFound from './pages/NotFound';
+import Forbidden from './pages/Forbidden';
 import HomePage from './pages/HomePage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import AdminRegister from './pages/AdminRegister';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+import Dashboard from './pages/Dashboard';
+import AdminDashboard from './pages/AdminDashboard';
+import LearningPaths from './pages/LearningPaths';
+import LearningPathDetails from './pages/LearningPathDetails';
+import AdminLearningPaths from './pages/admin/AdminLearningPaths';
+import CreateLearningPath from './pages/admin/CreateLearningPath';
+import EditLearningPath from './pages/admin/EditLearningPath';
+import ModuleDetails from './pages/ModuleDetails';
+import AdminModules from './pages/admin/AdminModules';
+import CreateModule from './pages/admin/CreateModule';
+import EditModule from './pages/admin/EditModule';
+import SectionDetails from './pages/SectionDetails';
+import AdminSections from './pages/admin/AdminSections';
+import CreateSection from './pages/admin/CreateSection';
+import EditSection from './pages/admin/EditSection';
+import TopicDetails from './pages/TopicDetails';
+import AdminTopics from './pages/admin/AdminTopics';
+import CreateTopic from './pages/admin/CreateTopic';
+import EditTopic from './pages/admin/EditTopic';
+import Notes from './pages/Notes';
+import NoteDetails from './pages/NoteDetails';
+import AdminNotes from './pages/admin/AdminNotes';
+import CreateNote from './pages/admin/CreateNote';
+import EditNote from './pages/admin/EditNote';
+import AdminResources from './pages/admin/AdminResources';
+import CreateResource from './pages/admin/CreateResource';
+import EditResource from './pages/admin/EditResource';
+import Playground from './pages/Playground';
+import AdminPlaygrounds from './pages/admin/AdminPlaygrounds';
+import CreatePlayground from './pages/admin/CreatePlayground';
+import EditPlayground from './pages/admin/EditPlayground';
+import Quiz from './pages/Quiz';
+import QuizHistory from './pages/QuizHistory';
+import AdminQuizzes from './pages/admin/AdminQuizzes';
+import CreateQuiz from './pages/admin/CreateQuiz';
+import EditQuiz from './pages/admin/EditQuiz';
+import InterviewQuestions from './pages/InterviewQuestions';
+import AdminInterviewQuestions from './pages/admin/AdminInterviewQuestions';
+import CreateInterviewQuestion from './pages/admin/CreateInterviewQuestion';
+import EditInterviewQuestion from './pages/admin/EditInterviewQuestion';
 
 export default function App() {
+  const dispatch = useDispatch();
+  const { accessToken, user } = useSelector((state) => state.auth);
+  const theme = useSelector((state) => state.theme?.theme || 'light');
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const body = document.body;
+    if (theme === 'dark') {
+      root.classList.add('dark');
+      if (body) body.classList.add('dark');
+      root.style.colorScheme = 'dark';
+    } else {
+      root.classList.remove('dark');
+      if (body) body.classList.remove('dark');
+      root.style.colorScheme = 'light';
+    }
+    try {
+      localStorage.setItem('theme', theme);
+    } catch (e) {}
+  }, [theme]);
+
+  useEffect(() => {
+    // If token exists in storage but user isn't loaded, verify session
+    if (accessToken && !user) {
+      dispatch(fetchCurrentUser());
+    }
+  }, [accessToken, user, dispatch]);
+
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200">
       <Navbar />
       <main className="flex-grow">
-        <Routes>
+        <ErrorBoundary>
+          <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/admin/login" element={<Navigate to="/login" replace />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/admin/register" element={<AdminRegister />} />
+          <Route path="/register/admin" element={<Navigate to="/admin/register" replace />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/learning-paths"
+            element={
+              <ProtectedRoute>
+                <LearningPaths />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/learning-paths/:slug"
+            element={
+              <ProtectedRoute>
+                <LearningPathDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/modules/:slug"
+            element={
+              <ProtectedRoute>
+                <ModuleDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/sections/:slug"
+            element={
+              <ProtectedRoute>
+                <SectionDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/topics/:slug"
+            element={
+              <ProtectedRoute>
+                <TopicDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/notes"
+            element={
+              <ProtectedRoute>
+                <Notes />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/notes/:slug"
+            element={
+              <ProtectedRoute>
+                <NoteDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/playgrounds/:slug"
+            element={
+              <ProtectedRoute>
+                <Playground />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/quizzes/:id"
+            element={
+              <ProtectedRoute>
+                <Quiz />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/quizzes/:id/history"
+            element={
+              <ProtectedRoute>
+                <QuizHistory />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/interview-questions"
+            element={
+              <ProtectedRoute>
+                <InterviewQuestions />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminDashboard />
+              </AdminRoute>
+            }
+          />
+          <Route path="/admin/dashboard" element={<Navigate to="/admin" replace />} />
+          <Route
+            path="/admin/learning-paths"
+            element={
+              <AdminRoute>
+                <AdminLearningPaths />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/learning-paths/create"
+            element={
+              <AdminRoute>
+                <CreateLearningPath />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/learning-paths/:id/edit"
+            element={
+              <AdminRoute>
+                <EditLearningPath />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/modules"
+            element={
+              <AdminRoute>
+                <AdminModules />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/modules/create"
+            element={
+              <AdminRoute>
+                <CreateModule />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/modules/:id/edit"
+            element={
+              <AdminRoute>
+                <EditModule />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/sections"
+            element={
+              <AdminRoute>
+                <AdminSections />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/sections/create"
+            element={
+              <AdminRoute>
+                <CreateSection />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/sections/:id/edit"
+            element={
+              <AdminRoute>
+                <EditSection />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/topics"
+            element={
+              <AdminRoute>
+                <AdminTopics />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/topics/create"
+            element={
+              <AdminRoute>
+                <CreateTopic />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/topics/:id/edit"
+            element={
+              <AdminRoute>
+                <EditTopic />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/notes"
+            element={
+              <AdminRoute>
+                <AdminNotes />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/notes/create"
+            element={
+              <AdminRoute>
+                <CreateNote />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/notes/:id/edit"
+            element={
+              <AdminRoute>
+                <EditNote />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/resources"
+            element={
+              <AdminRoute>
+                <AdminResources />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/resources/create"
+            element={
+              <AdminRoute>
+                <CreateResource />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/resources/:id/edit"
+            element={
+              <AdminRoute>
+                <EditResource />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/playgrounds"
+            element={
+              <AdminRoute>
+                <AdminPlaygrounds />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/playgrounds/create"
+            element={
+              <AdminRoute>
+                <CreatePlayground />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/playgrounds/:id/edit"
+            element={
+              <AdminRoute>
+                <EditPlayground />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/quizzes"
+            element={
+              <AdminRoute>
+                <AdminQuizzes />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/quizzes/create"
+            element={
+              <AdminRoute>
+                <CreateQuiz />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/quizzes/:id/edit"
+            element={
+              <AdminRoute>
+                <EditQuiz />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/interview-questions"
+            element={
+              <AdminRoute>
+                <AdminInterviewQuestions />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/interview-questions/create"
+            element={
+              <AdminRoute>
+                <CreateInterviewQuestion />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/interview-questions/:id/edit"
+            element={
+              <AdminRoute>
+                <EditInterviewQuestion />
+              </AdminRoute>
+            }
+          />
+          <Route path="/forbidden" element={<Forbidden />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
-      </main>
-      <footer className="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
-        <p>© 2026 Learning Hub — Phase 0 Project Foundation</p>
-      </footer>
-    </div>
-  );
+      </ErrorBoundary>
+    </main>
+    <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-4 py-6 text-center text-xs text-slate-500 dark:text-slate-400 transition-colors duration-200">
+      <p>© 2026 Learning Hub — Full-Stack Interactive Platform (Mobile, Tablet & Desktop)</p>
+    </footer>
+  </div>
+);
 }
